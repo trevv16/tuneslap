@@ -1,124 +1,81 @@
-# TuneSlap
+<div align="center">
+  <img src="frontend/public/logo.png" alt="TuneSlap" width="250" />
+  <p><strong>The collaborative soundboard for modern creators.</strong></p>
 
-A self-hosted soundboard application for podcasters and content creators. Create and manage interactive soundboards with customizable audio buttons, manipulate audio clips, and collaborate with your team.
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#for-developers">For Developers</a> •
+    <a href="docs/CONTRIBUTING.md">Contributing</a>
+  </p>
+</div>
 
-## Features
+---
 
-### Soundboard Management
-- Upload and play audio files (MP3, WAV, etc.) with instant playback
-- Create multiple customizable soundboards
-- Drag-and-drop interface for organizing sounds
-- Adjustable button labels, colors, and sizes
-- Assign custom images to buttons
+TuneSlap is a powerful, self-hosted soundboard designed for podcasters, streamers, and production teams. It brings your audio effects to life with instant playback, real-time collaboration, and professional-grade audio manipulation tools—all in your browser.
 
-### Audio Controls
-- Trim audio clips
-- Fade in/out effects
-- Modify playback speed and pitch
-- Looping support
+Say goodbye to clunky desktop apps and rigid file structures. With TuneSlap, you can organize, edit, and play your sounds from anywhere.
 
-### Collaboration
-- Invite team members to boards
-- Role-based access control (creator, editor, viewer)
-- Real-time collaboration
+## Why TuneSlap?
 
-### User Management
-- Email/password authentication
-- Social login (Google)
-- Password reset and email verification
-- User profile management
+### 🎛️ Total Control
+Customize every aspect of your soundboard. Drag and drop to organize buttons, assign custom images, and set colors to match your workflow.
+
+### 🤝 Built for Teams
+Invite your co-hosts and producers to collaborate. Changes happen in real-time, so everyone is always looking at the same board.
+
+### 🎧 Professional Audio Tools
+No need for external editors. Trim clips, add fade-in/out effects, adjust playback speed, and loop tracks directly within the app.
+
+### 🔒 Privacy First
+Self-hosted and secure. You own your data, your audio files, and your user accounts.
 
 ## Quick Start
 
-The easiest way to get started is using Docker Compose:
+Get your soundboard running in seconds with Docker.
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 
-# Copy environment file template
+# 2. Set up your environment
 cp server/.env.example server/.env
 
-# Edit server/.env with your configuration
-# See docs/DEPLOYMENT.md for detailed setup instructions
-
-# Start all services
+# 3. Launch TuneSlap
 docker-compose up -d
 ```
 
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8080
+That's it! 
+*   **App**: [http://localhost:3000](http://localhost:3000)
+*   **API**: [http://localhost:8080](http://localhost:8080)
 
-For detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Tech Stack
+## For Developers
+
+TuneSlap is built with a modern, performance-focused stack.
 
 ### Frontend
-- **Next.js 15** (React framework)
-- **TypeScript**
-- **TailwindCSS**
-- **TanStack Query** (data fetching and caching)
-- **Web Audio API** for audio previews
+*   **Next.js 15** & **React 19** – The latest in modern web development.
+*   **TypeScript** – For type-safe, maintainable code.
+*   **TanStack Query** – Efficient data fetching and state management.
+*   **Web Audio API** – Native browser audio processing.
 
 ### Backend
-- **Go (Fiber)** for API server
-- **MongoDB** for data storage
-- **Redis** for caching and job queues
-- **FFmpeg** for audio processing
-- **Sharp** for image processing
+*   **Go (Fiber)** – High-performance API server.
+*   **MongoDB** – Flexible document storage.
+*   **Redis** – Fast caching and job queues.
+*   **FFmpeg** – Industrial-strength media processing.
 
-## Development
-
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for development setup and contribution guidelines.
-
-## API Documentation
-
-All API routes are prefixed with `/api/v1`.
-
-### Authentication
-- `POST /auth/signup` - Register a new user
-- `POST /auth/login` - Authenticate user and return tokens
-- `POST /auth/forgot` - Request password reset
-- `POST /auth/reset` - Complete password reset
-
-### Boards
-- `GET /boards` - List all boards
-- `POST /boards` - Create a new board
-- `GET /boards/:boardId` - Get board details
-- `PATCH /boards/:boardId` - Update board
-- `DELETE /boards/:boardId` - Delete board
-
-### Media
-- `GET /media` - List all media files
-- `POST /media` - Upload a new media file
-- `GET /media/:mediaId` - Get media metadata
-- `PATCH /media/:mediaId` - Update media
-- `DELETE /media/:mediaId` - Delete media
-- `POST /media/:mediaId/process` - Process media (trim, convert, etc.)
-
-### Collaborators
-- `GET /boards/:boardId/collaborators` - List collaborators
-- `POST /boards/:boardId/collaborators` - Add collaborator
-- `PATCH /boards/:boardId/collaborators/:collaboratorId` - Update role
-- `DELETE /boards/:boardId/collaborators/:collaboratorId` - Remove collaborator
-
-For complete API documentation, see the [OpenAPI specification](openapi/openapi.yaml).
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### API & Documentation
+Explore the full API documentation in our [OpenAPI specification](openapi/openapi.yaml) or view the endpoints in `server/router/main.go`.
 
 ## Contributing
 
-Contributions are welcome! Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+We love contributions! whether it's a bug fix, new feature, or documentation update.
+Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) to get started.
 
-## Roadmap
+## License
 
-- [ ] Support for additional audio formats
-- [ ] MIDI device support
-- [ ] Stream deck integration
-- [ ] Audio library with preloaded sounds
-- [ ] Advanced audio effects and filters
-- [ ] Mobile app support
+TuneSlap is open source software licensed under the [MIT License](LICENSE).
