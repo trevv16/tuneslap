@@ -1,27 +1,39 @@
 # Start from golang 1.24 base image
 FROM golang:1.24-bookworm AS builder
 
-# Install build dependencies (required for bimg/libvips)
+# Install build dependencies (required for bimg/libvips) and code generation tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-dev \
     gcc \
     pkg-config \
+    nodejs \
+    npm \
+    default-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Work from project root structure so generate-types.sh paths work
+WORKDIR /workspace
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Copy go mod and sum files first for caching
+COPY server/go.mod server/go.sum ./server/
 
 # Download all dependencies
-RUN go mod download
+RUN cd server && go mod download
 
-# Copy the source code
-COPY . .
+# Copy OpenAPI specs and scripts for code generation
+COPY openapi ./openapi
+COPY scripts ./scripts
 
-# Build the application
+# Copy the server source code
+COPY server ./server
+
+# Generate Go types from OpenAPI spec using the project script
+RUN npm install -g @openapitools/openapi-generator-cli swagger-cli && \
+    ./scripts/generate-types.sh --backend-only
+
+# Build the application from server directory
 # CGO_ENABLED=1 is required for bimg
-RUN CGO_ENABLED=1 GOOS=linux go build -o main .
+RUN cd server && CGO_ENABLED=1 GOOS=linux go build -o main .
 
 # Final stage
 FROM debian:bookworm-slim
@@ -36,7 +48,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/main .
+COPY --from=builder /workspace/server/main .
 
 # Set environment variables
 # We do NOT set GO_ENV=production here because the application logic 

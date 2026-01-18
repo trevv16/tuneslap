@@ -17,14 +17,14 @@ ENV PATH="${PATH}:/root/go/bin"
 
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Copy go mod and sum files (context is now project root)
+COPY server/go.mod server/go.sum ./
 
 # Download all dependencies
 RUN go mod download
 
 # Copy Air configuration
-COPY .air.toml ./
+COPY server/.air.toml ./
 
 # Set environment variables
 ENV GO_ENV=local
