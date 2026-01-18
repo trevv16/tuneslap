@@ -1,0 +1,38 @@
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+COPY frontend/package.json frontend/yarn.lock* frontend/package-lock.json* frontend/pnpm-lock.yaml* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# Development image
+FROM base AS dev
+WORKDIR /workspace/frontend
+
+# Install bash and openjdk for generate-types script (OpenAPI generator requires Java)
+RUN apk add --no-cache bash openjdk17-jre
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules /workspace/frontend/node_modules
+
+# Copy frontend files (will be overridden by volume mount in docker-compose)
+COPY frontend/package.json frontend/yarn.lock* /workspace/frontend/
+
+# Set environment variables
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Expose port
+EXPOSE 3000
+
+# Run dev server
+CMD ["yarn", "dev"]

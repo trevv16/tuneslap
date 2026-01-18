@@ -1,0 +1,126 @@
+openapi: '3.0.3'
+info:
+  title: Users API
+  version: '1.0.0'
+
+components:
+  schemas:
+    UserResponse:
+      title: UserResponse
+      type: object
+      properties:
+        id:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+        imageUrl:
+          $ref: './common.yaml#/components/schemas/ImageUrl'
+        createdAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+    UpdateMeRequest:
+      type: object
+      properties:
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        imageUrl:
+          $ref: './common.yaml#/components/schemas/ImageUrl'
+    UpdateMeResponse:
+      title: UpdateMeResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Profile updated successfully
+        data:
+          $ref: '#/components/schemas/UserResponse'
+
+paths:
+  /users/me:
+    get:
+      summary: Get my profile
+      description: Returns the profile for the authenticated user
+      operationId: getMe
+      tags: [users]
+      responses:
+        '200':
+          description: The user profile
+          content:
+            application/json:
+              schema:
+                title: GetMeResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetMeUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: GetMeErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetMeServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update my profile
+      description: Updates the profile for the authenticated user
+      operationId: updateMe
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMeRequest'
+      responses:
+        '200':
+          description: The user profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMeResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: UpdateMeUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: UpdateMeErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: UpdateMeServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse' 

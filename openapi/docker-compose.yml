@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  openapi-docs:
+    build: .
+    ports:
+      - "8081:80"
+    volumes:
+      - .:/usr/share/nginx/html
+    container_name: tuneslap-openapi-docs 

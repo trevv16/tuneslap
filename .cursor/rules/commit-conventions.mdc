@@ -1,0 +1,82 @@
+---
+description: Conventional commit message format and git workflow standards
+alwaysApply: true
+---
+# Commit Message Conventions
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) enforced by commitlint.
+
+## Format
+
+```
+type(scope): short description
+
+optional body with more details
+```
+
+## Rules
+
+- **Header max 100 characters**: The first line must be under 100 chars
+- **No period at the end**: Don't end the header with a full stop
+- **Type is required**: Must start with a valid type
+- **Subject is required**: Must have a description after the colon
+
+## Valid Types
+
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `chore` | Maintenance tasks, dependencies |
+| `docs` | Documentation changes |
+| `style` | Code style changes (formatting, whitespace) |
+| `refactor` | Code refactoring without behavior change |
+| `test` | Adding or updating tests |
+| `build` | Build system or external dependencies |
+| `ci` | CI/CD configuration changes |
+
+## Examples
+
+Good:
+```
+feat: add user authentication flow
+fix: resolve memory leak in audio player
+chore: update dependencies
+docs: add API documentation for media endpoints
+refactor: simplify board creation logic
+```
+
+Bad:
+```
+Added new feature.              # No type, ends with period
+feat: Add a really long description that goes on and on and exceeds the maximum allowed character limit for commit headers  # Too long
+update stuff                    # No type, vague description
+```
+
+## Multi-line Commits
+
+For detailed changes, use a body:
+```
+feat: add audio waveform visualization
+
+Implement real-time waveform display for audio files.
+Uses Web Audio API for frequency analysis.
+Adds new WaveformCanvas component.
+```
+
+## Scopes (Optional)
+
+You can add a scope for more context:
+```
+feat(auth): add Google OAuth provider
+fix(api): handle rate limiting errors
+chore(deps): update React to v19
+```
+
+## Pre-commit Hooks
+
+This project runs automatically on commit:
+- **lint-staged**: Lints and formats staged files
+- **commitlint**: Validates commit message format
+
+If your commit is rejected, check the error message and reformat accordingly.

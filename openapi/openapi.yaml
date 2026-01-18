@@ -1,0 +1,77 @@
+openapi: '3.0.3'
+info:
+  title: TuneSlap API
+  version: '1.0.0'
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local API
+  - url: https://stg.tuneslap.com/api/v1
+    description: Staging API
+  - url: https://prod.tuneslap.com/api/v1
+    description: Production API
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: auth
+    description: Authentication API
+  - name: boards
+    description: Board API
+  - name: collaborators
+    description: Collaborators API
+  - name: keys
+    description: Keys API
+  - name: media
+    description: Media API
+  - name: users
+    description: Users API
+
+paths:
+  # Auth
+  /auth/signup:
+    $ref: './auth.yaml#/paths/~1auth~1signup'
+  /auth/signin:
+    $ref: './auth.yaml#/paths/~1auth~1signin'
+  /auth/forgot:
+    $ref: './auth.yaml#/paths/~1auth~1forgot'
+  /auth/reset:
+    $ref: './auth.yaml#/paths/~1auth~1reset'
+
+  # Boards
+  /boards:
+    $ref: './boards.yaml#/paths/~1boards'
+  /boards/{boardId}:
+    $ref: './boards.yaml#/paths/~1boards~1%7BboardId%7D'
+  /boards/{boardId}/collaborators:
+    $ref: './boards.yaml#/paths/~1boards~1%7BboardId%7D~1collaborators'
+  /boards/{boardId}/collaborators/{collaboratorId}:
+    $ref: './boards.yaml#/paths/~1boards~1%7BboardId%7D~1collaborators~1%7BcollaboratorId%7D'
+
+  # Keys
+  /boards/{boardId}/keys:
+    $ref: './boards.yaml#/paths/~1boards~1%7BboardId%7D~1keys'
+  /boards/{boardId}/keys/{keyId}:
+    $ref: './boards.yaml#/paths/~1boards~1%7BboardId%7D~1keys~1%7BkeyId%7D'
+
+  # Media
+  /media/stats:
+    $ref: './media.yaml#/paths/~1media~1stats'
+  /media:
+    $ref: './media.yaml#/paths/~1media'
+  /media/{mediaId}:
+    $ref: './media.yaml#/paths/~1media~1%7BmediaId%7D'
+  /media/{mediaId}/process:
+    $ref: './media.yaml#/paths/~1media~1%7BmediaId%7D~1process'
+
+  # Users
+  /users/me:
+    $ref: './users.yaml#/paths/~1users~1me'
+
+security:
+  - bearerAuth: []
+

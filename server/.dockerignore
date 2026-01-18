@@ -1,0 +1,10 @@
+# Ignore git directory
+.git
+
+# Ignore build artifacts
+bin/
+dist/
+vendor/
+
+# Do NOT ignore .env as it is required by the Dockerfile COPY instruction
+# .env 

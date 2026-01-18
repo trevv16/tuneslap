@@ -1,0 +1,1001 @@
+openapi: '3.0.3'
+info:
+  title: Boards API
+  version: '1.0.0'
+
+components:
+  parameters:
+    boardId:
+      name: boardId
+      description: The ID of the board
+      in: path
+      required: true
+      schema:
+        $ref: './common.yaml#/components/schemas/MongoObjectId'
+    collaboratorId:
+      name: collaboratorId
+      description: The ID of the collaborator
+      in: path
+      required: true
+      schema:
+        $ref: './common.yaml#/components/schemas/MongoObjectId'
+    keyId:
+      name: keyId
+      description: The ID of the key
+      in: path
+      required: true
+      schema:
+        $ref: './common.yaml#/components/schemas/MongoObjectId'
+  schemas:
+    BoardLayout:
+      type: string
+      description: The layout type of the board
+      enum:
+        - grid
+        - list
+    KeyResponse:
+      title: KeyResponse
+      type: object
+      properties:
+        id:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        boardId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        audioMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        audioUrl:
+          type: string
+          format: uri
+          example: https://example.com/audio.mp3
+        imageMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        imageUrl:
+          type: string
+          format: uri
+          example: https://example.com/image.png
+        hotKey:
+          type: string
+          minLength: 1
+          maxLength: 1
+          example: D
+        createdAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+    BoardListResponse:
+      title: GetAllBoardsResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Boards retrieved successfully
+        data:
+          type: object
+          properties:
+            boards:
+              type: array
+              items:
+                $ref: '#/components/schemas/BoardResponse'
+            pagination:
+              $ref: './common.yaml#/components/schemas/PaginationMeta'
+    BoardResponse:
+      title: BoardResponse
+      type: object
+      properties:
+        id:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        authorId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        layout:
+          $ref: '#/components/schemas/BoardLayout'
+        imageUrl:
+          $ref: './common.yaml#/components/schemas/ImageUrl'
+        collaborators:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaboratorResponse'
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyResponse'
+        createdAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+    CreateBoardRequest:
+      type: object
+      properties:
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        layout:
+          $ref: '#/components/schemas/BoardLayout'
+        imageUrl:
+          $ref: './common.yaml#/components/schemas/ImageUrl'
+        authorId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+    CreateBoardResponse:
+      title: CreateBoardResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Board created successfully
+        data:
+          $ref: '#/components/schemas/BoardResponse'
+    UpdateBoardRequest:
+      type: object
+      properties:
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        layout:
+          $ref: '#/components/schemas/BoardLayout'
+        imageUrl:
+          $ref: './common.yaml#/components/schemas/ImageUrl'
+    UpdateBoardResponse:
+      title: UpdateBoardResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Board updated successfully
+        data:
+          $ref: '#/components/schemas/BoardResponse'
+    DeleteBoardResponse:
+      title: DeleteBoardResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Board deleted successfully
+    CollaboratorRole:
+      type: string
+      enum:
+        - owner
+        - editor
+        - viewer
+    CollaboratorResponse:
+      title: CollaboratorResponse
+      type: object
+      properties:
+        id:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        userId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        role:
+          $ref: '#/components/schemas/CollaboratorRole'
+        imageUrl:
+          type: string
+          description: User's profile image URL
+          example: "https://example.com/avatar.jpg"
+        createdAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+    CreateCollaboratorRequest:
+      type: object
+      properties:
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+        role:
+          $ref: '#/components/schemas/CollaboratorRole'
+    CreateCollaboratorResponse:
+      title: CreateCollaboratorResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Collaborator invitation sent successfully
+        data:
+          $ref: '#/components/schemas/CollaboratorResponse'
+    UpdateCollaboratorRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/CollaboratorRole'
+    UpdateCollaboratorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Collaborator updated successfully
+        data:
+          $ref: '#/components/schemas/CollaboratorResponse'
+    DeleteCollaboratorResponse:
+      title: DeleteCollaboratorResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Collaborator removed successfully
+    GetAllCollaboratorsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Collaborators retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaboratorResponse'
+    GetCollaboratorByIdResponse:
+      title: GetCollaboratorByIdResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Collaborator retrieved successfully
+        data:
+          $ref: '#/components/schemas/CollaboratorResponse'
+    CreateKeyRequest:
+      type: object
+      required:
+        - boardId
+        - name
+        - audioMediaId
+        - hotKey
+      properties:
+        boardId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        audioMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        imageMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        hotKey:
+          type: string
+          minLength: 1
+          maxLength: 1
+          example: D
+    CreateKeyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Key created successfully
+        data:
+          $ref: '#/components/schemas/KeyResponse'
+    UpdateKeyRequest:
+      type: object
+      properties:
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        description:
+          $ref: './common.yaml#/components/schemas/DefaultDescription'
+        audioMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        imageMediaId:
+          $ref: './common.yaml#/components/schemas/MongoObjectId'
+        hotKey:
+          type: string
+          minLength: 1
+          maxLength: 1
+          example: D
+    UpdateKeyResponse:
+      title: UpdateKeyResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Key updated successfully
+        data:
+          $ref: '#/components/schemas/KeyResponse'
+    DeleteKeyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Key deleted successfully
+paths:
+  /boards:
+    get:
+      summary: Get all boards
+      description: Returns all boards for a user
+      operationId: getAllBoards
+      tags: [boards]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/page'
+        - $ref: './common.yaml#/components/parameters/limit'
+      responses:
+        '200':
+          description: The boards
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetAllBoardsUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: GetAllBoardsErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetAllBoardsServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a board
+      description: Creates a new board for a user
+      operationId: createBoard
+      tags: [boards]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBoardRequest'
+      responses:
+        '201':
+          description: The board created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBoardResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: CreateBoardUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: CreateBoardErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: CreateBoardServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /boards/{boardId}:
+    get:
+      summary: Get a board by ID
+      description: Returns the board with the given ID
+      operationId: getBoardById
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      responses:
+        '200':
+          description: The board
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetBoardByIdUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                title: GetBoardByIdNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: GetBoardByIdErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetBoardByIdServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update a board
+      description: Updates the board with the given ID
+      operationId: updateBoard
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBoardRequest'
+      responses:
+        '200':
+          description: The board updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBoardResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: UpdateBoardUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                title: UpdateBoardNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: UpdateBoardErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: UpdateBoardServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a board
+      description: Deletes the board with the given ID
+      operationId: deleteBoard
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      responses:
+        '200':
+          description: The board deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBoardResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: DeleteBoardUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                title: DeleteBoardNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: DeleteBoardErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: DeleteBoardServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /boards/{boardId}/collaborators:
+    get:
+      summary: Get all collaborators
+      description: Returns all collaborators for a board
+      operationId: getAllCollaborators
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      responses:
+        '200':
+          description: The collaborators
+          content:
+            application/json:
+              schema:
+                title: GetAllCollaboratorsResponse
+                $ref: '#/components/schemas/GetAllCollaboratorsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetAllCollaboratorsUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: GetAllCollaboratorsErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetAllCollaboratorsServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a collaborator
+      description: Creates a new collaborator for a board
+      operationId: createCollaborator
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollaboratorRequest'
+      responses:
+        '201':
+          description: The collaborator created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCollaboratorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: CreateCollaboratorUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: CreateCollaboratorErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: CreateCollaboratorServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /boards/{boardId}/collaborators/{collaboratorId}:
+    get:
+      summary: Get a collaborator by ID
+      description: Returns the collaborator with the given ID
+      operationId: getCollaboratorById
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/collaboratorId'
+      responses:
+        '200':
+          description: The collaborator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCollaboratorByIdResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetCollaboratorByIdUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Collaborator not found
+          content:
+            application/json:
+              schema:
+                title: GetCollaboratorByIdNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: GetCollaboratorByIdErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetCollaboratorByIdServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update a collaborator
+      description: Updates the collaborator with the given ID
+      operationId: updateCollaborator
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/collaboratorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCollaboratorRequest'
+      responses:
+        '200':
+          description: The collaborator updated
+          content:
+            application/json:
+              schema:
+                title: UpdateCollaboratorResponse
+                $ref: '#/components/schemas/UpdateCollaboratorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: UpdateCollaboratorUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Collaborator not found
+          content:
+            application/json:
+              schema:
+                title: UpdateCollaboratorNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: UpdateCollaboratorErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: UpdateCollaboratorServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a collaborator
+      description: Deletes the collaborator with the given ID
+      operationId: deleteCollaborator
+      tags: [boards]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/collaboratorId'
+      responses:
+        '200':
+          description: The collaborator deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCollaboratorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: DeleteCollaboratorUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Collaborator not found
+          content:
+            application/json:
+              schema:
+                title: DeleteCollaboratorNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: DeleteCollaboratorErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: DeleteCollaboratorServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /boards/{boardId}/keys:
+    get:
+      summary: Get all keys for a board
+      description: Retrieves all keys for a specific board
+      operationId: getBoardKeys
+      tags: [keys]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      responses:
+        '200':
+          description: List of keys
+          content:
+            application/json:
+              schema:
+                title: GetBoardKeysResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Keys retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KeyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetBoardKeysUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Board not found
+          content:
+            application/json:
+              schema:
+                title: GetBoardKeysNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetBoardKeysServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a key
+      description: Creates a new key for a board
+      operationId: createKey
+      tags: [keys]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateKeyRequest'
+      responses:
+        '201':
+          description: The key created
+          content:
+            application/json:
+              schema:
+                title: CreateKeyResponse
+                $ref: '#/components/schemas/CreateKeyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: CreateKeyUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: CreateKeyErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: CreateKeyServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /boards/{boardId}/keys/{keyId}:
+    get:
+      summary: Get a key by ID
+      description: Retrieves a specific key from a board
+      operationId: getKeyById
+      tags: [keys]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/keyId'
+      responses:
+        '200':
+          description: The key
+          content:
+            application/json:
+              schema:
+                title: GetKeyByIdResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Key retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/KeyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: GetKeyByIdUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                title: GetKeyByIdNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetKeyByIdServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update a key
+      description: Updates the key with the given ID
+      operationId: updateKey
+      tags: [keys]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/keyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateKeyRequest'
+      responses:
+        '200':
+          description: The key updated
+          content:
+            application/json:
+              schema:
+                title: UpdateKeyResponse
+                $ref: '#/components/schemas/UpdateKeyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: UpdateKeyUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                title: UpdateKeyNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: UpdateKeyErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: UpdateKeyServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a key
+      description: Deletes the key with the given ID
+      operationId: deleteKey
+      tags: [keys]
+      parameters:
+        - $ref: '#/components/parameters/boardId'
+        - $ref: '#/components/parameters/keyId'
+      responses:
+        '200':
+          description: The key deleted
+          content:
+            application/json:
+              schema:
+                title: DeleteKeyResponse
+                $ref: '#/components/schemas/DeleteKeyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: DeleteKeyUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                title: DeleteKeyNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: DeleteKeyServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'

@@ -1,0 +1,123 @@
+openapi: '3.0.3'
+info:
+  title: Common Components
+  version: '1.0.0'
+paths: {}
+components:
+  parameters:
+    page:
+      name: page
+      description: Page number (1-based)
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+    limit:
+      name: limit
+      description: Number of items per page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+        example: 10
+
+  schemas:
+    Timestamp:
+      type: string
+      format: date-time
+      description: The timestamp of the resource
+      example: 2025-06-20T12:00:00.000Z
+    MongoObjectId:
+      type: string
+      format: objectid
+      description: The ID of the resource
+      minLength: 24
+      maxLength: 24
+      example: 6855035acabd2275b45659a8
+    ImageUrl:
+      type: string
+      description: The URL of the image
+      minLength: 10
+      maxLength: 2048
+      example: https://example.com/image.jpg
+    DefaultName:
+      type: string
+      description: The name of the resource
+      minLength: 1
+      maxLength: 255
+      example: John Doe
+    DefaultDescription:
+      type: string
+      description: The description of the resource
+      minLength: 1
+      maxLength: 1000
+      example: This is a description of the resource
+    PaginationMeta:
+      type: object
+      properties:
+        currentPage:
+          type: number
+          minimum: 1
+          example: 1
+        pageSize:
+          type: number
+          minimum: 1
+          maximum: 100
+          example: 10
+        totalResults:
+          type: number
+          minimum: 0
+          example: 50
+    UserEmail:
+      type: string
+      description: The email of the user
+      minLength: 5
+      maxLength: 254
+      example: john.doe@example.com
+    UserPassword:
+      type: string
+      description: The password of the user
+      minLength: 8
+      maxLength: 128
+      example: password123
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: An error occurred
+        data:
+          type: string
+          minLength: 0
+          maxLength: 1000
+          example: Additional error details
+    MediaTypeFilter:
+      type: string
+      description: Filter media by type (image or audio)
+      enum:
+        - image
+        - audio
+      example: image
+    ContentTypeFilter:
+      type: string
+      description: Filter media by content type (MIME type)
+      enum:
+        - image/jpeg
+        - image/png
+        - image/gif
+        - image/webp
+        - audio/mpeg
+        - audio/mp3
+        - audio/mp4
+        - audio/wav
+        - audio/ogg
+        - audio/webm
+      example: image/jpeg

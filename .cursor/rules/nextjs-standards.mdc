@@ -1,0 +1,101 @@
+---
+description: Next.js and TypeScript development standards for the frontend application
+alwaysApply: false
+---
+# Next.js & TypeScript Standards
+
+## Next.js 15 App Router Standards
+
+### File Structure
+- Use App Router structure in `app/` directory
+- Page components in `app/[route]/page.tsx`
+- Layout components in `app/layout.tsx`
+- Global styles in `app/globals.css`
+
+### Component Standards
+- Use TypeScript for all components
+- Export default for page components
+- Use proper TypeScript interfaces for props
+- Implement proper error boundaries
+
+### Import Standards
+```tsx
+// 1. Next.js imports
+import Link from "next/link";
+import Image from "next/image";
+
+// 2. React imports
+import { useState, useEffect } from "react";
+
+// 3. Custom components
+import { SoundBoard } from "@/components/SoundBoard";
+import { EmptyState } from "@/components/EmptyState";
+
+// 4. Icons
+import { PlayIcon } from "@heroicons/react/24/outline";
+
+// 5. Utilities
+import { cn } from "@/utils/helpers";
+```
+
+### Metadata Standards
+Always include proper metadata in layout.tsx:
+```tsx
+export const metadata: Metadata = {
+  title: "Page Title - TuneSlap",
+  description: "SEO-optimized description",
+  keywords: "relevant, keywords, here",
+  openGraph: {
+    title: "Page Title - TuneSlap",
+    description: "SEO-optimized description",
+    type: "website",
+  },
+};
+```
+
+## TypeScript Standards
+
+### Type Definitions
+- Use proper TypeScript interfaces
+- Avoid `any` types
+- Use strict type checking
+- Define props interfaces for components
+
+### Component Props
+```tsx
+interface ComponentProps {
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+}
+
+export function Component({ title, description, children }: ComponentProps) {
+  // Component implementation
+}
+```
+
+## Performance Standards
+
+### Image Optimization
+- Always use Next.js Image component
+- Include proper alt text
+- Use appropriate sizes and priority flags
+- Optimize for different screen sizes
+
+### Code Splitting
+- Use dynamic imports for heavy components
+- Implement proper loading states
+- Use Suspense boundaries where appropriate
+
+### SEO Optimization
+- Use semantic HTML elements
+- Include proper heading hierarchy (h1, h2, h3)
+- Add meta descriptions and keywords
+- Implement structured data where relevant
+
+## Accessibility Standards
+- Use semantic HTML elements
+- Include proper ARIA labels
+- Ensure keyboard navigation works
+- Maintain proper color contrast ratios
+- Use descriptive alt text for images

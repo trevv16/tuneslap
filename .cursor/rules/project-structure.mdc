@@ -1,0 +1,100 @@
+---
+alwaysApply: true
+description: TuneSlap project structure and development workflow
+---
+
+# TuneSlap Project Structure
+
+## Repository Overview
+The TuneSlap project is a monorepo containing the unified frontend application and backend services:
+
+```
+tuneslap/
+├── frontend/           # Unified web application (Next.js)
+├── server/            # Go backend API
+├── infra/             # Terraform infrastructure
+├── openapi/           # API documentation
+└── scripts/           # Development scripts
+```
+
+## Frontend Structure
+The frontend is a Next.js App Router application containing both marketing pages and the main application:
+
+```
+frontend/
+├── app/                  # App Router pages and layouts
+│   ├── (authenticated)/  # Protected application routes (dashboard, library)
+│   ├── (index)/         # Marketing landing pages
+│   ├── auth/            # Authentication routes
+│   ├── api/             # API routes
+│   └── globals.css      # Global styles
+├── components/           # Reusable components
+├── contexts/            # Global state contexts
+├── hooks/               # Custom hooks
+├── utils/               # Utility functions
+└── public/              # Static assets
+```
+
+## Development Workflow
+
+### Package Management
+- **Always use Yarn** for the frontend
+- Never mix package managers (remove package-lock.json if present)
+- Use `yarn add` for new dependencies
+- Use `yarn dev` for development server
+
+### File Naming Conventions
+- **Components**: PascalCase (e.g., `Header.tsx`, `Footer.tsx`)
+- **Pages**: lowercase with hyphens (e.g., `page.tsx`, `layout.tsx`)
+- **Utilities**: camelCase (e.g., `utils.ts`)
+- **Types**: PascalCase with `.types.ts` suffix
+
+### Import Paths
+Use absolute imports with the `@/` alias:
+- `@/components/EmptyState` - Components
+- `@/hooks/useAuth` - Custom hooks
+- `@/utils/helpers` - Utility functions
+- `@/app/globals.css` - Global styles
+
+## Content Management
+
+### Marketing Content
+Marketing content is managed within the `app/(index)` components (e.g., `Hero.tsx`, `Features.tsx`).
+
+### SEO and Metadata
+- Update metadata in `app/layout.tsx` for global SEO
+- Add page-specific metadata for each route
+- Use proper Open Graph tags for social sharing
+- Include relevant keywords for search optimization
+
+## Infrastructure
+
+### Deployment
+- Frontend deploys to `tuneslap.com`
+- Use Terraform configurations in `infra/` for infrastructure
+- Separate staging and production environments
+
+### Environment Management
+- Use environment variables for configuration
+- Keep sensitive data out of version control
+- Use different configs for staging vs production
+
+## Quality Standards
+
+### Code Quality
+- Use TypeScript for type safety
+- Follow ESLint configuration
+- Use Prettier for code formatting
+- Write semantic, accessible HTML
+
+### Performance
+- Optimize images with Next.js Image component
+- Use proper loading states and error boundaries
+- Implement code splitting for better performance
+- Monitor Core Web Vitals
+
+### Accessibility
+- Use semantic HTML elements
+- Include proper ARIA labels
+- Ensure keyboard navigation works
+- Maintain proper color contrast ratios

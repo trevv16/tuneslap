@@ -1,0 +1,106 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [main]
+
+  push:
+    branches: [main, feature/*, fix/*]
+
+jobs:
+  frontend-ci:
+    name: Frontend - Continuous Integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+          cache-dependency-path: './frontend/yarn.lock'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Generate types
+        run: |
+          cd ..
+          ./scripts/generate-types.sh --frontend-only
+      
+      - name: Run type check
+        run: yarn tsc --noEmit
+      
+      - name: Run linting
+        run: yarn lint
+      
+      - name: Build application
+        run: yarn build
+      
+      # Uncomment when you have tests set up
+      # - name: Run tests
+      #   run: yarn test
+
+  backend-ci:
+    name: Backend - Continuous Integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.3'
+          cache: true
+          cache-dependency-path: './server/go.sum'
+      
+      - name: Setup Node.js (for swagger-cli)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      
+      - name: Download Go dependencies
+        run: go mod download
+      
+      - name: Verify Go modules
+        run: go mod verify
+      
+      - name: Install oapi-codegen
+        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+
+      - name: Generate types
+        run: |
+          cd ..
+          ./scripts/generate-types.sh --backend-only
+      
+      # https://github.com/h2non/bimg?tab=readme-ov-file#installation
+      # https://github.com/libvips/libvips/wiki/Build-for-Ubuntu
+      - name: Install bimg dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+      
+      - name: Run Go tests
+        run: go test -v ./...
+      
+      - name: Build Go application
+        run: go build -o tuneslap .
+      
+      - name: Run Go vet
+        run: go vet ./...
+      
+      - name: Run Go fmt check
+        run: |
+          if [ "$(gofmt -s -l . | grep -v "^generated/" | wc -l)" -gt 0 ]; then
+            echo "Code is not formatted. Please run 'make fmt'"
+            gofmt -s -l . | grep -v "^generated/"
+            exit 1
+          fi

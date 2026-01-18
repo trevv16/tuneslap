@@ -1,0 +1,244 @@
+openapi: '3.0.3'
+info:
+  title: Auth API
+  version: '1.0.0'
+
+components:
+  schemas:
+    SignUpRequest:
+      type: object
+      properties:
+        name:
+          $ref: './common.yaml#/components/schemas/DefaultName'
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+        password:
+          $ref: './common.yaml#/components/schemas/UserPassword'
+    SignUpResponse:
+      title: SignupResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: User created successfully
+    SignInRequest:
+      type: object
+      properties:
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+        password:
+          $ref: './common.yaml#/components/schemas/UserPassword'
+    SignInResponse:
+      title: SigninResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Successfully signed in
+        data:
+          title: SigninData
+          type: object
+          properties:
+            token:
+              type: string
+              description: The JWT token
+              minLength: 100
+              maxLength: 2000
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          $ref: './common.yaml#/components/schemas/UserEmail'
+    ForgotPasswordResponse:
+      title: ForgotResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Password reset email sent
+    ResetPasswordRequest:
+      type: object
+      properties:
+        password:
+          $ref: './common.yaml#/components/schemas/UserPassword'
+        token:
+          type: string
+          description: The password reset token
+          minLength: 32
+          maxLength: 256
+    ResetPasswordResponse:
+      title: ResetResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Password reset successfully
+
+paths:
+  /auth/signup:
+    post:
+      summary: Sign up a new user
+      description: Creates a new user
+      operationId: signup
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+      responses:
+        '201':
+          description: The new user created
+          content:
+            application/json:
+              schema:
+                title: SignupResponse
+                $ref: '#/components/schemas/SignUpResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: SignupErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: SignupServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /auth/signin:
+    post:
+      summary: Sign in a user
+      description: Authenticates a user and returns a JWT token
+      operationId: signin
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Successfully signed in
+          content:
+            application/json:
+              schema:
+                title: SigninResponse
+                $ref: '#/components/schemas/SignInResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: SigninErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: SigninUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: SigninServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /auth/forgot:
+    post:
+      summary: Request a password reset
+      description: Sends a password reset email to the user
+      operationId: forgot
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Password reset email sent
+          content:
+            application/json:
+              schema:
+                title: ForgotResponse
+                $ref: '#/components/schemas/ForgotPasswordResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: ForgotErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: SignupServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  /auth/reset:
+    post:
+      summary: Reset password
+      description: Resets the password for a user
+      operationId: reset
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                title: ResetResponse
+                $ref: '#/components/schemas/ResetPasswordResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                title: ResetErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                title: ResetUnauthorizedResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: ResetServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+  
