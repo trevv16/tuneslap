@@ -28,11 +28,23 @@ func ValidateRequiredConfig() error {
 		"DATABASE",
 		"MONGODB_URI",
 		"REDIS_URL",
-		// Add GCS buckets to validation as they are in the user's list
 		"USER_UPLOADS_BUCKET",
 		"MEDIA_BUCKET",
-		"GOOGLE_SERVICE_ACCOUNT_EMAIL",
-		"GOOGLE_PRIVATE_KEY_PATH",
+	}
+
+	// Add storage-provider-specific requirements
+	storageProvider := os.Getenv("STORAGE_PROVIDER")
+	if storageProvider == "gcs" {
+		required = append(required,
+			"GOOGLE_SERVICE_ACCOUNT_EMAIL",
+			"GOOGLE_PRIVATE_KEY_PATH",
+		)
+	} else {
+		// S3 is the default provider
+		required = append(required,
+			"S3_ACCESS_KEY",
+			"S3_SECRET_KEY",
+		)
 	}
 
 	missing := []string{}
