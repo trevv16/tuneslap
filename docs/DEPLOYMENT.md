@@ -35,6 +35,8 @@ The application will be available at:
 
 ## Configuration
 
+For detailed storage configuration (S3, GCS, MinIO), see the [Storage documentation](media/storage.md).
+
 ### Environment Variables
 
 Create a `.env` file in the `server/` directory with the following variables:

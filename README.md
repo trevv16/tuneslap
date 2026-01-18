@@ -72,6 +72,8 @@ TuneSlap is built with a modern, performance-focused stack.
 ### API & Documentation
 Explore the full API documentation in our [OpenAPI explorer](http://localhost:8081) or view the specification in `openapi/openapi.yaml`.
 
+For details on media uploads, storage, and processing, see the [Media System documentation](docs/media/README.md).
+
 ## Contributing
 
 We love contributions! whether it's a bug fix, new feature, or documentation update.

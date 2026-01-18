@@ -150,10 +150,15 @@ tuneslap/
 ├── server/            # Go backend API
 │   ├── handlers/      # HTTP handlers
 │   ├── models/        # Data models
-│   ├── repositories/ # Database access layer
+│   ├── repositories/  # Database access layer
 │   ├── services/      # Business logic
+│   ├── mempeg/        # Media processing (audio/image)
+│   ├── tasks/         # Background tasks (Asynq)
 │   └── router/        # Route definitions
 ├── docs/              # Documentation
+│   ├── media/         # Media system docs (uploads, storage, processing)
+│   ├── CONTRIBUTING.md
+│   └── DEPLOYMENT.md
 ├── scripts/           # Utility scripts
 └── openapi/           # API specification
 ```
