@@ -101,7 +101,7 @@ func attachMiddleware(app *fiber.App) {
 
 	// cors middleware
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, http://localhost:8081, https://tuneslap.com, https://*.tuneslap.com",
+		AllowOrigins:     "http://localhost:3001, http://localhost:8081, https://tuneslap.com, https://*.tuneslap.com",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
 	}))

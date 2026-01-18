@@ -162,7 +162,7 @@ func TestMiddlewareFunctionality(t *testing.T) {
 
 	// Test CORS headers
 	req = httptest.NewRequest("GET", "/test", nil)
-	req.Header.Set("Origin", "http://localhost:3000")
+	req.Header.Set("Origin", "http://localhost:3001")
 	resp, err = app.Test(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

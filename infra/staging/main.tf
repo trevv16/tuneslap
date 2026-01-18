@@ -17,7 +17,7 @@ resource "google_storage_bucket" "media_bucket" {
   uniform_bucket_level_access = true
 
   cors {
-    origin          = ["http://localhost:3000", "https://*.tuneslap.com"]
+    origin          = ["http://localhost:3001", "https://*.tuneslap.com"]
     method          = ["GET", "HEAD", "PUT", "POST", "OPTIONS"]
     response_header = ["Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Methods", "Access-Control-Allow-Headers", "Access-Control-Max-Age"]
     max_age_seconds = 3600
@@ -62,7 +62,7 @@ resource "google_storage_bucket" "user_uploads_bucket" {
   uniform_bucket_level_access = true
 
   cors {
-    origin          = ["http://localhost:3000", "https://*.tuneslap.com"]
+    origin          = ["http://localhost:3001", "https://*.tuneslap.com"]
     method          = ["GET", "HEAD", "PUT", "POST", "OPTIONS"]
     response_header = ["Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Methods", "Access-Control-Allow-Headers", "Access-Control-Max-Age"]
     max_age_seconds = 3600

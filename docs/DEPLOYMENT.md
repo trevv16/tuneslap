@@ -29,7 +29,7 @@ docker-compose up -d
 ```
 
 The application will be available at:
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:3001
 - Backend API: http://localhost:8082
 - API Explorer: http://localhost:8081
 
@@ -68,7 +68,7 @@ MAX_STORAGE_BYTES=-1
 
 # Frontend URLs (for CORS and redirects)
 NEXT_PUBLIC_API_URL=http://localhost:8082
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
 ```
 
 ### Google Cloud Storage Setup
@@ -109,7 +109,7 @@ services:
       - "8082:8082"  # Change first number to change host port
   frontend:
     ports:
-      - "3000:3000"  # Change first number to change host port
+      - "3001:3001"  # Change first number to change host port
 ```
 
 ### Persistent Storage
@@ -140,7 +140,7 @@ server {
     server_name your-domain.com;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3001;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -169,7 +169,7 @@ docker-compose up -d --build
 
 ### Services won't start
 
-- Check that ports 3000, 8082, 27017, and 6379 are not in use
+- Check that ports 3001, 8082, 27017, and 6379 are not in use
 - Verify environment variables are set correctly
 - Check logs: `docker-compose logs`
 
