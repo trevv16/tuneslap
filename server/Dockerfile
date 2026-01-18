@@ -2,13 +2,15 @@
 FROM golang:1.24-bookworm AS builder
 
 # Install build dependencies (required for bimg/libvips) and code generation tools
+# Install Node.js 20 from NodeSource for openapi-generator compatibility
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-dev \
     gcc \
     pkg-config \
-    nodejs \
-    npm \
     default-jre-headless \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Work from project root structure so generate-types.sh paths work
