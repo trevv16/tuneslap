@@ -4,14 +4,14 @@ services:
       context: .
       dockerfile: ./server/Dockerfile
     ports:
-      - "8082:8080"
+      - "8082:8082"
     environment:
       # Prevent .env file loading in deployment
       - GO_ENV=production
       # Override connection strings to point to docker services
       - MONGODB_URI=mongodb://mongodb:27017
       - REDIS_URL=redis:6379
-      - PORT=8080
+      - PORT=8082
       # Storage configuration (defaults to MinIO)
       - STORAGE_PROVIDER=${STORAGE_PROVIDER:-s3}
       - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
@@ -42,14 +42,14 @@ services:
       context: .
       dockerfile: ./frontend/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8082/api/v1}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8082/api/v1}
       # If SSR needs to talk to server container directly:
-      # - INTERNAL_API_URL=http://server:8080
+      # - INTERNAL_API_URL=http://server:8082
     depends_on:
       - server
     restart: on-failure

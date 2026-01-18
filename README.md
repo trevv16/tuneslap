@@ -47,7 +47,7 @@ docker-compose up -d
 
 That's it! 
 *   **App**: [http://localhost:3000](http://localhost:3000)
-*   **API**: [http://localhost:8080](http://localhost:8080)
+*   **API**: [http://localhost:8082](http://localhost:8082)
 *   **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
 For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

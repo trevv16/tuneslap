@@ -28,7 +28,7 @@ func TestSetupApp(t *testing.T) {
 				"MONGODB_URI":                  "mongodb://localhost:27017",
 				"DATABASE":                     "testdb",
 				"REDIS_URL":                    "localhost:6379",
-				"PORT":                         "8080",
+				"PORT":                         "8082",
 				"JWT_SECRET":                   "test-secret",
 				"USER_UPLOADS_BUCKET":          "test-bucket",
 				"MEDIA_BUCKET":                 "test-media-bucket",
@@ -184,7 +184,7 @@ func TestSetupAndRunApp_EnvironmentHandling(t *testing.T) {
 		{
 			name:     "without PORT environment variable",
 			port:     "",
-			expected: ":8080",
+			expected: ":8082",
 		},
 	}
 
@@ -206,7 +206,7 @@ func TestSetupAndRunApp_EnvironmentHandling(t *testing.T) {
 			// by checking what port would be used
 			port := os.Getenv("PORT")
 			if port == "" {
-				port = "8080"
+				port = "8082"
 			}
 			assert.Equal(t, tt.expected, ":"+port)
 		})
@@ -243,7 +243,7 @@ func TestSetupApp_Configuration(t *testing.T) {
 	os.Setenv("MONGODB_URI", "mongodb://localhost:27017")
 	os.Setenv("DATABASE", "testdb")
 	os.Setenv("REDIS_URL", "localhost:6379")
-	os.Setenv("PORT", "8080")
+	os.Setenv("PORT", "8082")
 	os.Setenv("JWT_SECRET", "test-secret")
 	os.Setenv("USER_UPLOADS_BUCKET", "test-bucket")
 	os.Setenv("MEDIA_BUCKET", "test-media-bucket")

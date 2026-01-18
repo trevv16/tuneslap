@@ -20,7 +20,7 @@ A template for a GoLang backend using Fiber, MongoDB, a Makefile, and more
 1. Clone the repo
 2. Create your own .env file
 3. ```make dev```
-4. Server running on http://localhost:8080
+4. Server running on http://localhost:8082
 4. Build OAS docs with ```make docs-build```
 4. Run OAS docs with ```make docs```
 4. view docs at http://localhost:8081

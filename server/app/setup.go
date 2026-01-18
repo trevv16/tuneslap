@@ -81,7 +81,7 @@ func SetupAndRunApp() error {
 	// get the port and start
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // default port
+		port = "8082" // default port
 	}
 
 	return app.Listen(":" + port)

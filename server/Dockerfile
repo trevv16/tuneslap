@@ -53,10 +53,10 @@ COPY --from=builder /workspace/server/main .
 # Set environment variables
 # We do NOT set GO_ENV=production here because the application logic 
 # only loads .env if GO_ENV is empty or "local".
-ENV PORT=8080
+ENV PORT=8082
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 8082
 
 # Run the executable
 CMD ["./main"]

@@ -6,7 +6,7 @@ import { getStoredToken } from '@/utils/token';
  * The token is retrieved from localStorage and will be used for bearer authentication
  */
 export function getApiConfig(): Configuration {
-  const basePath = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+  const basePath = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082/api/v1';
   
   return new Configuration({
     basePath,

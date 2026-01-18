@@ -30,7 +30,7 @@ docker-compose up -d
 
 The application will be available at:
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:8080
+- Backend API: http://localhost:8082
 - API Explorer: http://localhost:8081
 
 ## Configuration
@@ -45,7 +45,7 @@ Create a `.env` file in the `server/` directory with the following variables:
 
 ```bash
 # Server Configuration
-PORT=8080
+PORT=8082
 JWT_SECRET=your-secret-key-here
 DATABASE=tuneslap
 
@@ -67,7 +67,7 @@ GOOGLE_PRIVATE_KEY_PATH=/app/keys/your-service-account-key.json
 MAX_STORAGE_BYTES=-1
 
 # Frontend URLs (for CORS and redirects)
-NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_API_URL=http://localhost:8082
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
@@ -106,7 +106,7 @@ To change the default ports, modify the `ports` section in `docker-compose.yml`:
 services:
   server:
     ports:
-      - "8080:8080"  # Change first number to change host port
+      - "8082:8082"  # Change first number to change host port
   frontend:
     ports:
       - "3000:3000"  # Change first number to change host port
@@ -146,7 +146,7 @@ server {
     }
 
     location /api {
-        proxy_pass http://localhost:8080;
+        proxy_pass http://localhost:8082;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -169,7 +169,7 @@ docker-compose up -d --build
 
 ### Services won't start
 
-- Check that ports 3000, 8080, 27017, and 6379 are not in use
+- Check that ports 3000, 8082, 27017, and 6379 are not in use
 - Verify environment variables are set correctly
 - Check logs: `docker-compose logs`
 
