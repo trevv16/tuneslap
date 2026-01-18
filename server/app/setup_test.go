@@ -25,10 +25,15 @@ func TestSetupApp(t *testing.T) {
 		{
 			name: "successful setup with valid environment",
 			envVars: map[string]string{
-				"MONGODB_URI": "mongodb://localhost:27017",
-				"DATABASE":    "testdb",
-				"REDIS_URL":   "localhost:6379",
-				"PORT":        "8080",
+				"MONGODB_URI":                  "mongodb://localhost:27017",
+				"DATABASE":                     "testdb",
+				"REDIS_URL":                    "localhost:6379",
+				"PORT":                         "8080",
+				"JWT_SECRET":                   "test-secret",
+				"USER_UPLOADS_BUCKET":          "test-bucket",
+				"MEDIA_BUCKET":                 "test-media-bucket",
+				"GOOGLE_SERVICE_ACCOUNT_EMAIL": "test@example.com",
+				"GOOGLE_PRIVATE_KEY_PATH":      "test-key-path",
 			},
 			expectError: false,
 			createEnv:   true,
@@ -238,6 +243,12 @@ func TestSetupApp_Configuration(t *testing.T) {
 	os.Setenv("MONGODB_URI", "mongodb://localhost:27017")
 	os.Setenv("DATABASE", "testdb")
 	os.Setenv("REDIS_URL", "localhost:6379")
+	os.Setenv("PORT", "8080")
+	os.Setenv("JWT_SECRET", "test-secret")
+	os.Setenv("USER_UPLOADS_BUCKET", "test-bucket")
+	os.Setenv("MEDIA_BUCKET", "test-media-bucket")
+	os.Setenv("GOOGLE_SERVICE_ACCOUNT_EMAIL", "test@example.com")
+	os.Setenv("GOOGLE_PRIVATE_KEY_PATH", "test-key-path")
 
 	app, err := SetupApp()
 
