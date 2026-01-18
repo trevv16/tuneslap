@@ -31,6 +31,7 @@ docker-compose up -d
 The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080
+- API Explorer: http://localhost:8081
 
 ## Configuration
 
@@ -90,6 +91,9 @@ The `docker-compose.yml` file includes:
 - **frontend**: Next.js frontend
 - **mongodb**: MongoDB database
 - **redis**: Redis cache
+- **minio**: S3-compatible object storage (local development)
+- **createbuckets**: Helper to initialize MinIO buckets
+- **openapi**: API documentation explorer
 - **setup-keys**: Optional service for GCS key setup
 
 ### Customizing Ports

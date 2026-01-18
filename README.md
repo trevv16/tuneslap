@@ -49,6 +49,7 @@ docker-compose up -d
 That's it! 
 *   **App**: [http://localhost:3000](http://localhost:3000)
 *   **API**: [http://localhost:8080](http://localhost:8080)
+*   **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
 For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
@@ -69,7 +70,7 @@ TuneSlap is built with a modern, performance-focused stack.
 *   **FFmpeg** – Industrial-strength media processing.
 
 ### API & Documentation
-Explore the full API documentation in our [OpenAPI specification](openapi/openapi.yaml) or view the endpoints in `server/router/main.go`.
+Explore the full API documentation in our [OpenAPI explorer](http://localhost:8081) or view the specification in `openapi/openapi.yaml`.
 
 ## Contributing
 

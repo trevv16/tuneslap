@@ -136,6 +136,18 @@ services:
       - tuneslap-network
     restart: no
 
+  openapi:
+    build:
+      context: ./openapi
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    volumes:
+      - ./openapi:/usr/share/nginx/html
+    restart: unless-stopped
+    networks:
+      - tuneslap-network
+
 volumes:
   mongodb_data:
   redis_data:
