@@ -1,0 +1,30 @@
+{
+  "agents": {
+    "firecrawl-agent": {
+      "enabled": true,
+      "name": "Firecrawl Web Scraping Agent",
+      "description": "A specialized agent for web scraping, content extraction, and data gathering using Firecrawl MCP tools",
+      "tools": [
+        "mcp_firecrawl-mcp_firecrawl_scrape",
+        "mcp_firecrawl-mcp_firecrawl_map",
+        "mcp_firecrawl-mcp_firecrawl_crawl",
+        "mcp_firecrawl-mcp_firecrawl_search",
+        "mcp_firecrawl-mcp_firecrawl_extract"
+      ],
+      "autoSelect": false,
+      "priority": 1
+    }
+  },
+  "mcp": {
+    "firecrawl": {
+      "enabled": true,
+      "tools": [
+        "mcp_firecrawl-mcp_firecrawl_scrape",
+        "mcp_firecrawl-mcp_firecrawl_map",
+        "mcp_firecrawl-mcp_firecrawl_crawl",
+        "mcp_firecrawl-mcp_firecrawl_search",
+        "mcp_firecrawl-mcp_firecrawl_extract"
+      ]
+    }
+  }
+}

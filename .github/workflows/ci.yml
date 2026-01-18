@@ -28,10 +28,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       
+      - name: Install root dependencies
+        working-directory: ./
+        run: yarn install
+      
       - name: Generate types
-        run: |
-          cd ..
-          ./scripts/generate-types.sh --frontend-only
+        working-directory: ./
+        run: ./scripts/generate-types.sh --frontend-only
       
       - name: Run type check
         run: yarn tsc --noEmit

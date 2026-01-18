@@ -1,0 +1,50 @@
+{
+  "name": "tuneslap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A self-hosted soundboard application for content creators",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
+    "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:server\"",
+    "dev:frontend": "cd frontend && yarn dev",
+    "dev:server": "cd server && make dev",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up",
+    "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
+    "docker:dev:restart": "docker compose -f docker-compose.dev.yml restart",
+    "docker:dev:ps": "docker compose -f docker-compose.dev.yml ps",
+    "docker:build": "docker compose build",
+    "docker:build:frontend": "docker compose build frontend",
+    "docker:build:server": "docker compose build server",
+    "docker:up": "docker compose up",
+    "docker:up:detached": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:down:volumes": "docker compose down -v",
+    "docker:stop": "docker compose stop",
+    "docker:start": "docker compose start",
+    "docker:restart": "docker compose restart",
+    "docker:logs": "docker compose logs -f",
+    "docker:logs:frontend": "docker compose logs -f frontend",
+    "docker:logs:server": "docker compose logs -f server",
+    "docker:ps": "docker compose ps",
+    "docker:exec:frontend": "docker compose exec frontend sh",
+    "docker:exec:server": "docker compose exec server sh",
+    "docker:clean": "docker compose down -v --remove-orphans && docker system prune -f",
+    "docker:clean:all": "docker compose down -v --remove-orphans && docker system prune -af --volumes"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  }
+}
