@@ -44,6 +44,10 @@ ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
+# Generate TypeScript API client from OpenAPI spec
+RUN npm install -g @openapitools/openapi-generator-cli swagger-cli && \
+    cd .. && ./scripts/generate-types.sh --frontend-only
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
