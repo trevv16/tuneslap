@@ -8,12 +8,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// LoadENV loads environment variables from .env file
-// It follows the precedence: existing env vars > .env file
-// This allows Docker/System to override .env values which is crucial for container orchestration
+// LoadENV loads environment variables from .env file only in local development.
+// In production, staging, or test environments, .env files are not loaded.
+// Environment variables should be provided directly by the deployment platform.
 func LoadENV() error {
-	// Always try to load .env file, ignoring error if it doesn't exist
-	_ = godotenv.Load()
+	goEnv := os.Getenv("GO_ENV")
+	// Only load .env file in local development (when GO_ENV is empty or "local")
+	if goEnv == "" || goEnv == "local" {
+		_ = godotenv.Load() // Ignore error if file doesn't exist
+	}
 	return nil
 }
 

@@ -5,9 +5,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    env_file:
-      - ./server/.env
     environment:
+      # Prevent .env file loading in deployment
+      - GO_ENV=production
       # Override connection strings to point to docker services
       - MONGODB_URI=mongodb://mongodb:27017
       - REDIS_URL=redis:6379
@@ -111,8 +111,6 @@ services:
     depends_on:
       minio:
         condition: service_started
-    env_file:
-      - ./server/.env
     entrypoint: >
       /bin/sh -c "
       sleep 5;

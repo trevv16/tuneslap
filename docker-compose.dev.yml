@@ -5,13 +5,14 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
-    env_file:
-      - ./server/.env
     environment:
-      # Override connection strings to point to docker services
+      # Connection strings for docker services
       - MONGODB_URI=mongodb://mongodb:27017
       - REDIS_URL=redis:6379
       - PORT=8080
+      # App config
+      - DATABASE=${DATABASE:-tuneslap}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-change-in-production}
       # Storage configuration (defaults to MinIO)
       - STORAGE_PROVIDER=${STORAGE_PROVIDER:-s3}
       - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}

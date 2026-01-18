@@ -38,10 +38,6 @@ WORKDIR /app
 # Copy the binary from the builder stage
 COPY --from=builder /app/main .
 
-# Copy .env file to be used by the application
-# Note: Ensure the .env file exists in the build context
-COPY .env .
-
 # Set environment variables
 # We do NOT set GO_ENV=production here because the application logic 
 # only loads .env if GO_ENV is empty or "local".
