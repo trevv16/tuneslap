@@ -61,3 +61,14 @@ func GetMaxStorageBytes() int64 {
 
 	return parsed
 }
+
+// Demo mode constants
+const (
+	DemoMaxFileSize   int64 = 10 * 1024 * 1024 // 10MB
+	DemoMaxMediaCount int   = 5
+)
+
+// IsDemoMode returns true if the application is running in demo mode
+func IsDemoMode() bool {
+	return os.Getenv("DEMO_MODE") == "true"
+}

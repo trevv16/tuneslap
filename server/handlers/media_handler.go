@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"tuneslap/config"
 	api "tuneslap/generated"
 	"tuneslap/models"
 	"tuneslap/repositories"
@@ -154,6 +155,19 @@ func (h *MediaHandler) HandleCreateMedia(c *fiber.Ctx) error {
 		mediaStats, err := h.mediaRepo.GetMyMediaStats(authorId)
 		if err != nil {
 			return models.Media{}, err
+		}
+
+		// Demo mode limits
+		if config.IsDemoMode() {
+			// Check file size limit (10MB in demo mode)
+			if req.FileSize != nil && int64(*req.FileSize) > config.DemoMaxFileSize {
+				return models.Media{}, fmt.Errorf("file size (%d bytes) exceeds demo mode limit (%d bytes)", *req.FileSize, config.DemoMaxFileSize)
+			}
+			// Check media count limit (5 uploads in demo mode)
+			totalCount := mediaStats.ImageCount + mediaStats.AudioCount
+			if totalCount >= config.DemoMaxMediaCount {
+				return models.Media{}, fmt.Errorf("demo mode limit reached: maximum %d uploads allowed", config.DemoMaxMediaCount)
+			}
 		}
 
 		// If storage limit is set (availableStorage is not -1 for unlimited), validate
@@ -313,6 +327,19 @@ func (h *MediaHandler) HandleGenerateUploadURL(c *fiber.Ctx) error {
 	mediaStats, err := h.mediaRepo.GetMyMediaStats(authorId)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Error getting media stats", err)
+	}
+
+	// Demo mode limits
+	if config.IsDemoMode() {
+		// Check file size limit (10MB in demo mode)
+		if requestBody.FileSize > config.DemoMaxFileSize {
+			return SendErrorResponse(c, fiber.StatusBadRequest, fmt.Sprintf("File size (%d bytes) exceeds demo mode limit (%d bytes)", requestBody.FileSize, config.DemoMaxFileSize), nil)
+		}
+		// Check media count limit (5 uploads in demo mode)
+		totalCount := mediaStats.ImageCount + mediaStats.AudioCount
+		if totalCount >= config.DemoMaxMediaCount {
+			return SendErrorResponse(c, fiber.StatusBadRequest, fmt.Sprintf("Demo mode limit reached: maximum %d uploads allowed", config.DemoMaxMediaCount), nil)
+		}
 	}
 
 	// If storage limit is set (availableStorage is not -1 for unlimited), validate

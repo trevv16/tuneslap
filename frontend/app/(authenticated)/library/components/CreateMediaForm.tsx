@@ -1,5 +1,6 @@
 'use client'
 
+import DemoBanner from '@/components/DemoBanner';
 import { MediaCreateFormData, useMediaCreate, useMediaStats } from '@/hooks/media';
 import { formatBytes } from '@/utils/helpers';
 import { CloudArrowUpIcon } from '@heroicons/react/20/solid';
@@ -138,6 +139,7 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+      <DemoBanner message="Demo mode: Files will be deleted within one hour. Max file size: 10MB. Max uploads: 5." />
       {/* File Upload */}
       <div>
         <label className="block text-sm/6 font-medium text-base mb-2">
