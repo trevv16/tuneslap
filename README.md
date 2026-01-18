@@ -3,7 +3,6 @@
   <p><strong>The collaborative soundboard for modern creators.</strong></p>
 
   <p>
-    <a href="#features">Features</a> •
     <a href="#quick-start">Quick Start</a> •
     <a href="#for-developers">For Developers</a> •
     <a href="docs/CONTRIBUTING.md">Contributing</a>
