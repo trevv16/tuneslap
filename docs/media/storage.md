@@ -14,7 +14,7 @@ Works with AWS S3, MinIO, Cloudflare R2, DigitalOcean Spaces, and other S3-compa
 |----------|----------|-------------|
 | `STORAGE_PROVIDER` | No | Set to `s3` (default if not set) |
 | `S3_ENDPOINT` | Yes* | Endpoint URL (e.g., `http://minio:9000`). Required for non-AWS S3. |
-| `S3_EXTERNAL_ENDPOINT` | No | Public endpoint for signed URLs if different from internal (e.g., `http://localhost:9000`) |
+| `S3_EXTERNAL_ENDPOINT` | No | Public endpoint for media URLs. See [External Endpoint Configuration](#external-endpoint-configuration) below. |
 | `S3_REGION` | No | AWS region (defaults to `us-east-1`) |
 | `S3_ACCESS_KEY` | Yes | Access key ID |
 | `S3_SECRET_KEY` | Yes | Secret access key |
@@ -82,9 +82,39 @@ Examples:
 
 The helper function `storage.GetMediaKey()` generates these keys.
 
+## External Endpoint Configuration
+
+The `S3_EXTERNAL_ENDPOINT` variable is critical for production deployments. It controls the URL that gets stored in the database for media files and must be accessible from the browser.
+
+**How it works:**
+
+1. `S3_ENDPOINT` is used internally by the server to communicate with MinIO (e.g., `http://minio:9000`)
+2. `S3_EXTERNAL_ENDPOINT` is used to build public URLs stored in the database (e.g., `https://media.tuneslap.com`)
+
+**Example URLs generated:**
+
+| Environment | S3_EXTERNAL_ENDPOINT | Stored URL |
+|-------------|---------------------|------------|
+| Development | `http://localhost:9000` | `http://localhost:9000/tuneslap-media/userId/audio/file.mp3` |
+| Production | `https://media.tuneslap.com` | `https://media.tuneslap.com/tuneslap-media/userId/audio/file.mp3` |
+
+**Configuration examples:**
+
+```bash
+# Development (localhost)
+S3_ENDPOINT=http://minio:9000
+S3_EXTERNAL_ENDPOINT=http://localhost:9000
+
+# Production (custom domain)
+S3_ENDPOINT=http://minio:9000
+S3_EXTERNAL_ENDPOINT=https://media.tuneslap.com
+```
+
+For production, configure your reverse proxy to route `media.tuneslap.com` to MinIO port 9000.
+
 ## Local Development with MinIO
 
-The default `docker-compose.yml` includes MinIO for local S3-compatible storage:
+Use `docker-compose.dev.yml` for local development, which defaults to localhost URLs:
 
 ```yaml
 minio:
@@ -127,7 +157,7 @@ Example `cors.json`:
 ```json
 [
   {
-    "origin": ["https://your-domain.com"],
+    "origin": ["https://tuneslap.com"],
     "method": ["GET", "PUT", "POST"],
     "responseHeader": ["Content-Type"],
     "maxAgeSeconds": 3600

@@ -28,10 +28,17 @@ cp server/.env.example server/.env
 docker-compose up -d
 ```
 
-The application will be available at:
+**Development URLs** (localhost):
 - Frontend: http://localhost:3001
 - Backend API: http://localhost:8082
 - API Explorer: http://localhost:8081
+- MinIO Storage: http://localhost:9000
+
+**Production URLs** (with custom domains):
+- Frontend: https://tuneslap.com
+- Backend API: https://api.tuneslap.com
+- API Explorer: https://openapi.tuneslap.com
+- MinIO Storage: https://media.tuneslap.com
 
 ## Configuration
 
@@ -67,8 +74,18 @@ GOOGLE_PRIVATE_KEY_PATH=/app/keys/your-service-account-key.json
 MAX_STORAGE_BYTES=-1
 
 # Frontend URLs (for CORS and redirects)
-NEXT_PUBLIC_API_URL=http://localhost:8082
+# Development:
+NEXT_PUBLIC_API_URL=http://localhost:8082/api/v1
 NEXT_PUBLIC_SITE_URL=http://localhost:3001
+# Production:
+# NEXT_PUBLIC_API_URL=https://api.tuneslap.com/api/v1
+# NEXT_PUBLIC_SITE_URL=https://tuneslap.com
+
+# S3/MinIO external endpoint (for media URLs stored in database)
+# Development:
+S3_EXTERNAL_ENDPOINT=http://localhost:9000
+# Production:
+# S3_EXTERNAL_ENDPOINT=https://media.tuneslap.com
 ```
 
 ### Google Cloud Storage Setup
@@ -132,21 +149,69 @@ For production deployments, consider:
 6. **Configure backups** for MongoDB
 7. **Use managed databases** (MongoDB Atlas, Redis Cloud) instead of containers for production
 
+### Domain Configuration
+
+The default `docker-compose.yml` is configured for production domains:
+
+| Service | Domain | Internal Port |
+|---------|--------|---------------|
+| Frontend | tuneslap.com | 3001 |
+| API Server | api.tuneslap.com | 8082 |
+| MinIO Storage | media.tuneslap.com | 9000 |
+| OpenAPI Docs | openapi.tuneslap.com | 8081 |
+
+Configure your reverse proxy (Dokploy, Traefik, nginx, etc.) to route each domain to the appropriate port.
+
+**Important**: The `S3_EXTERNAL_ENDPOINT` variable controls what URL is stored in the database for media files. Set this to your MinIO domain (e.g., `https://media.tuneslap.com`) so media URLs are accessible from the browser.
+
+For local development, use `docker-compose.dev.yml` which defaults to localhost URLs.
+
 ### Example with Nginx
 
 ```nginx
+# Frontend
 server {
-    listen 80;
-    server_name your-domain.com;
+    listen 443 ssl;
+    server_name tuneslap.com;
 
     location / {
         proxy_pass http://localhost:3001;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
+}
 
-    location /api {
+# API Server
+server {
+    listen 443 ssl;
+    server_name api.tuneslap.com;
+
+    location / {
         proxy_pass http://localhost:8082;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# MinIO Storage
+server {
+    listen 443 ssl;
+    server_name media.tuneslap.com;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# OpenAPI Docs
+server {
+    listen 443 ssl;
+    server_name openapi.tuneslap.com;
+
+    location / {
+        proxy_pass http://localhost:8081;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
