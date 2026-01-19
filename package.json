@@ -15,7 +15,7 @@
     "dev:frontend": "cd frontend && yarn dev",
     "dev:server": "cd server && make dev",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
-    "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build --force-recreate",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
     "docker:dev:restart": "docker compose -f docker-compose.dev.yml restart",

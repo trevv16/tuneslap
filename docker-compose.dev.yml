@@ -69,6 +69,7 @@ services:
     image: mongo:6
     ports:
       - "27017:27017"
+    attach: false # Don't attach to the console for cleaner logs in dev
     volumes:
       - mongodb_data:/data/db
     restart: unless-stopped
