@@ -325,7 +325,7 @@ func ToMediaResponse(media models.Media) *api.MediaResponse {
 		validActivities = []models.ProcessingActivity{
 			{
 				Status:    models.ProcessingStatusPending,
-				Message:   "Processing started",
+				Message:   "Queued for processing",
 				CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 				UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
 			},
@@ -468,7 +468,7 @@ func MediaFromCreateRequest(req *api.CreateMediaRequest, authorId primitive.Obje
 	}
 
 	var dimensions [2]int
-	if req.Dimensions != nil && len(req.Dimensions) == 2 {
+	if len(req.Dimensions) == 2 {
 		dimensions = [2]int{int(req.Dimensions[0]), int(req.Dimensions[1])}
 	}
 
@@ -497,7 +497,7 @@ func MediaFromCreateRequest(req *api.CreateMediaRequest, authorId primitive.Obje
 		ProcessingActivity: []models.ProcessingActivity{
 			{
 				Status:    models.ProcessingStatusPending,
-				Message:   "Processing started",
+				Message:   "Queued for processing",
 				CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 				UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
 			},

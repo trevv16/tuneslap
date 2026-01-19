@@ -78,6 +78,9 @@ func SetupAndRunApp() error {
 		tasks.CloseClient()
 	}()
 
+	// start the background worker in a goroutine
+	go tasks.StartWorker()
+
 	// get the port and start
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -149,7 +149,7 @@ func (m Media) MarshalJSON() ([]byte, error) {
 		validActivities = []ProcessingActivity{
 			{
 				Status:    ProcessingStatusPending,
-				Message:   "Processing started",
+				Message:   "Queued for processing",
 				CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 				UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
 			},
@@ -244,7 +244,7 @@ func (m Media) ToJSONResponse() MediaJSONResponse {
 		validActivities = []ProcessingActivity{
 			{
 				Status:    ProcessingStatusPending,
-				Message:   "Processing started",
+				Message:   "Queued for processing",
 				CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 				UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
 			},

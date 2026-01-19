@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 	"tuneslap/mempeg/audio"
 	"tuneslap/mempeg/image"
@@ -39,17 +40,25 @@ func NewMediaProcessTask(mediaId primitive.ObjectID, userId primitive.ObjectID, 
 
 // function used by asynq
 func HandleMediaProcessTask(ctx context.Context, task *asynq.Task) error {
+	log.Printf("[Task] Received media:process task")
+
 	var payload MediaProcessPayload
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
+		log.Printf("[Task] Failed to unmarshal payload: %v", err)
 		return fmt.Errorf("json.Unmarshal failed: %v", err)
 	}
+
+	log.Printf("[Task] Processing media ID: %s, User ID: %s", payload.MediaID.Hex(), payload.UserID.Hex())
 
 	// get the media
 	mediaRepo := repositories.NewMediaRepository()
 	media, err := mediaRepo.GetByIdUnscoped(payload.MediaID)
 	if err != nil {
+		log.Printf("[Task] Failed to get media: %v", err)
 		return fmt.Errorf("failed to get media: %v", err)
 	}
+
+	log.Printf("[Task] Found media: %s (type: %s)", media.FileName, media.MediaType)
 
 	// update the media status to processing
 	_, err = mediaRepo.UpdateMediaUnscoped(payload.MediaID, &models.Media{
@@ -107,15 +116,16 @@ func HandleMediaProcessTask(ctx context.Context, task *asynq.Task) error {
 	// update the media metadata
 	_, err = mediaRepo.UpdateMediaUnscoped(payload.MediaID, &updateData)
 	if err != nil {
+		log.Printf("[Task] Failed to update media after processing: %v", err)
 		return fmt.Errorf("failed to update media after processing: %v", err)
 	}
 
-	return nil // or return error to retry
+	log.Printf("[Task] Successfully processed media ID: %s", payload.MediaID.Hex())
+	return nil
 }
 
-// register tasks here to be used by asynq
-func RegisterMediaProcessTasks() {
-	fmt.Println("Registering Media Process Tasks...")
-	mux := asynq.NewServeMux()
+// RegisterMediaProcessTasks registers media processing task handlers to the provided mux
+func RegisterMediaProcessTasks(mux *asynq.ServeMux) {
+	log.Println("[Worker] Registering media:process task handler")
 	mux.HandleFunc(TypeMediaProcess, HandleMediaProcessTask)
 }
