@@ -12,6 +12,8 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017
       - REDIS_URL=redis:6379
       - PORT=8082
+      - DATABASE=${DATABASE:-tuneslap}
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
       # Storage configuration (defaults to MinIO)
       - STORAGE_PROVIDER=${STORAGE_PROVIDER:-s3}
       - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
