@@ -5,9 +5,7 @@ info:
 servers:
   - url: http://localhost:8082/api/v1
     description: Local API
-  - url: https://stg.tuneslap.com/api/v1
-    description: Staging API
-  - url: https://prod.tuneslap.com/api/v1
+  - url: https://api.tuneslap.com/api/v1
     description: Production API
 
 components:
