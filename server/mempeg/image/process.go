@@ -37,34 +37,36 @@ func ProcessImage(media models.Media, params models.ImageProcessingParams) (mode
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to download original image: %w", err)
 	}
+	// Clean up downloaded file when done
+	defer os.Remove(downloadedFilePath)
 
-	// Step 3: Open the file
+	// Step 4: Open the file
 	file, err := os.Open(downloadedFilePath)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to open file: %w", err)
 	}
 	defer file.Close()
 
-	// Step 4: Read the file
+	// Step 5: Read the file
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	// Step 5: Normalize with default options
+	// Step 6: Normalize with default options
 	// (resize, strip metadata, compress, convert)
 	img, err := normalizeDefault(fileBytes)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("normalization error: %w", err)
 	}
 
-	// Step 6: Transform (crop, rotate, blur, grayscale)
+	// Step 7: Transform (crop, rotate, blur, grayscale)
 	img, err = transform(img, params)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("transformation error: %w", err)
 	}
 
-	// Step 7: Get updated metadata
+	// Step 8: Get updated metadata
 	metadata, err := getMetadata(img)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to get metadata: %w", err)
@@ -76,11 +78,13 @@ func ProcessImage(media models.Media, params models.ImageProcessingParams) (mode
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to save file: %w", err)
 	}
+	// Clean up processed file when done
+	defer os.Remove(processedFilePath)
 
-	// Step 8: Get processed file upload key
+	// Step 9: Get processed file upload key
 	processedFileUploadKey := storage.GetMediaKey(media.AuthorId.Hex(), media.MediaType, media.FileName)
 
-	// Step 9: Upload processed image to media bucket
+	// Step 10: Upload processed image to media bucket
 	mediaClient, err := storage.GetMediaStorage()
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to get media client: %w", err)
@@ -94,10 +98,19 @@ func ProcessImage(media models.Media, params models.ImageProcessingParams) (mode
 		return models.Media{}, fmt.Errorf("upload error: %w", err)
 	}
 
-	// Step 7: Get the uploaded file url
+	// Step 11: Get the uploaded file url
 	processedUrl := mediaClient.GetFileURL(processedFileUploadKey)
 
-	// Step 8: Build updated media object
+	// Step 12: Delete original file from user uploads bucket
+	err = userUploadsClient.DeleteFile(context.Background(), originalFileUploadKey)
+	if err != nil {
+		// Log but don't fail - the processed file was uploaded successfully
+		fmt.Printf("[Image Process] Warning: failed to delete original file %s from user uploads bucket: %v\n", originalFileUploadKey, err)
+	} else {
+		fmt.Printf("[Image Process] Deleted original file %s from user uploads bucket\n", originalFileUploadKey)
+	}
+
+	// Step 13: Build updated media object
 	media.ProcessedUrl = processedUrl
 	media.Status = models.ProcessingStatusDone
 	media.FileSize = metadata.FileSize

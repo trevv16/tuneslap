@@ -201,7 +201,7 @@ func (h *MediaHandler) HandleUpdateMedia(c *fiber.Ctx) error {
 	}, h.MediaResponseMapper)
 }
 
-// HandleDeleteMedia handles DELETE media with S3 cleanup
+// HandleDeleteMedia handles DELETE media with S3 cleanup and cascade key deletion
 func (h *MediaHandler) HandleDeleteMedia(c *fiber.Ctx) error {
 	authorId, err := GetAuthorId(c)
 	if err != nil {
@@ -217,6 +217,16 @@ func (h *MediaHandler) HandleDeleteMedia(c *fiber.Ctx) error {
 	media, err := h.mediaRepo.GetById(mediaId, authorId)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusNotFound, "Media not found", err)
+	}
+
+	// Delete all keys that reference this media (cascade delete)
+	keyRepo := repositories.NewKeyRepository()
+	deletedCount, err := keyRepo.DeleteKeysByMediaId(mediaId)
+	if err != nil {
+		// Log but don't fail the operation - keys might not exist
+		fmt.Printf("[Media Delete] Warning: failed to cascade delete keys for media %s: %v\n", mediaId.Hex(), err)
+	} else if deletedCount > 0 {
+		fmt.Printf("[Media Delete] Cascade deleted keys from %d boards for media %s\n", deletedCount, mediaId.Hex())
 	}
 
 	// Delete from storage first

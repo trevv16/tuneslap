@@ -127,3 +127,37 @@ func (r *KeyRepository) DeleteKey(
 
 	return board, nil
 }
+
+// DeleteKeysByMediaId removes all keys that reference a specific media ID
+// (either as audioMediaId or imageMediaId) from all boards
+func (r *KeyRepository) DeleteKeysByMediaId(mediaId primitive.ObjectID) (int64, error) {
+	collection := r.getCollection()
+	ctx, cancel := r.getContext()
+	defer cancel()
+
+	// Pull keys from all boards where the key references this media ID
+	update := bson.M{
+		"$pull": bson.M{
+			"keys": bson.M{
+				"$or": []bson.M{
+					{"audioMediaId": mediaId},
+					{"imageMediaId": mediaId},
+				},
+			},
+		},
+		"$set": bson.M{
+			"updatedAt": time.Now(),
+		},
+	}
+
+	// Update all boards that have keys referencing this media
+	result, err := collection.UpdateMany(ctx, bson.M{}, update)
+	if err != nil {
+		return 0, err
+	}
+
+	// Clear cache after deletion
+	r.clearCache()
+
+	return result.ModifiedCount, nil
+}
