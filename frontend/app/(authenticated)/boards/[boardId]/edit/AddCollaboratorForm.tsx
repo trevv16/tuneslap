@@ -1,14 +1,23 @@
 'use client'
 
-import { useCreateCollaborator } from '@/hooks/collaborators';
-import type { CreateCollaboratorRequestRoleEnum } from '@/api/models';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Dispatch, SetStateAction } from "react";
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { z } from 'zod';
+import { useCreateCollaborator } from '@/hooks/collaborators'
+import type { CreateCollaboratorRequestRoleEnum } from '@/api/models'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Dispatch, SetStateAction } from "react"
+import { useForm, Controller } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
-// Validation schema
 const addCollaboratorSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   role: z.string().min(1, 'Role is required'),
@@ -17,17 +26,17 @@ const addCollaboratorSchema = z.object({
 type AddCollaboratorFormData = z.infer<typeof addCollaboratorSchema>
 
 type AddCollaboratorFormProps = {
-  boardId: string;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  boardId: string
+  setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export default function AddCollaboratorForm({ boardId, setOpen }: AddCollaboratorFormProps) {
-
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    control,
   } = useForm<AddCollaboratorFormData>({
     resolver: zodResolver(addCollaboratorSchema),
     defaultValues: {
@@ -54,64 +63,67 @@ export default function AddCollaboratorForm({ boardId, setOpen }: AddCollaborato
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="my-12">
-        <div>
-          <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-            Email Address
-          </label>
-          <div className="mt-2">
-            <input
-              id="email"
-              type="email"
-              disabled={createCollaboratorMutation.isPending}
-              className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-gray-300 sm:text-sm/6 ${errors.email ? 'outline-red-500 focus:outline-red-500' : ''}`}
-              placeholder="Enter collaborator's email address"
-              {...register('email')}
-            />
-          </div>
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-          )}
-        </div>
-        <div className="mt-4">
-          <label htmlFor="role" className="block text-sm/6 font-medium text-gray-900">
-            Role
-          </label>
-          <div className="mt-2">
-            <select
-              id="role"
-              disabled={createCollaboratorMutation.isPending}
-              className={`block w-full rounded-md bg-white h-8 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-gray-300 sm:text-sm/6 ${errors.role ? 'outline-red-500 focus:outline-red-500' : ''}`}
-              {...register('role')}
-            >
-              <option value="viewer">Viewer</option>
-              <option value="editor">Editor</option>
-              <option value="owner">Owner</option>
-            </select>
-          </div>
-          {errors.role && (
-            <p className="mt-1 text-sm text-red-500">{errors.role.message}</p>
-          )}
-        </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="email">Email Address</Label>
+        <Input
+          id="email"
+          type="email"
+          disabled={createCollaboratorMutation.isPending}
+          placeholder="Enter collaborator's email address"
+          className="mt-2"
+          {...register('email')}
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
+        )}
       </div>
-      <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-        <button
+
+      <div>
+        <Label htmlFor="role">Role</Label>
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <Select
+              value={field.value}
+              onValueChange={field.onChange}
+              disabled={createCollaboratorMutation.isPending}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+                <SelectItem value="owner">Owner</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.role && (
+          <p className="mt-1 text-sm text-destructive">{errors.role.message}</p>
+        )}
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <Button
           type="button"
+          variant="outline"
           onClick={() => setOpen(false)}
           disabled={createCollaboratorMutation.isPending}
-          className="inline-flex w-full justify-center rounded-md bg-error border-2 border-error px-3 py-2 text-sm font-semibold text-error shadow-xs hover:bg-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={createCollaboratorMutation.isPending}
-          className="inline-flex w-full justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-inverted shadow-xs hover:bg-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1"
         >
           {createCollaboratorMutation.isPending ? 'Sending invitation...' : 'Send invitation'}
-        </button>
+        </Button>
       </div>
     </form>
   )
-} 
+}

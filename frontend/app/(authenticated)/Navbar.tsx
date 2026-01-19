@@ -1,168 +1,220 @@
 'use client'
 
-import { useAuthContext } from "@/contexts/AuthContext";
-import { classNames } from "@/utils/helpers";
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Bars3Icon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { useAuthContext } from "@/contexts/AuthContext"
+import { cn } from "@/lib/utils"
+import { Menu, User } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useState } from "react"
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const { user, signOut } = useAuthContext();
+  const pathname = usePathname()
+  const { user, signOut } = useAuthContext()
+  const [sheetOpen, setSheetOpen] = useState(false)
+
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', current: pathname === '/dashboard' },
-    { name: 'Library', href: '/library', current: pathname === '/library' },
-  ];
-  const userNavigation = [
-    { name: 'Your Account', href: '/account' },
-  ];
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Library', href: '/library' },
+  ]
+
+  const isActive = (href: string) => pathname === href
+
+  const getUserInitials = () => {
+    if (!user?.name) return 'U'
+    const parts = user.name.split(' ')
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+    }
+    return parts[0][0].toUpperCase()
+  }
 
   return (
-    <Disclosure as="nav" className="bg-base border-b border-white lg:border-none">
-      <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
-        <div className="relative flex h-16 items-center justify-between lg:border-b lg:border-white">
-          <div className="flex items-center px-2 lg:px-0">
-            <div className="shrink-0">
-              <Link href="/dashboard">
-                <img
-                  alt="TuneSlap"
-                  src="/logo.png"
-                  className="h-8 w-auto"
-                />
-              </Link>
+    <nav className="border-b bg-background">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo and Desktop Nav */}
+          <div className="flex items-center gap-8">
+            <Link href="/dashboard" className="flex-shrink-0">
+              <img
+                alt="TuneSlap"
+                src="/logo.png"
+                className="h-8 w-auto"
+              />
+            </Link>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:gap-1">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    isActive(item.href)
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
             </div>
-            <div className="hidden lg:ml-10 lg:block">
-              <div className="flex space-x-4">
-                {navigation.map((item) => (
+          </div>
+
+          {/* Desktop Right Side */}
+          <div className="hidden md:flex md:items-center md:gap-2">
+            <ThemeToggle />
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage 
+                      src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined} 
+                      alt={user?.name || "User"} 
+                    />
+                    <AvatarFallback>
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    {user?.name && (
+                      <p className="font-medium">{user.name}</p>
+                    )}
+                    {user?.email && (
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {user.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/account" className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    Account
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={signOut}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+            
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[350px]">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                </SheetHeader>
+                
+                {/* User Info */}
+                <div className="flex items-center gap-3 py-4 border-b">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage 
+                      src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined} 
+                      alt={user?.name || "User"} 
+                    />
+                    <AvatarFallback>
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    {user?.name && (
+                      <p className="font-medium">{user.name}</p>
+                    )}
+                    {user?.email && (
+                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                        {user.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Navigation Links */}
+                <div className="flex flex-col gap-1 py-4">
+                  {navigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setSheetOpen(false)}
+                      className={cn(
+                        "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                        isActive(item.href)
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                   <Link
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500/75',
-                      'rounded-md px-3 py-2 text-sm font-medium',
+                    href="/account"
+                    onClick={() => setSheetOpen(false)}
+                    className={cn(
+                      "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                      isActive('/account')
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     )}
                   >
-                    {item.name}
+                    Account
                   </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end">
-            <div className="grid w-full max-w-lg grid-cols-1 lg:max-w-xs">
-              <input
-                name="search"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                className="col-start-1 row-start-1 block w-full rounded-md bg-muted py-1.5 pr-3 pl-10 text-base outline-hidden placeholder:text-base placeholder:text-sm focus:outline-2 focus:outline-offset-2 focus:border-accent sm:text-sm/6"
-              />
-              <MagnifyingGlassIcon
-                aria-hidden="true"
-                className="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400"
-              />
-            </div>
-          </div>
-          <div className="flex lg:hidden">
-            {/* Mobile menu button */}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-primary-600 p-2 text-primary-200 hover:bg-primary-500/75 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 focus:outline-hidden">
-              <span className="absolute -inset-0.5" />
-              <span className="sr-only">Open main menu</span>
-              <Bars3Icon aria-hidden="true" className="block size-6 group-data-open:hidden" />
-              <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
-            </DisclosureButton>
-          </div>
-          <div className="hidden lg:ml-4 lg:block">
-            <div className="flex items-center">
-              {/* Profile dropdown */}
-              <Menu as="div" className="relative ml-3 shrink-0">
-                <div>
-                  <MenuButton className="relative flex rounded-full bg-primary-600 text-sm text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 focus:outline-hidden">
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">Open user menu</span>
-                    <img alt="" src={(user?.imageUrl && user?.imageUrl !== "") ? user?.imageUrl : "/defaultUser.jpg"} className="size-8 rounded-full" />
-                  </MenuButton>
                 </div>
-                <MenuItems
-                  transition
-                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-highlight py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                >
-                  {userNavigation.map((item) => (
-                    <MenuItem key={item.name}>
-                      <Link
-                        href={item.href}
-                        className="block px-4 py-2 text-sm text-base data-focus:bg-gray-100 data-focus:outline-hidden"
-                      >
-                        {item.name}
-                      </Link>
-                    </MenuItem>
-                  ))}
-                  <MenuItem key="signout">
-                    <button
-                      onClick={signOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-base data-focus:bg-gray-100 data-focus:outline-hidden"
-                    >
-                      Sign out
-                    </button>
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
-            </div>
+
+                {/* Sign Out */}
+                <div className="border-t pt-4">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => {
+                      setSheetOpen(false)
+                      signOut()
+                    }}
+                  >
+                    Sign out
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
-
-      <DisclosurePanel className="lg:hidden">
-        <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? 'page' : undefined}
-              className={classNames(
-                item.current ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500/75',
-                'block rounded-md px-3 py-2 text-base font-medium',
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
-          ))}
-        </div>
-        <div className="border-t border-primary-700 pt-4 pb-3">
-          <div className="flex items-center px-5">
-            <div className="shrink-0">
-              <img alt="" src={(user?.imageUrl && user?.imageUrl !== "") ? user?.imageUrl : "/defaultUser.jpg"} className="size-10 rounded-full" />
-            </div>
-            <div className="ml-3">
-              <div className="text-base font-medium text-white">{user?.name}</div>
-              <div className="text-sm font-medium text-primary-300">{user?.email}</div>
-            </div>
-          </div>
-          <div className="mt-3 space-y-1 px-2">
-            {userNavigation.map((item) => (
-              <DisclosureButton
-                key={item.name}
-                as="a"
-                href={item.href}
-                className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-primary-500/75"
-              >
-                {item.name}
-              </DisclosureButton>
-            ))}
-            <DisclosureButton
-              key="signout"
-              onClick={signOut}
-              className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-white hover:bg-primary-500/75"
-            >
-              Sign out
-            </DisclosureButton>
-          </div>
-        </div>
-      </DisclosurePanel>
-    </Disclosure>
+    </nav>
   )
 }

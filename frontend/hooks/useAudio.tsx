@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: string) => void) {
   const audioCtxRef = useRef<AudioContext | null>(null);

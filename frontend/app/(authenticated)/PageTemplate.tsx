@@ -1,16 +1,13 @@
-"use client"
-
-import { useThemeContext } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/utils"
 
 type PageTemplateProps = {
-  children: React.ReactNode;
+  children: React.ReactNode
+  className?: string
 }
 
-export default function PageTemplate({ children }: PageTemplateProps) {
-  const { theme } = useThemeContext();
-
+export default function PageTemplate({ children, className }: PageTemplateProps) {
   return (
-    <main className="px-4 pb-12 sm:px-6 lg:px-8" data-theme={theme}>
+    <main className={cn("mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8", className)}>
       {children}
     </main>
   )

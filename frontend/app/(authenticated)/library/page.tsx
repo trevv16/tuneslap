@@ -1,43 +1,48 @@
-import { Metadata } from "next";
-import { Suspense } from "react";
-import PageTemplate from "../PageTemplate";
-import LibraryClient from "./LibraryClient";
-import MediaGallerySkeleton from "./components/MediaGallerySkeleton";
+import { Skeleton } from "@/components/ui/skeleton"
+import { Metadata } from "next"
+import { Suspense } from "react"
+import PageTemplate from "../PageTemplate"
+import LibraryClient from "./LibraryClient"
 
 export const metadata: Metadata = {
   title: "Library",
   description: "Library",
-};
+}
 
 function LibraryLoadingSkeleton() {
   return (
-    <div className="flex h-full bg-base">
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="h-8 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="h-10 w-28 animate-pulse rounded bg-gray-200" />
+    <div className="space-y-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-10 w-28" />
+      </div>
+
+      {/* Tabs skeleton */}
+      <div className="flex items-center justify-between border-b pb-4">
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-10 w-20" />
         </div>
+        <div className="flex gap-1">
+          <Skeleton className="h-8 w-8" />
+          <Skeleton className="h-8 w-8" />
+        </div>
+      </div>
 
-        {/* Main content skeleton */}
-        <main className="flex-1">
-          <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-            {/* Title skeleton */}
-            <div className="h-8 w-24 animate-pulse rounded bg-gray-200" />
-            
-            {/* Tabs skeleton */}
-            <div className="mt-4 flex gap-4">
-              <div className="h-10 w-20 animate-pulse rounded bg-gray-200" />
-              <div className="h-10 w-20 animate-pulse rounded bg-gray-200" />
-              <div className="h-10 w-20 animate-pulse rounded bg-gray-200" />
-            </div>
-
-            <MediaGallerySkeleton />
+      {/* Grid skeleton */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="aspect-square w-full rounded-lg" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
           </div>
-        </main>
+        ))}
       </div>
     </div>
-  );
+  )
 }
 
 export default function LibraryPage() {
@@ -47,5 +52,5 @@ export default function LibraryPage() {
         <LibraryClient />
       </Suspense>
     </PageTemplate>
-  );
+  )
 }
