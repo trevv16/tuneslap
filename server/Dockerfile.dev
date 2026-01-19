@@ -1,12 +1,13 @@
 # Development Dockerfile with Air for hot reloading
 FROM golang:1.24-bookworm
 
-# Install build dependencies (required for bimg/libvips)
+# Install build dependencies (required for bimg/libvips) and ffmpeg for audio processing
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-dev \
     gcc \
     pkg-config \
     curl \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Air for hot reloading (pinned to version compatible with Go 1.24)

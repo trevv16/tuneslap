@@ -12,6 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// DirPermissions is the default permission for created directories (rwxr-xr-x)
+const DirPermissions = 0755
+
 func ProcessImage(media models.Media, params models.ImageProcessingParams) (models.Media, error) {
 	// Step 1: Initialize user uploads bucket client
 	userUploadsClient, err := storage.GetUserUploadsStorage()
@@ -22,8 +25,14 @@ func ProcessImage(media models.Media, params models.ImageProcessingParams) (mode
 	// get original file upload key
 	originalFileUploadKey := storage.GetMediaKey(media.AuthorId.Hex(), media.MediaType, media.FileName)
 
-	// Step 2: Download original image from user uploads bucket
+	// Step 2: Create destination path and ensure directory exists
 	downloadedFilePath := filepath.Join(os.TempDir(), originalFileUploadKey)
+	downloadDir := filepath.Dir(downloadedFilePath)
+	if err := os.MkdirAll(downloadDir, DirPermissions); err != nil {
+		return models.Media{}, fmt.Errorf("failed to create download directory: %w", err)
+	}
+
+	// Step 3: Download original image from user uploads bucket
 	err = userUploadsClient.DownloadFile(context.Background(), originalFileUploadKey, downloadedFilePath)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to download original image: %w", err)

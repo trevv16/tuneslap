@@ -9,6 +9,7 @@ import (
 // NormalizeAudio applies loudness normalization, resampling, trimming silence, and re-encodes to MP3 and WebM.
 func NormalizeAudio(ctx context.Context, inputPath, outputBasePath string) (webmPath string, err error) {
 	// Apply loudness normalization, resample, trim silence, and export as MP3
+	// MP3 supports 44100 Hz sample rate
 	mp3Path := fmt.Sprintf("%s.mp3", outputBasePath)
 	cmdMp3 := exec.CommandContext(ctx, "ffmpeg",
 		"-i", inputPath,
@@ -23,11 +24,12 @@ func NormalizeAudio(ctx context.Context, inputPath, outputBasePath string) (webm
 	}
 
 	// Apply same processing but encode as WebM (Opus)
+	// Opus only supports: 8000, 12000, 16000, 24000, 48000 Hz - using 48000 for best quality
 	webmPath = fmt.Sprintf("%s.webm", outputBasePath)
 	cmdWebm := exec.CommandContext(ctx, "ffmpeg",
 		"-i", inputPath,
 		"-af", "loudnorm=I=-16:TP=-1.5:LRA=11,silenceremove=start_periods=1:start_duration=0.5:start_threshold=-50dB",
-		"-ar", "44100",
+		"-ar", "48000",
 		"-c:a", "libopus",
 		"-b:a", "128k",
 		"-y", webmPath,

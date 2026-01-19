@@ -1,11 +1,13 @@
 'use client'
 
+import type { MediaListItem } from '@/api/models';
 import DemoBanner from '@/components/DemoBanner';
 import { MediaCreateFormData, useMediaCreate, useMediaStats } from '@/hooks/media';
 import { formatBytes } from '@/utils/helpers';
 import { CloudArrowUpIcon } from '@heroicons/react/20/solid';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import ProcessMediaModal from './ProcessMediaModal';
 
 type CreateMediaFormProps = {
   setOpen: (open: boolean) => void;
@@ -13,6 +15,8 @@ type CreateMediaFormProps = {
 
 export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
   const [dragActive, setDragActive] = useState(false);
+  const [createdMedia, setCreatedMedia] = useState<MediaListItem | null>(null);
+  const [showProcessModal, setShowProcessModal] = useState(false);
 
   const {
     form,
@@ -88,9 +92,31 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
 
   const handleFormSubmit = async (data: MediaCreateFormData) => {
     const result = await handleSubmit(data);
-    if (result.success) {
-      toast.success('Media created successfully!');
-      setOpen(false);
+    if (result.success && result.data) {
+      toast.success('Media uploaded! Configure processing options.');
+      // Convert the response data to MediaListItem format
+      // Use type assertion since the enum values are identical between response types
+      const mediaItem = {
+        id: result.data.id,
+        authorId: result.data.authorId,
+        mediaType: result.data.mediaType as MediaListItem['mediaType'],
+        fileName: result.data.fileName,
+        description: result.data.description,
+        fileUrl: result.data.fileUrl,
+        processedUrl: result.data.processedUrl,
+        waveformUrl: result.data.waveformUrl,
+        contentType: result.data.contentType as MediaListItem['contentType'],
+        fileSize: result.data.fileSize,
+        status: result.data.status as MediaListItem['status'],
+        processingParams: result.data.processingParams,
+        processingActivity: result.data.processingActivity,
+        dimensions: result.data.dimensions,
+        duration: result.data.duration,
+        createdAt: result.data.createdAt,
+        updatedAt: result.data.updatedAt,
+      } as MediaListItem;
+      setCreatedMedia(mediaItem);
+      setShowProcessModal(true);
       form.reset();
     } else {
       const errorMessage = result.error instanceof Error
@@ -100,6 +126,18 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
           : 'Failed to create media';
       toast.error(errorMessage);
     }
+  };
+
+  const handleProcessModalClose = () => {
+    setShowProcessModal(false);
+    setCreatedMedia(null);
+    setOpen(false);
+  };
+
+  const handleProcessSuccess = () => {
+    setShowProcessModal(false);
+    setCreatedMedia(null);
+    setOpen(false);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -282,9 +320,19 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
           disabled={isSubmitting || !!storageError}
           className="inline-flex w-full justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-inverted shadow-xs hover:bg-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Creating...' : 'Create Media'}
+          {isSubmitting ? 'Uploading...' : 'Upload Media'}
         </button>
       </div>
+
+      {/* Process Media Modal */}
+      {createdMedia && (
+        <ProcessMediaModal
+          media={createdMedia}
+          open={showProcessModal}
+          onClose={handleProcessModalClose}
+          onSuccess={handleProcessSuccess}
+        />
+      )}
     </form>
   );
 } 

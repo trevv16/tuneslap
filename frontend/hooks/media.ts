@@ -13,7 +13,15 @@ import type {
   UpdateMediaRequest,
   UpdateMediaResponse,
 } from "@/api/models";
-import { CreateMediaRequestContentTypeEnum, CreateMediaRequestMediaTypeEnum } from "@/api/models";
+import {
+  CreateMediaRequestContentTypeEnum,
+  CreateMediaRequestMediaTypeEnum,
+  MediaProcessingParamsAudioContentTypeEnum,
+  MediaProcessingParamsAudioOutputFormatsEnum,
+  MediaProcessingParamsImageFormatEnum,
+  MediaProcessingParamsImageAspectRatioEnum,
+  MediaProcessingParamsImageApplyFiltersEnum,
+} from "@/api/models";
 import { generateUploadUrl } from "@/api/uploadUrl";
 import { getStoredToken } from "@/utils/token";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -427,5 +435,130 @@ export function useFileUpload() {
     uploadFile,
     uploadProgress,
     isUploading,
+  };
+}
+
+// Validation schema for audio processing
+const audioProcessingSchema = z.object({
+  contentType: z.nativeEnum(MediaProcessingParamsAudioContentTypeEnum).optional(),
+  trimStart: z.number().min(0, "Trim start must be non-negative").optional(),
+  trimEnd: z.number().min(0, "Trim end must be non-negative").optional(),
+  normalize: z.boolean().optional(),
+  fadeIn: z.number().min(0, "Fade in must be non-negative").max(10, "Fade in must be at most 10 seconds").optional(),
+  fadeOut: z.number().min(0, "Fade out must be non-negative").max(10, "Fade out must be at most 10 seconds").optional(),
+  speed: z.number().min(0.5, "Speed must be at least 0.5x").max(2, "Speed must be at most 2x").optional(),
+  pitch: z.number().min(-12, "Pitch must be at least -12 semitones").max(12, "Pitch must be at most +12 semitones").optional(),
+  outputFormats: z.array(z.nativeEnum(MediaProcessingParamsAudioOutputFormatsEnum)).optional(),
+});
+
+export type AudioProcessingFormData = z.infer<typeof audioProcessingSchema>;
+
+// Custom hook for audio processing form
+export function useAudioProcessingForm(mediaId: string) {
+  const processMediaMutation = useProcessMedia();
+
+  const form = useForm<AudioProcessingFormData>({
+    resolver: zodResolver(audioProcessingSchema),
+    defaultValues: {
+      contentType: MediaProcessingParamsAudioContentTypeEnum.AudioWebm,
+      trimStart: 0,
+      trimEnd: 0,
+      normalize: true,
+      fadeIn: 0,
+      fadeOut: 0,
+      speed: 1,
+      pitch: 0,
+    },
+  });
+
+  const handleSubmit = async (data: AudioProcessingFormData) => {
+    try {
+      const processingParams: MediaProcessingParams = {
+        audio: {
+          contentType: data.contentType,
+          trimStart: data.trimStart,
+          trimEnd: data.trimEnd,
+          normalize: data.normalize,
+          fadeIn: data.fadeIn,
+          fadeOut: data.fadeOut,
+          speed: data.speed,
+          pitch: data.pitch,
+          outputFormats: data.outputFormats,
+        },
+      };
+
+      await processMediaMutation.mutateAsync({
+        mediaId,
+        processingParams,
+      });
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  };
+
+  return {
+    form,
+    handleSubmit,
+    isSubmitting: processMediaMutation.isPending,
+    isSuccess: processMediaMutation.isSuccess,
+    error: processMediaMutation.error,
+  };
+}
+
+// Validation schema for image processing
+const imageProcessingSchema = z.object({
+  format: z.nativeEnum(MediaProcessingParamsImageFormatEnum).optional(),
+  aspectRatio: z.nativeEnum(MediaProcessingParamsImageAspectRatioEnum).optional(),
+  resizeWidth: z.number().min(1).max(4096).optional(),
+  resizeHeight: z.number().min(1).max(4096).optional(),
+  applyFilters: z.array(z.nativeEnum(MediaProcessingParamsImageApplyFiltersEnum)).optional(),
+});
+
+export type ImageProcessingFormData = z.infer<typeof imageProcessingSchema>;
+
+// Custom hook for image processing form
+export function useImageProcessingForm(mediaId: string) {
+  const processMediaMutation = useProcessMedia();
+
+  const form = useForm<ImageProcessingFormData>({
+    resolver: zodResolver(imageProcessingSchema),
+    defaultValues: {
+      format: MediaProcessingParamsImageFormatEnum.Webp,
+      applyFilters: [],
+    },
+  });
+
+  const handleSubmit = async (data: ImageProcessingFormData) => {
+    try {
+      const processingParams: MediaProcessingParams = {
+        image: {
+          format: data.format,
+          aspectRatio: data.aspectRatio,
+          resizeTo: data.resizeWidth && data.resizeHeight
+            ? [data.resizeWidth, data.resizeHeight]
+            : undefined,
+          applyFilters: data.applyFilters && data.applyFilters.length > 0 ? data.applyFilters : undefined,
+        },
+      };
+
+      await processMediaMutation.mutateAsync({
+        mediaId,
+        processingParams,
+      });
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  };
+
+  return {
+    form,
+    handleSubmit,
+    isSubmitting: processMediaMutation.isPending,
+    isSuccess: processMediaMutation.isSuccess,
+    error: processMediaMutation.error,
   };
 }

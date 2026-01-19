@@ -82,21 +82,45 @@ func (r *MediaRepository) UpdateMedia(id primitive.ObjectID, authorId primitive.
 }
 
 // UpdateMediaUnscoped updates media by ID without author filter
+// Only updates fields that have non-zero values to avoid overwriting existing data
 func (r *MediaRepository) UpdateMediaUnscoped(id primitive.ObjectID, updateData *models.Media) (models.Media, error) {
-	update := bson.M{
-		"$set": bson.M{
-			"fileName":           updateData.FileName,
-			"processedUrl":       updateData.ProcessedUrl,
-			"waveformUrl":        updateData.WaveformUrl,
-			"contentType":        updateData.ContentType,
-			"fileSize":           updateData.FileSize,
-			"dimensions":         updateData.Dimensions,
-			"duration":           updateData.Duration,
-			"status":             updateData.Status,
-			"processingParams":   updateData.ProcessingParams,
-			"processingActivity": updateData.ProcessingActivity,
-		},
+	setFields := bson.M{
+		"updatedAt": primitive.NewDateTimeFromTime(time.Now()),
 	}
+
+	// Only set fields that have values
+	if updateData.FileName != "" {
+		setFields["fileName"] = updateData.FileName
+	}
+	if updateData.ProcessedUrl != "" {
+		setFields["processedUrl"] = updateData.ProcessedUrl
+	}
+	if updateData.WaveformUrl != "" {
+		setFields["waveformUrl"] = updateData.WaveformUrl
+	}
+	if updateData.ContentType != "" {
+		setFields["contentType"] = updateData.ContentType
+	}
+	if updateData.FileSize != 0 {
+		setFields["fileSize"] = updateData.FileSize
+	}
+	if updateData.Dimensions[0] != 0 || updateData.Dimensions[1] != 0 {
+		setFields["dimensions"] = updateData.Dimensions
+	}
+	if updateData.Duration != 0 {
+		setFields["duration"] = updateData.Duration
+	}
+	if updateData.Status != "" {
+		setFields["status"] = updateData.Status
+	}
+	if updateData.ProcessingParams.Audio != nil || updateData.ProcessingParams.Image != nil {
+		setFields["processingParams"] = updateData.ProcessingParams
+	}
+	if len(updateData.ProcessingActivity) > 0 {
+		setFields["processingActivity"] = updateData.ProcessingActivity
+	}
+
+	update := bson.M{"$set": setFields}
 
 	// First update the document
 	_, err := r.Update(id, update)
@@ -104,7 +128,7 @@ func (r *MediaRepository) UpdateMediaUnscoped(id primitive.ObjectID, updateData 
 		return models.Media{}, err
 	}
 
-	// Then fetch the updated document with author filter
+	// Then fetch the updated document
 	return r.FindOne(bson.M{
 		"_id": id,
 	})
