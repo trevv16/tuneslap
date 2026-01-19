@@ -5,7 +5,7 @@ import { useAllMedia, useDeleteMedia } from '@/hooks/media'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import CreateMediaForm from './components/CreateMediaForm'
 import LibraryHeader from './components/LibraryHeader'
@@ -20,7 +20,13 @@ type LibraryClientProps = {
 export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
   const [selectedItem, setSelectedItem] = useState<Media | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const pathname = usePathname();
+
+  // Ensure consistent hydration by only rendering data-dependent content after mount
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Fetch media data with optional filtering by type
   const { data: mediaResponse, isLoading, error } = useAllMedia(
@@ -99,7 +105,7 @@ export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
 
                 <LibraryTabs currentTab={pathname} />
 
-                {isLoading ? (
+                {!hasMounted || isLoading ? (
                   <div className="mt-24 text-center">
                     <p className="text-base">Loading media...</p>
                   </div>
