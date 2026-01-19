@@ -251,7 +251,7 @@ function MediaDetailsContent({
         <h3 className="font-medium text-highlight">Processing Activity</h3>
         <hr className="mt-2 mb-6 border-highlight" />
         <div className="mt-2 flex items-center justify-between">
-          <p className="text-sm text-base italic">
+          <div className="text-sm text-base italic w-full">
             {item.processingActivity?.map((activity, index) => (
               <div key={index + (activity.status || '') + (activity.createdAt?.toString() || '')}>
                 <p className="mb-2 text-md text-highlight italic">{activity.message}</p>
@@ -261,7 +261,7 @@ function MediaDetailsContent({
                 <hr className="my-2" />
               </div>
             ))}
-          </p>
+          </div>
         </div>
       </div>
 
