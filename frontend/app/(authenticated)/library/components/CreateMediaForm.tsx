@@ -28,15 +28,15 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
   // Check if file size exceeds available storage
   const storageError = useMemo(() => {
     if (!selectedFile || !mediaStats?.data) return null;
-    
+
     const availableStorage = mediaStats.data?.availableStorage;
     // -1 means unlimited storage
     if (availableStorage === -1 || availableStorage === undefined) return null;
-    
+
     if (selectedFile.size > availableStorage) {
       return `File size (${formatBytes(selectedFile.size)}) exceeds available storage (${formatBytes(availableStorage)})`;
     }
-    
+
     return null;
   }, [selectedFile, mediaStats]);
 
@@ -93,7 +93,12 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
       setOpen(false);
       form.reset();
     } else {
-      toast.error((result.error as Error).message);
+      const errorMessage = result.error instanceof Error
+        ? result.error.message
+        : typeof result.error === 'string'
+          ? result.error
+          : 'Failed to create media';
+      toast.error(errorMessage);
     }
   };
 
