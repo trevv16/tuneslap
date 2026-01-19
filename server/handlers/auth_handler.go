@@ -164,7 +164,7 @@ func SignUpHandler(c *fiber.Ctx) error {
 	response.Success = &success
 	response.Message = &message
 
-	return SendSuccessResponse(c, fiber.StatusCreated, "User created successfully", response)
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
 func SignInHandler(c *fiber.Ctx) error {
@@ -211,7 +211,7 @@ func SignInHandler(c *fiber.Ctx) error {
 	signinData.Token = &token
 	response.Data = signinData
 
-	return SendSuccessResponse(c, fiber.StatusOK, "User logged in successfully", response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func ForgotPasswordHandler(c *fiber.Ctx) error {
@@ -238,7 +238,7 @@ func ForgotPasswordHandler(c *fiber.Ctx) error {
 		message := "If the email exists, a reset link has been sent"
 		response.Success = &success
 		response.Message = &message
-		return SendSuccessResponse(c, fiber.StatusOK, "If the email exists, a reset link has been sent", response)
+		return c.Status(fiber.StatusOK).JSON(response)
 	}
 
 	// Generate reset token
@@ -261,7 +261,7 @@ func ForgotPasswordHandler(c *fiber.Ctx) error {
 	message := "If the email exists, a reset link has been sent"
 	response.Success = &success
 	response.Message = &message
-	return SendSuccessResponse(c, fiber.StatusOK, "If the email exists, a reset link has been sent", response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func ResetPasswordHandler(c *fiber.Ctx) error {
@@ -313,5 +313,5 @@ func ResetPasswordHandler(c *fiber.Ctx) error {
 	message := "Password reset successful"
 	response.Success = &success
 	response.Message = &message
-	return SendSuccessResponse(c, fiber.StatusOK, "Password reset successful", response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
