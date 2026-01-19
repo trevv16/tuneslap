@@ -2,9 +2,9 @@
 
 import type { MediaListItem as Media } from '@/api/models'
 import { useAllMedia, useDeleteMedia } from '@/hooks/media'
+import { useLibraryParams } from '@/hooks/useQueryParams'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/20/solid'
-import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import CreateMediaForm from './components/CreateMediaForm'
@@ -12,16 +12,15 @@ import LibraryHeader from './components/LibraryHeader'
 import LibraryTabs from './components/LibraryTabs'
 import MediaDetails from './components/MediaDetails'
 import MediaGallery from './components/MediaGallery'
+import MediaGallerySkeleton from './components/MediaGallerySkeleton'
 
-type LibraryClientProps = {
-  mediaType?: 'audio' | 'image';
-}
-
-export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
+export default function LibraryClient() {
   const [selectedItem, setSelectedItem] = useState<Media | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const pathname = usePathname();
+  
+  // Use query params for tab and view
+  const { tab, view, mediaType, setTab, setView } = useLibraryParams();
 
   // Ensure consistent hydration by only rendering data-dependent content after mount
   useEffect(() => {
@@ -29,9 +28,7 @@ export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
   }, []);
 
   // Fetch media data with optional filtering by type
-  const { data: mediaResponse, isLoading, error } = useAllMedia(
-    mediaType ? { mediaType } : undefined
-  );
+  const { data: mediaResponse, isLoading, error } = useAllMedia({ mediaType });
   const deleteMediaMutation = useDeleteMedia();
   const mediaItems = mediaResponse || [];
 
@@ -52,8 +49,7 @@ export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
   }
 
   const handleUploadClick = () => {
-    // TODO: Implement upload functionality
-    console.log('Upload clicked');
+    setCreateModalOpen(true);
   }
 
   const handleDownload = () => {
@@ -103,12 +99,15 @@ export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
                   <h1 className="flex-1 text-2xl font-bold text-highlight">Library</h1>
                 </div>
 
-                <LibraryTabs currentTab={pathname} />
+                <LibraryTabs
+                  currentTab={tab}
+                  onTabChange={setTab}
+                  viewMode={view}
+                  onViewModeChange={setView}
+                />
 
                 {!hasMounted || isLoading ? (
-                  <div className="mt-24 text-center">
-                    <p className="text-base">Loading media...</p>
-                  </div>
+                  <MediaGallerySkeleton viewMode={view} />
                 ) : error ? (
                   <div className="mt-24 text-center">
                     <p className="text-base text-red-500">Error loading media: {error.message}</p>
@@ -119,6 +118,7 @@ export default function LibraryClient({ mediaType }: LibraryClientProps = {}) {
                     selectedItem={selectedItem}
                     onItemClick={handleItemClick}
                     onUploadClick={handleUploadClick}
+                    viewMode={view}
                   />
                 )}
               </div>

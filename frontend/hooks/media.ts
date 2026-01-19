@@ -1,14 +1,14 @@
 import { MediaApi } from "@/api";
-import { GetAllMediaContentTypeEnum, GetAllMediaMediaTypeEnum } from "@/api/apis/MediaApi";
+import { GetAllMediaMediaTypeEnum } from "@/api/apis/MediaApi";
 import { getApiConfig } from "@/api/config";
 import type {
   CreateMediaRequest,
   CreateMediaResponse,
   DeleteMediaResponse,
+  GetMyMediaStatsResponse,
   MediaListItem,
   MediaProcessingParams,
   MediaResponse,
-  GetMyMediaStatsResponse,
   ProcessMediaResponse,
   UpdateMediaRequest,
   UpdateMediaResponse,
@@ -18,9 +18,9 @@ import {
   CreateMediaRequestMediaTypeEnum,
   MediaProcessingParamsAudioContentTypeEnum,
   MediaProcessingParamsAudioOutputFormatsEnum,
-  MediaProcessingParamsImageFormatEnum,
-  MediaProcessingParamsImageAspectRatioEnum,
   MediaProcessingParamsImageApplyFiltersEnum,
+  MediaProcessingParamsImageAspectRatioEnum,
+  MediaProcessingParamsImageFormatEnum,
 } from "@/api/models";
 import { generateUploadUrl } from "@/api/uploadUrl";
 import { getStoredToken } from "@/utils/token";
@@ -32,8 +32,8 @@ import { z } from "zod";
 
 // Query key factory for media
 export const mediaKeys = {
-  all: (params?: { page?: number; limit?: number; mediaType?: "image" | "audio"; contentType?: string }) =>
-    ["media", "list", params || {}] as const,
+  all: (params?: { page?: number; limit?: number; mediaType?: "image" | "audio" }) =>
+    ["media", "list", params?.mediaType ?? "all", params?.page ?? 1, params?.limit ?? 25] as const,
   detail: (mediaId: string) => ["media", "detail", mediaId] as const,
   stats: () => ["media", "stats"] as const,
 };
@@ -80,24 +80,6 @@ function convertMediaTypeToEnum(mediaType: 'image' | 'audio'): CreateMediaReques
 function convertMediaTypeToGetAllEnum(mediaType: 'image' | 'audio' | undefined): GetAllMediaMediaTypeEnum | undefined {
   if (!mediaType) return undefined;
   return mediaType === 'image' ? GetAllMediaMediaTypeEnum.Image : GetAllMediaMediaTypeEnum.Audio;
-}
-
-// Helper function to convert MIME type string to GetAllMediaContentTypeEnum
-function convertMimeTypeToGetAllContentTypeEnum(mimeType: string | undefined): GetAllMediaContentTypeEnum | undefined {
-  if (!mimeType) return undefined;
-  const mimeToEnum: Record<string, GetAllMediaContentTypeEnum> = {
-    'image/jpeg': GetAllMediaContentTypeEnum.ImageJpeg,
-    'image/png': GetAllMediaContentTypeEnum.ImagePng,
-    'image/gif': GetAllMediaContentTypeEnum.ImageGif,
-    'image/webp': GetAllMediaContentTypeEnum.ImageWebp,
-    'audio/mpeg': GetAllMediaContentTypeEnum.AudioMpeg,
-    'audio/mp3': GetAllMediaContentTypeEnum.AudioMp3,
-    'audio/mp4': GetAllMediaContentTypeEnum.AudioMp4,
-    'audio/wav': GetAllMediaContentTypeEnum.AudioWav,
-    'audio/ogg': GetAllMediaContentTypeEnum.AudioOgg,
-    'audio/webm': GetAllMediaContentTypeEnum.AudioWebm,
-  };
-  return mimeToEnum[mimeType];
 }
 
 // Custom hook for media creation
@@ -245,23 +227,25 @@ export function useAllMedia(params?: {
   page?: number;
   limit?: number;
   mediaType?: "image" | "audio";
-  contentType?: string;
 }) {
   const token = getStoredToken() || "";
+  const queryKey = mediaKeys.all(params);
 
   return useQuery<MediaListItem[], Error>({
-    queryKey: mediaKeys.all(params),
+    queryKey,
     queryFn: async () => {
+      console.log('[useAllMedia] Fetching with queryKey:', queryKey, 'mediaType:', params?.mediaType);
       const mediaApi = new MediaApi(getApiConfig());
       const response = await mediaApi.getAllMedia({
         page: params?.page,
         limit: params?.limit,
         mediaType: convertMediaTypeToGetAllEnum(params?.mediaType),
-        contentType: convertMimeTypeToGetAllContentTypeEnum(params?.contentType),
       });
+      console.log('[useAllMedia] Got response with', response.data?.media?.length, 'items');
       return response.data?.media || [];
     },
     enabled: !!token && token !== "",
+    staleTime: 30 * 1000, // 30 seconds - data is fresh for 30s before refetching
   });
 }
 

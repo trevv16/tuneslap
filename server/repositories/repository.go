@@ -108,18 +108,13 @@ func (r *Repository[T]) FindAll(filter bson.M, opts ...*options.FindOptions) ([]
 	// Generate cache key based on filter and options
 	filterBytes, _ := json.Marshal(filter)
 	optsBytes, _ := json.Marshal(opts)
-	cacheKey := r.getCacheKey("findAll", string(filterBytes), string(optsBytes))
+	findAllKey := r.getCacheKey("findAllResults", string(filterBytes), string(optsBytes))
 
 	// Try to get from cache first
-	if _, found := r.getFromCache(cacheKey); found {
-		// For FindAll, we need to handle multiple results
-		// We'll use a special FindAll cache key format
-		findAllKey := r.getCacheKey("findAllResults", string(filterBytes), string(optsBytes))
-		if findAllStr, err := database.GetCache(findAllKey); err == nil {
-			var results []T
-			if err := json.Unmarshal([]byte(findAllStr), &results); err == nil {
-				return results, nil
-			}
+	if findAllStr, err := database.GetCache(findAllKey); err == nil {
+		var results []T
+		if err := json.Unmarshal([]byte(findAllStr), &results); err == nil {
+			return results, nil
 		}
 	}
 
@@ -149,12 +144,9 @@ func (r *Repository[T]) FindAll(filter bson.M, opts ...*options.FindOptions) ([]
 		results = []T{}
 	}
 
-	// Store results in cache with a special key
-	if len(results) > 0 {
-		findAllKey := r.getCacheKey("findAllResults", string(filterBytes), string(optsBytes))
-		if resultsBytes, err := json.Marshal(results); err == nil {
-			database.SetCache(findAllKey, string(resultsBytes), r.cacheTTL)
-		}
+	// Store results in cache (even empty results to avoid repeated queries)
+	if resultsBytes, err := json.Marshal(results); err == nil {
+		database.SetCache(findAllKey, string(resultsBytes), r.cacheTTL)
 	}
 
 	return results, nil
