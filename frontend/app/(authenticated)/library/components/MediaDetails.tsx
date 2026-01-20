@@ -45,7 +45,7 @@ export default function MediaDetails({
           <SheetHeader>
             <SheetTitle>Details</SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto py-4">
+          <div className="flex-1 overflow-y-auto px-4 py-4">
             <MediaDetailsContent
               item={item}
               onDownload={onDownload}

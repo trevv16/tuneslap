@@ -58,7 +58,7 @@ export default function Navbar() {
                 className="h-8 w-auto"
               />
             </Link>
-            
+
             {/* Desktop Navigation */}
             <div className="hidden md:flex md:items-center md:gap-1">
               {navigation.map((item) => (
@@ -81,14 +81,14 @@ export default function Navbar() {
           {/* Desktop Right Side */}
           <div className="hidden md:flex md:items-center md:gap-2">
             <ThemeToggle />
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage 
-                      src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined} 
-                      alt={user?.name || "User"} 
+                    <AvatarImage
+                      src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined}
+                      alt={user?.name || "User"}
                     />
                     <AvatarFallback>
                       {getUserInitials()}
@@ -97,19 +97,21 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    {user?.name && (
-                      <p className="font-medium">{user.name}</p>
-                    )}
-                    {user?.email && (
-                      <p className="w-[200px] truncate text-sm text-muted-foreground">
-                        {user.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
+                {(user?.name || user?.email) && (
+                  <>
+                    <div className="px-2 py-1.5">
+                      {user?.name && (
+                        <p className="text-sm font-medium">{user.name}</p>
+                      )}
+                      {user?.email && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link href="/account" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
@@ -117,7 +119,7 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={signOut}
                   className="cursor-pointer text-destructive focus:text-destructive"
                 >
@@ -130,7 +132,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
-            
+
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -142,73 +144,75 @@ export default function Navbar() {
                 <SheetHeader>
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 </SheetHeader>
-                
-                {/* User Info */}
-                <div className="flex items-center gap-3 py-4 border-b">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage 
-                      src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined} 
-                      alt={user?.name || "User"} 
-                    />
-                    <AvatarFallback>
-                      {getUserInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    {user?.name && (
-                      <p className="font-medium">{user.name}</p>
-                    )}
-                    {user?.email && (
-                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">
-                        {user.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
-                {/* Navigation Links */}
-                <div className="flex flex-col gap-1 py-4">
-                  {navigation.map((item) => (
+                <div className="px-4">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 py-4 border-b">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined}
+                        alt={user?.name || "User"}
+                      />
+                      <AvatarFallback>
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      {user?.name && (
+                        <p className="font-medium">{user.name}</p>
+                      )}
+                      {user?.email && (
+                        <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Navigation Links */}
+                  <div className="flex flex-col gap-1 py-4">
+                    {navigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setSheetOpen(false)}
+                        className={cn(
+                          "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                          isActive(item.href)
+                            ? "bg-accent text-accent-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
                     <Link
-                      key={item.name}
-                      href={item.href}
+                      href="/account"
                       onClick={() => setSheetOpen(false)}
                       className={cn(
                         "px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                        isActive(item.href)
+                        isActive('/account')
                           ? "bg-accent text-accent-foreground"
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       )}
                     >
-                      {item.name}
+                      Account
                     </Link>
-                  ))}
-                  <Link
-                    href="/account"
-                    onClick={() => setSheetOpen(false)}
-                    className={cn(
-                      "px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                      isActive('/account')
-                        ? "bg-accent text-accent-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
-                  >
-                    Account
-                  </Link>
-                </div>
+                  </div>
 
-                {/* Sign Out */}
-                <div className="border-t pt-4">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => {
-                      setSheetOpen(false)
-                      signOut()
-                    }}
-                  >
-                    Sign out
-                  </Button>
+                  {/* Sign Out */}
+                  <div className="border-t pt-4">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => {
+                        setSheetOpen(false)
+                        signOut()
+                      }}
+                    >
+                      Sign out
+                    </Button>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

@@ -24,7 +24,7 @@ export default function LibraryClient() {
   const [selectedItem, setSelectedItem] = useState<Media | null>(null)
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
-  
+
   const { tab, view, mediaType, setTab, setView } = useLibraryParams()
 
   useEffect(() => {

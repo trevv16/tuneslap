@@ -3,6 +3,7 @@
 import { useDeleteCollaborator, useGetCollaborators, useUpdateCollaborator } from '@/hooks/collaborators'
 import type { UpdateCollaboratorRequestRoleEnum } from '@/api/models'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -27,7 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Check, MoreVertical, Plus } from 'lucide-react'
+import { AlertTriangle, MoreVertical, Plus, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -109,78 +110,70 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
 
   return (
     <>
-      <div className="mt-8 lg:flex lg:items-center lg:justify-between">
-        <div className="min-w-0 flex-1">
-          <h3 className="mb-4 text-lg font-semibold text-foreground">Collaborators</h3>
-        </div>
-        <div className="my-5 flex lg:mt-0 lg:ml-4">
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
-            Invite Collaborator
-          </Button>
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          {collaborators.length === 0 
+            ? 'No collaborators yet' 
+            : `${collaborators.length} collaborator${collaborators.length === 1 ? '' : 's'}`
+          }
+        </p>
+        <Button size="sm" onClick={() => setOpen(true)}>
+          <Plus className="mr-1.5 h-4 w-4" />
+          Invite
+        </Button>
       </div>
 
-      {collaborators.length === 0 && (
-        <div className="bg-card p-4 rounded-lg border">
-          <div className="text-center text-sm text-muted-foreground">No collaborators found</div>
+      {collaborators.length > 0 && (
+        <div className="space-y-2">
+          {collaborators.map((person) => (
+            <div key={person.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={person.imageUrl && person.imageUrl !== "" ? person.imageUrl : undefined} />
+                  <AvatarFallback className="text-xs">{person.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{person.name}</p>
+                  <Badge variant="outline" className="text-xs capitalize">{person.role}</Badge>
+                </div>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => openRoleModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}>
+                    Change Role
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => openDeleteModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    Remove
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
         </div>
       )}
 
-      {collaborators.length > 0 && (
-        <ul className="bg-card p-4 rounded-lg border divide-y">
-          {collaborators.map((person) => (
-            <li key={person.id} className="flex justify-between gap-x-6 py-5">
-              <div className="flex min-w-0 gap-x-4">
-                <Avatar>
-                  <AvatarImage src={person.imageUrl && person.imageUrl !== "" ? person.imageUrl : undefined} />
-                  <AvatarFallback>{person.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-auto">
-                  <p className="text-sm font-semibold text-foreground">
-                    {person.name}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground capitalize">
-                    {person.role}
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-x-6">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <span className="sr-only">Open options</span>
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => openRoleModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}>
-                      Edit Role
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => openDeleteModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      Remove
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </li>
-          ))}
-        </ul>
+      {collaborators.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <UserPlus className="h-10 w-10 text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground">Invite collaborators to work on this board together.</p>
+        </div>
       )}
 
       {/* Add Collaborator Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Check className="h-6 w-6 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Invite a collaborator</DialogTitle>
-            <DialogDescription className="text-center">
-              Send an invitation to collaborate on this board. If the user doesn&apos;t have an account, they&apos;ll be prompted to create one.
+            <DialogTitle>Invite Collaborator</DialogTitle>
+            <DialogDescription>
+              Send an invitation to collaborate on this board.
             </DialogDescription>
           </DialogHeader>
           <AddCollaboratorForm boardId={boardId} setOpen={setOpen} />
@@ -196,7 +189,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
             </div>
             <DialogTitle className="text-center">Remove collaborator</DialogTitle>
             <DialogDescription className="text-center">
-              Are you sure you want to remove <strong>{selectedCollaborator?.name}</strong> from this board? This action cannot be undone.
+              Are you sure you want to remove <strong>{selectedCollaborator?.name}</strong>? They will lose access to this board.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:grid sm:grid-cols-2 sm:gap-3">
@@ -222,17 +215,14 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
       <Dialog open={roleModalOpen} onOpenChange={setRoleModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Check className="h-6 w-6 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Change collaborator role</DialogTitle>
-            <DialogDescription className="text-center">
-              Update the role for <strong>{selectedCollaborator?.name}</strong>. Current role: <strong>{selectedCollaborator?.currentRole}</strong>
+            <DialogTitle>Change Role</DialogTitle>
+            <DialogDescription>
+              Update the role for <strong>{selectedCollaborator?.name}</strong>.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(handleRoleChange)} className="space-y-4">
             <div>
-              <Label htmlFor="role">New Role</Label>
+              <Label htmlFor="role">Role</Label>
               <Controller
                 name="role"
                 control={control}
@@ -243,7 +233,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
                     onValueChange={field.onChange}
                     disabled={updateCollaboratorMutation.isPending}
                   >
-                    <SelectTrigger className="mt-2">
+                    <SelectTrigger className="mt-1.5">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -258,7 +248,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
                 <p className="mt-1 text-sm text-destructive">{errors.role.message}</p>
               )}
             </div>
-            <DialogFooter className="sm:grid sm:grid-cols-2 sm:gap-3">
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -271,7 +261,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
                 type="submit"
                 disabled={updateCollaboratorMutation.isPending}
               >
-                {updateCollaboratorMutation.isPending ? 'Updating...' : 'Update Role'}
+                {updateCollaboratorMutation.isPending ? 'Updating...' : 'Update'}
               </Button>
             </DialogFooter>
           </form>

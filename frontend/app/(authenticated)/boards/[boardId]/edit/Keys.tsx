@@ -16,8 +16,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { useCreateKey, useDeleteKey, useGetBoardKeys, useUpdateKey } from '@/hooks/keys'
-import { AlertTriangle, Check, MoreVertical, Plus } from 'lucide-react'
+import { AlertTriangle, Keyboard, MoreVertical, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import KeyForm from '../KeyForm'
@@ -27,10 +34,10 @@ type KeysProps = {
 }
 
 export default function Keys({ boardId }: KeysProps) {
-  const [open, setOpen] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedKey, setSelectedKey] = useState<Key | null>(null)
+  const [mode, setMode] = useState<'add' | 'edit'>('add')
 
   const keysQuery = useGetBoardKeys(boardId)
   const keys = keysQuery.data?.data || []
@@ -58,7 +65,7 @@ export default function Keys({ boardId }: KeysProps) {
     try {
       await createKeyMutation.mutateAsync(data)
       toast.success('Key created successfully!')
-      setOpen(false)
+      setSheetOpen(false)
     } catch (error) {
       toast.error('Failed to create key. Please try again.')
       console.error('Add key error:', error)
@@ -75,7 +82,7 @@ export default function Keys({ boardId }: KeysProps) {
         data: data,
       })
       toast.success('Key updated successfully!')
-      setEditModalOpen(false)
+      setSheetOpen(false)
       setSelectedKey(null)
     } catch (error) {
       toast.error('Failed to update key. Please try again.')
@@ -83,73 +90,61 @@ export default function Keys({ boardId }: KeysProps) {
     }
   }
 
+  const openAddSheet = () => {
+    setMode('add')
+    setSelectedKey(null)
+    setSheetOpen(true)
+  }
+
+  const openEditSheet = (key: Key) => {
+    setMode('edit')
+    setSelectedKey(key)
+    setSheetOpen(true)
+  }
+
   const openDeleteModal = (key: Key) => {
     setSelectedKey(key)
     setDeleteModalOpen(true)
   }
 
-  const openEditModal = (key: Key) => {
-    setSelectedKey(key)
-    setEditModalOpen(true)
-  }
-
   return (
     <>
-      <div className="mt-8 lg:flex lg:items-center lg:justify-between">
-        <div className="min-w-0 flex-1">
-          <h3 className="mb-4 text-lg font-semibold text-foreground">Keys</h3>
-        </div>
-        <div className="my-5 flex lg:mt-0 lg:ml-4">
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
-            Add Key
-          </Button>
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          {keys.length === 0 
+            ? 'No keys configured' 
+            : `${keys.length} key${keys.length === 1 ? '' : 's'}`
+          }
+        </p>
+        <Button size="sm" onClick={openAddSheet}>
+          <Plus className="mr-1.5 h-4 w-4" />
+          Add Key
+        </Button>
       </div>
 
-      {keys.length === 0 && (
-        <div className="bg-card p-4 rounded-lg border">
-          <div className="text-center text-sm text-muted-foreground">No keys found</div>
-        </div>
-      )}
-
       {keys.length > 0 && (
-        <ul className="bg-card p-4 rounded-lg border divide-y">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {keys.map((key, index) => (
-            <li key={(key?.id || 'key-') + index} className="flex justify-between gap-x-6 py-5">
-              <div className="flex min-w-0 gap-x-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                    <span className="text-primary-foreground font-bold text-lg">{key?.hotKey || '?'}</span>
-                  </div>
+            <div
+              key={(key?.id || 'key-') + index}
+              className="relative group rounded-lg border bg-muted/30 p-3 hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-primary-foreground font-mono font-bold text-sm">
+                  {key?.hotKey?.toUpperCase() || '?'}
                 </div>
-                <div className="min-w-0 flex-auto">
-                  <p className="text-sm font-semibold text-foreground">
-                    {key?.name || 'No name'}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {key?.description || 'No description'}
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    {key?.audioUrl && (
-                      <audio src={key.audioUrl} controls className="h-8 text-xs" />
-                    )}
-                    {key?.imageUrl && (
-                      <img src={key.imageUrl} alt={key?.name || 'No name'} className="w-8 h-8 object-cover rounded" />
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-x-6">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <span className="sr-only">Open options</span>
-                      <MoreVertical className="h-5 w-5" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => openEditModal(key)}>
+                    <DropdownMenuItem onClick={() => openEditSheet(key)}>
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem 
@@ -161,33 +156,69 @@ export default function Keys({ boardId }: KeysProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            </li>
+              
+              {key?.imageUrl && (
+                <div className="mb-2 rounded overflow-hidden aspect-square">
+                  <img 
+                    src={key.imageUrl} 
+                    alt={key?.name || 'Key image'} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              
+              <p className="text-sm font-medium truncate">{key?.name || 'Unnamed'}</p>
+              {key?.description && (
+                <p className="text-xs text-muted-foreground truncate mt-0.5">{key.description}</p>
+              )}
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
-      {/* Add Key Modal */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Check className="h-6 w-6 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Add a new key</DialogTitle>
-            <DialogDescription className="text-center">
-              Create a new key for this board. Select audio and optionally an image, then assign a hotkey.
-            </DialogDescription>
-          </DialogHeader>
-          <KeyForm
-            boardId={boardId}
-            existingKeys={keys}
-            mode="add"
-            onSubmit={handleCreateKey}
-            onCancel={() => setOpen(false)}
-            isSubmitting={createKeyMutation.isPending}
-          />
-        </DialogContent>
-      </Dialog>
+      {keys.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <Keyboard className="h-10 w-10 text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground">Add keys to create your soundboard.</p>
+        </div>
+      )}
+
+      {/* Add/Edit Key Sheet */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent className="sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>{mode === 'add' ? 'Add Key' : 'Edit Key'}</SheetTitle>
+            <SheetDescription>
+              {mode === 'add' 
+                ? 'Create a new key for this board.' 
+                : `Update settings for "${selectedKey?.name}".`
+              }
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            {mode === 'add' ? (
+              <KeyForm
+                boardId={boardId}
+                existingKeys={keys}
+                mode="add"
+                onSubmit={handleCreateKey}
+                onCancel={() => setSheetOpen(false)}
+                isSubmitting={createKeyMutation.isPending}
+              />
+            ) : selectedKey && (
+              <KeyForm
+                boardId={boardId}
+                existingKeys={keys}
+                mode="edit"
+                initialData={selectedKey}
+                onSubmit={handleUpdateKey}
+                onCancel={() => setSheetOpen(false)}
+                isSubmitting={updateKeyMutation.isPending}
+              />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Delete Confirmation Modal */}
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
@@ -217,32 +248,6 @@ export default function Keys({ boardId }: KeysProps) {
               {deleteKeyMutation.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Key Modal */}
-      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Check className="h-6 w-6 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Edit key</DialogTitle>
-            <DialogDescription className="text-center">
-              Update the key <strong>{selectedKey?.name}</strong> with new settings.
-            </DialogDescription>
-          </DialogHeader>
-          {selectedKey && (
-            <KeyForm
-              boardId={boardId}
-              existingKeys={keys}
-              mode="edit"
-              initialData={selectedKey}
-              onSubmit={handleUpdateKey}
-              onCancel={() => setEditModalOpen(false)}
-              isSubmitting={updateKeyMutation.isPending}
-            />
-          )}
         </DialogContent>
       </Dialog>
     </>

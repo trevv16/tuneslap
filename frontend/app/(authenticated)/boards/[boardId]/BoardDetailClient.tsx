@@ -3,12 +3,12 @@
 import SoundBoard from "@/components/SoundBoard"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { useGetBoardById } from "@/hooks/boards"
 import { useCreateKey } from "@/hooks/keys"
 import { Pencil, Plus } from "lucide-react"
@@ -21,6 +21,7 @@ import KeyForm from "./KeyForm"
 
 type HeaderActionsProps = {
   boardId: string
+  onAddKey: () => void
 }
 
 export default function BoardDetailClient() {
@@ -41,7 +42,7 @@ export default function BoardDetailClient() {
     }
   }
 
-  const HeaderActions = ({ boardId }: HeaderActionsProps) => {
+  const HeaderActions = ({ boardId, onAddKey }: HeaderActionsProps) => {
     return (
       <div className="flex items-center gap-3">
         <Button variant="outline" asChild>
@@ -50,7 +51,7 @@ export default function BoardDetailClient() {
             Edit
           </Link>
         </Button>
-        <Button onClick={() => setAddKeyOpen(true)}>
+        <Button onClick={onAddKey}>
           <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
           Add Key
         </Button>
@@ -60,39 +61,33 @@ export default function BoardDetailClient() {
 
   return (
     <>
-      <Header pageTitle={board?.name || "Board Detail"} headerActions={<HeaderActions boardId={boardId as string} />} />
+      <Header
+        pageTitle={board?.name || "Board Detail"}
+        headerActions={<HeaderActions boardId={boardId as string} onAddKey={() => setAddKeyOpen(true)} />}
+      />
       <SoundBoard keys={board?.keys || []} />
 
-      {/* Add Key Button */}
-      <div className="mt-6 flex justify-center">
-        <Button onClick={() => setAddKeyOpen(true)}>
-          <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
-          Add Key
-        </Button>
-      </div>
-
-      {/* Add Key Modal */}
-      <Dialog open={addKeyOpen} onOpenChange={setAddKeyOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Plus className="h-6 w-6 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Add a new key</DialogTitle>
-            <DialogDescription className="text-center">
-              Create a new key for this board. Select audio (required) and optionally an image, then assign a hotkey.
-            </DialogDescription>
-          </DialogHeader>
-          <KeyForm
-            boardId={boardId as string}
-            existingKeys={board?.keys || []}
-            mode="add"
-            onSubmit={handleAddKey}
-            onCancel={() => setAddKeyOpen(false)}
-            isSubmitting={createKeyMutation.isPending}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Add Key Sheet */}
+      <Sheet open={addKeyOpen} onOpenChange={setAddKeyOpen}>
+        <SheetContent className="sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>Add Key</SheetTitle>
+            <SheetDescription>
+              Create a new key for this board.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <KeyForm
+              boardId={boardId as string}
+              existingKeys={board?.keys || []}
+              mode="add"
+              onSubmit={handleAddKey}
+              onCancel={() => setAddKeyOpen(false)}
+              isSubmitting={createKeyMutation.isPending}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   )
 }
