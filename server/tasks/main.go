@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"tuneslap/config"
 
 	"github.com/hibiken/asynq"
 )
 
 var Client *asynq.Client
+var scheduler *asynq.Scheduler
 
 func InitClient() {
 	fmt.Println("Starting Asynq Client...")
@@ -52,6 +54,7 @@ func StartWorker() {
 
 	mux := asynq.NewServeMux()
 	RegisterMediaProcessTasks(mux)
+	RegisterCleanupTasks(mux)
 
 	log.Println("[Worker] Worker server starting, waiting for tasks...")
 	if err := srv.Run(mux); err != nil {
@@ -80,4 +83,51 @@ func (l *workerLogger) Error(args ...interface{}) {
 
 func (l *workerLogger) Fatal(args ...interface{}) {
 	log.Fatal("[Worker FATAL]", fmt.Sprint(args...))
+}
+
+// StartScheduler starts the asynq scheduler for periodic tasks (only in demo mode)
+func StartScheduler() {
+	if !config.IsDemoMode() {
+		log.Println("[Scheduler] Not in demo mode, skipping scheduler")
+		return
+	}
+
+	log.Println("[Scheduler] Starting Asynq Scheduler for demo mode...")
+
+	scheduler = asynq.NewScheduler(
+		asynq.RedisClientOpt{
+			Addr:     os.Getenv("REDIS_URL"),
+			Password: os.Getenv("REDIS_PASSWORD"),
+			DB:       0,
+		},
+		&asynq.SchedulerOpts{
+			Logger: &workerLogger{},
+		},
+	)
+
+	// Schedule demo cleanup every hour
+	task, err := NewDemoCleanupTask()
+	if err != nil {
+		log.Printf("[Scheduler] Failed to create cleanup task: %v", err)
+		return
+	}
+
+	entryID, err := scheduler.Register("@every 1h", task)
+	if err != nil {
+		log.Printf("[Scheduler] Failed to register cleanup task: %v", err)
+		return
+	}
+
+	log.Printf("[Scheduler] Registered demo cleanup task with entry ID: %s", entryID)
+
+	if err := scheduler.Run(); err != nil {
+		log.Printf("[Scheduler] Could not run scheduler: %v", err)
+	}
+}
+
+// CloseScheduler stops the scheduler
+func CloseScheduler() {
+	if scheduler != nil {
+		scheduler.Shutdown()
+	}
 }

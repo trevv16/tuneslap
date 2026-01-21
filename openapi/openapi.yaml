@@ -22,6 +22,8 @@ tags:
     description: Board API
   - name: collaborators
     description: Collaborators API
+  - name: demo
+    description: Public demo API (no auth required)
   - name: keys
     description: Keys API
   - name: media
@@ -39,6 +41,10 @@ paths:
     $ref: './auth.yaml#/paths/~1auth~1forgot'
   /auth/reset:
     $ref: './auth.yaml#/paths/~1auth~1reset'
+
+  # Demo (public, no auth required)
+  /demo/board:
+    $ref: './demo.yaml#/paths/~1demo~1board'
 
   # Boards
   /boards:

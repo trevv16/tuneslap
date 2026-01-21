@@ -29,6 +29,10 @@ func SetupRoutes(app *fiber.App) {
 	auth.Post("/forgot", handlers.ForgotPasswordHandler)
 	auth.Post("/reset", handlers.ResetPasswordHandler)
 
+	// demo (public, no auth required)
+	demo := apiV1.Group("/demo")
+	demo.Get("/board", boardHandler.HandleGetDemoBoard)
+
 	// boards
 	boards := apiV1.Group("/boards", services.JWTProtected())
 	boards.Get("/", boardHandler.HandleGetAllBoards)

@@ -1,0 +1,35 @@
+openapi: '3.0.3'
+info:
+  title: Demo API
+  version: '1.0.0'
+  description: Public demo endpoints for the TuneSlap homepage
+
+paths:
+  /demo/board:
+    get:
+      summary: Get demo board
+      description: Returns the demo board with all its keys. This endpoint is public and does not require authentication. Only available when demo mode is enabled.
+      operationId: getDemoBoard
+      tags: [demo]
+      security: []
+      responses:
+        '200':
+          description: The demo board
+          content:
+            application/json:
+              schema:
+                $ref: './boards.yaml#/components/schemas/BoardResponse'
+        '404':
+          description: Demo mode not enabled or demo board not found
+          content:
+            application/json:
+              schema:
+                title: GetDemoBoardNotFoundResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                title: GetDemoBoardServerErrorResponse
+                $ref: './common.yaml#/components/schemas/ErrorResponse'

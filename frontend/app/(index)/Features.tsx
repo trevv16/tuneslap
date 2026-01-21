@@ -1,60 +1,114 @@
-import { ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, LockClosedIcon } from "@heroicons/react/24/outline"
+import Image from "next/image";
 
-const features = [
+type Feature = {
+  title: string;
+  subtitle: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
+};
+
+const features: Feature[] = [
   {
-    name: "Lightning-Fast Audio",
+    title: "Media Processing",
+    subtitle: "Built-in Optimization",
     description:
-      "Trigger sounds instantly with zero lag. Built for real-time performance with modern web technology and optimized audio processing.",
-    icon: CloudArrowUpIcon,
+      "Upload your audio and images, and TuneSlap automatically processes them for the best quality and smallest file size. Audio files are normalized and converted to optimal formats. Images are compressed and resized without losing clarity.",
+    imageSrc: "/defaultKey.png", // Placeholder - replace with actual screenshot
+    imageAlt: "Media processing interface showing file optimization",
   },
   {
-    name: "Cloud Sync & Storage",
+    title: "Collaboration",
+    subtitle: "Work Together",
     description:
-      "Your soundboards sync across all devices with secure S3 cloud storage. Access your sounds anywhere, anytime.",
-    icon: LockClosedIcon,
+      "Share your soundboards with teammates and set permissions for who can view or edit. Perfect for podcast teams, streaming groups, or anyone who needs to coordinate sounds across multiple people.",
+    imageSrc: "/defaultBoard.png", // Placeholder - replace with actual screenshot
+    imageAlt: "Collaboration interface showing shared board with team members",
   },
   {
-    name: "Full Customization",
+    title: "Self-Hosted",
+    subtitle: "Own Your Data",
     description:
-      "Optimize your audio with built-in editing tools and personalize your soundboards with custom themes, layouts, and hotkeys. Make it truly yours.",
-    icon: ArrowPathIcon,
+      "Run TuneSlap on your own infrastructure with Docker. Your sounds, your servers, your rules. No vendor lock-in, no unexpected costs, and complete control over your data and privacy.",
+    imageSrc: "/logo.png", // Placeholder - replace with actual screenshot
+    imageAlt: "Docker deployment showing self-hosted setup",
   },
-  {
-    name: "Team Collaboration",
-    description:
-      "Share boards with your team, set permissions, and collaborate on sound libraries. Perfect for podcasts and streaming teams.",
-    icon: FingerPrintIcon,
-  },
-]
+];
+
+function FeatureRow({
+  feature,
+  imageOnLeft,
+}: {
+  feature: Feature;
+  imageOnLeft: boolean;
+}) {
+  const imageBlock = (
+    <div className="relative aspect-video overflow-hidden rounded-xl bg-card shadow-lg ring-1 ring-border">
+      <Image
+        src={feature.imageSrc}
+        alt={feature.imageAlt}
+        fill
+        className="object-cover"
+      />
+    </div>
+  );
+
+  const textBlock = (
+    <div className="flex flex-col justify-center">
+      <p className="text-base/7 font-semibold text-primary">{feature.subtitle}</p>
+      <h3 className="mt-2 text-2xl font-semibold tracking-tight text-highlight sm:text-3xl">
+        {feature.title}
+      </h3>
+      <p className="mt-4 text-base/7 text-muted-foreground">
+        {feature.description}
+      </p>
+    </div>
+  );
+
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16 items-center">
+      {imageOnLeft ? (
+        <>
+          <div className="lg:order-1">{imageBlock}</div>
+          <div className="lg:order-2">{textBlock}</div>
+        </>
+      ) : (
+        <>
+          <div className="lg:order-2">{imageBlock}</div>
+          <div className="lg:order-1">{textBlock}</div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function Features() {
   return (
-    <div id="features" className="mx-auto mt-24 max-w-7xl px-6 sm:mt-24 lg:px-8">
-      <div className="mx-auto max-w-2xl lg:text-center">
-        <h2 className="text-base/7 font-semibold text-accent">Built for Creators</h2>
+    <section
+      id="features"
+      className="mx-auto max-w-7xl px-6 lg:px-8 mt-24 sm:mt-32"
+    >
+      <div className="mx-auto max-w-2xl lg:text-center mb-16">
+        <h2 className="text-base/7 font-semibold text-primary">Built for Creators</h2>
         <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-highlight sm:text-5xl lg:text-balance">
           Everything you need for professional soundboards
         </p>
-        <p className="mt-6 text-lg/8 text-pretty text-base">
-          Modern tools that keep up with your creativity. Organize, trigger, and share sounds effortlessly with zero-lag
-          performance and beautiful design.
+        <p className="mt-6 text-lg/8 text-pretty text-muted-foreground">
+          Modern tools that keep up with your creativity. Organize, trigger, and
+          share sounds effortlessly with zero-lag performance and beautiful
+          design.
         </p>
       </div>
-      <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-        <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-          {features.map((feature) => (
-            <div key={feature.name} className="relative pl-16">
-              <dt className="text-base/7 font-semibold text-highlight">
-                <div className="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-accent">
-                  <feature.icon aria-hidden="true" className="size-6 text-highlight" />
-                </div>
-                {feature.name}
-              </dt>
-              <dd className="mt-2 text-base/7 text-base">{feature.description}</dd>
-            </div>
-          ))}
-        </dl>
+
+      <div className="space-y-24 lg:space-y-32">
+        {features.map((feature, index) => (
+          <FeatureRow
+            key={feature.title}
+            feature={feature}
+            imageOnLeft={index % 2 === 0}
+          />
+        ))}
       </div>
-    </div>
-  )
+    </section>
+  );
 }

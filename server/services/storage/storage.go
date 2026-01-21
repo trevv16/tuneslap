@@ -35,4 +35,7 @@ type ObjectStorage interface {
 
 	// GetFileURL returns the public URL for a file (if applicable)
 	GetFileURL(objectName string) string
+
+	// FileExists checks if a file exists in storage
+	FileExists(ctx context.Context, objectName string) (bool, error)
 }

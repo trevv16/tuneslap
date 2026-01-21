@@ -19,11 +19,10 @@ export default function Hero() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-balance text-highlight sm:text-7xl">
-              Create Professional Soundboards That Actually Work
+              Open Source Soundboards for Creators
             </h1>
             <p className="mt-8 text-lg font-medium text-pretty text-base sm:text-xl/8">
-              Fast, beautiful, and powerful soundboards for creators. No clutter, no lag, just clean creative flow.
-              Perfect for streamers, podcasters, and content creators.
+              A free, self-hostable soundboard app. Build a library of sounds, collaborate with your team, and let the server handle media processing.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link

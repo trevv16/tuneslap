@@ -48,6 +48,12 @@ func SetupApp() (*fiber.App, error) {
 	// start asynq client
 	tasks.InitClient()
 
+	// seed demo data if in demo mode
+	err = EnsureDemoData()
+	if err != nil {
+		return nil, fmt.Errorf("error seeding demo data: %w", err)
+	}
+
 	// create app
 	app := fiber.New()
 
@@ -76,10 +82,14 @@ func SetupAndRunApp() error {
 		database.CloseMongoDB()
 		database.CloseRedis()
 		tasks.CloseClient()
+		tasks.CloseScheduler()
 	}()
 
 	// start the background worker in a goroutine
 	go tasks.StartWorker()
+
+	// start the scheduler in a goroutine (only runs in demo mode)
+	go tasks.StartScheduler()
 
 	// get the port and start
 	port := os.Getenv("PORT")

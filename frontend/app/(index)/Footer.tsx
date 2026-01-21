@@ -1,91 +1,35 @@
 import Link from "next/link"
 
-const footerNavigation = {
-  solutions: [
-    { name: "For Streamers", href: "#" },
-    { name: "For Podcasters", href: "#" },
-    { name: "For Content Creators", href: "#" },
-    { name: "For Teams", href: "#" },
-    { name: "Sound Packs", href: "#" },
-  ],
-  support: [
-    { name: "Help Center", href: "#" },
-    { name: "Documentation", href: "#" },
-    { name: "Community", href: "#" },
-    { name: "Contact Support", href: "#" },
-  ],
-  company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Careers", href: "#" },
-    { name: "Press Kit", href: "#" },
-  ],
-  legal: [
-    { name: "Terms of Service", href: "#" },
-    { name: "Privacy Policy", href: "#" },
-    { name: "Cookie Policy", href: "#" },
-  ],
-}
-
 export default function Footer() {
   return (
     <footer className="relative mx-auto mt-32 max-w-7xl px-6 lg:px-8">
-      <div className="border-t border-muted py-16 sm:py-24 lg:py-32">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <img alt="Company name" src="/logo.png" className="h-9" />
-          <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm/6 font-semibold text-highlight">Solutions</h3>
-                <ul className="mt-6 space-y-4">
-                  {footerNavigation.solutions.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className="text-sm/6 text-base hover:text-highlight">
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm/6 font-semibold text-highlight">Support</h3>
-                <ul className="mt-6 space-y-4">
-                  {footerNavigation.support.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className="text-sm/6 text-base hover:text-highlight">
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm/6 font-semibold text-highlight">Company</h3>
-                <ul className="mt-6 space-y-4">
-                  {footerNavigation.company.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className="text-sm/6 text-base hover:text-highlight">
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm/6 font-semibold text-highlight">Legal</h3>
-                <ul className="mt-6 space-y-4">
-                  {footerNavigation.legal.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className="text-sm/6 text-base hover:text-highlight">
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+      <div className="border-t border-muted py-12">
+        <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+          <div className="flex flex-col items-center gap-3 sm:items-start">
+            <img alt="TuneSlap" src="/logo.png" className="h-9" />
+            <p className="text-sm text-base max-w-xs text-center sm:text-left">
+              Create and trigger sounds for your streams and content.
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-4 sm:items-end">
+            <Link
+              href="https://github.com/tuneslap/tuneslap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-base hover:text-highlight transition-colors"
+            >
+              <span className="sr-only">GitHub</span>
+              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fillRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </Link>
+            <p className="text-sm text-base">
+              &copy; {new Date().getFullYear()} TuneSlap. All rights reserved.
+            </p>
           </div>
         </div>
       </div>

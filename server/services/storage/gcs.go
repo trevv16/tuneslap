@@ -132,6 +132,23 @@ func (g *GCSStorage) DownloadFile(ctx context.Context, objectName, destPath stri
 }
 
 // DeleteFile deletes a file from GCS
+// FileExists checks if a file exists in GCS storage
+func (g *GCSStorage) FileExists(ctx context.Context, objectName string) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	obj := g.client.Bucket(g.bucketName).Object(objectName)
+	_, err := obj.Attrs(ctx)
+	if err != nil {
+		if err == storage.ErrObjectNotExist {
+			return false, nil
+		}
+		return false, fmt.Errorf("failed to check if object exists: %w", err)
+	}
+
+	return true, nil
+}
+
 func (g *GCSStorage) DeleteFile(ctx context.Context, objectName string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()

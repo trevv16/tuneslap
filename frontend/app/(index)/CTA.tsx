@@ -17,11 +17,10 @@ export default function CTA() {
       </div>
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-4xl font-semibold tracking-tight text-balance text-highlight sm:text-5xl">
-          Ready to level up your sound game?
+          Ready to give it a try?
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-lg/8 text-pretty text-base">
-          Join thousands of creators who&apos;ve upgraded their workflow with TuneSlap. Fast, beautiful, and built for
-          professionals.
+          TuneSlap is free and open source. Set it up in minutes and start triggering sounds in your content.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <Link

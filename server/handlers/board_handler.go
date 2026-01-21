@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"tuneslap/config"
 	api "tuneslap/generated"
 	"tuneslap/models"
 	"tuneslap/repositories"
@@ -144,4 +145,23 @@ func (h *BoardHandler) HandleDeleteBoard(c *fiber.Ctx) error {
 	}
 
 	return h.HandleDelete(c, "boardId", authorId)
+}
+
+// HandleGetDemoBoard handles GET demo board (public, no auth required)
+func (h *BoardHandler) HandleGetDemoBoard(c *fiber.Ctx) error {
+	// Check if demo mode is enabled
+	if !config.IsDemoMode() {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Demo mode is not enabled", nil)
+	}
+
+	// Fetch the demo board using the hardcoded ID
+	board, err := h.boardRepo.FindByID(config.DemoBoardID)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Demo board not found", err)
+	}
+
+	// Use the same response mapper for consistency
+	response := h.BoardResponseMapper(board)
+
+	return c.JSON(response)
 }

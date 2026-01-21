@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -134,6 +135,28 @@ func (s *S3Storage) DeleteFile(ctx context.Context, objectName string) error {
 	}
 
 	return nil
+}
+
+// FileExists checks if a file exists in S3 storage
+func (s *S3Storage) FileExists(ctx context.Context, objectName string) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	_, err := s.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(s.bucketName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		// Check if it's a "not found" error
+		var nsk *types.NoSuchKey
+		var nskb *types.NotFound
+		if errors.As(err, &nsk) || errors.As(err, &nskb) {
+			return false, nil
+		}
+		return false, fmt.Errorf("failed to check if object exists: %w", err)
+	}
+
+	return true, nil
 }
 
 // GenerateSignedUploadURL generates a presigned URL for uploading to S3
