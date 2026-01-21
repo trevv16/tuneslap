@@ -9,6 +9,7 @@ import (
 	"tuneslap/config"
 	"tuneslap/database"
 	"tuneslap/router"
+	"tuneslap/seed"
 	"tuneslap/tasks"
 
 	"github.com/gofiber/fiber/v2"
@@ -49,7 +50,7 @@ func SetupApp() (*fiber.App, error) {
 	tasks.InitClient()
 
 	// seed demo data if in demo mode
-	err = EnsureDemoData()
+	err = seed.EnsureDemoData()
 	if err != nil {
 		return nil, fmt.Errorf("error seeding demo data: %w", err)
 	}

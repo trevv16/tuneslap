@@ -1,4 +1,4 @@
-package app
+package seed
 
 import (
 	"context"
@@ -250,9 +250,9 @@ func findDemoAudioFile(localPath string) string {
 	// All demo audio files should be in server/assets/demo/
 	// Try relative paths for local dev and absolute for Docker
 	paths := []string{
-		localPath,                                        // Direct path (assets/demo/filename.mp3)
-		filepath.Join(".", localPath),                    // Relative to server/
-		filepath.Join("/app", localPath),                 // Docker container path
+		localPath,                        // Direct path (assets/demo/filename.mp3)
+		filepath.Join(".", localPath),    // Relative to server/
+		filepath.Join("/app", localPath), // Docker container path
 	}
 
 	for _, p := range paths {

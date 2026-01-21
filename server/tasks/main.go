@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 	"tuneslap/config"
 
 	"github.com/hibiken/asynq"
@@ -105,14 +106,20 @@ func StartScheduler() {
 		},
 	)
 
-	// Schedule demo cleanup every hour
+	// Schedule demo cleanup every hour with retry and timeout configuration
 	task, err := NewDemoCleanupTask()
 	if err != nil {
 		log.Printf("[Scheduler] Failed to create cleanup task: %v", err)
 		return
 	}
 
-	entryID, err := scheduler.Register("@every 1h", task)
+	entryID, err := scheduler.Register(
+		"@every 1h",
+		task,
+		asynq.Queue("default"),
+		asynq.MaxRetry(3),
+		asynq.Timeout(10*time.Minute),
+	)
 	if err != nil {
 		log.Printf("[Scheduler] Failed to register cleanup task: %v", err)
 		return
