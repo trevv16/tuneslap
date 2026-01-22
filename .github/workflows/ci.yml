@@ -37,12 +37,15 @@ jobs:
         run: ./scripts/generate-types.sh --frontend-only
       
       - name: Run type check
+        working-directory: ./frontend
         run: yarn tsc --noEmit
       
       - name: Run linting
+        working-directory: ./frontend
         run: yarn lint
       
       - name: Build application
+        working-directory: ./frontend
         run: yarn build
       
       # Uncomment when you have tests set up
