@@ -106,3 +106,67 @@ func (r *BoardRepository) DeleteBoard(id primitive.ObjectID, authorId primitive.
 func (r *BoardRepository) AggregateBoards(pipeline interface{}, authorId primitive.ObjectID) ([]models.Board, int64, error) {
 	return r.AggregateWithCount(pipeline, bson.M{"authorId": authorId})
 }
+
+// FindByIDWithAccess finds a board by ID if the user has access (as author or collaborator)
+func (r *BoardRepository) FindByIDWithAccess(boardId primitive.ObjectID, userId primitive.ObjectID) (models.Board, error) {
+	return r.FindOne(bson.M{
+		"_id": boardId,
+		"$or": []bson.M{
+			{"authorId": userId},
+			{"collaborators.userId": userId},
+		},
+	})
+}
+
+// FindAllWithAccess returns all boards where the user is author OR collaborator
+func (r *BoardRepository) FindAllWithAccess(userId primitive.ObjectID) ([]models.Board, error) {
+	return r.FindAll(bson.M{
+		"$or": []bson.M{
+			{"authorId": userId},
+			{"collaborators.userId": userId},
+		},
+	})
+}
+
+// UpdateBoardWithAccess updates a board if the user has edit permission
+// This method does not check permissions - it should be checked before calling
+func (r *BoardRepository) UpdateBoardWithAccess(id primitive.ObjectID, updateData *api.UpdateBoardRequest) (models.Board, error) {
+	update := bson.M{
+		"$set": bson.M{},
+	}
+
+	// Only include fields that are not nil
+	if updateData.Name != nil {
+		update["$set"].(bson.M)["name"] = updateData.GetName()
+	}
+	if updateData.Description != nil {
+		update["$set"].(bson.M)["description"] = updateData.GetDescription()
+	}
+	if updateData.Layout != nil {
+		update["$set"].(bson.M)["layout"] = models.LayoutType(updateData.GetLayout())
+	}
+	if updateData.ImageUrl != nil {
+		update["$set"].(bson.M)["imageUrl"] = updateData.GetImageUrl()
+	}
+
+	// Only update if there are fields to update
+	if len(update["$set"].(bson.M)) == 0 {
+		// No fields to update, just return the current board
+		return r.FindByID(id)
+	}
+
+	// First update the document
+	_, err := r.Update(id, update)
+	if err != nil {
+		return models.Board{}, err
+	}
+
+	// Then fetch the updated document
+	return r.FindByID(id)
+}
+
+// DeleteBoardWithAccess deletes a board if the user has delete permission
+// This method does not check permissions - it should be checked before calling
+func (r *BoardRepository) DeleteBoardWithAccess(id primitive.ObjectID) error {
+	return r.Delete(id)
+}

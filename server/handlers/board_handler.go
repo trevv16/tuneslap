@@ -9,7 +9,6 @@ import (
 	"tuneslap/validation"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -91,26 +90,93 @@ func (h *BoardHandler) BoardResponseMapper(board models.Board) interface{} {
 }
 
 // HandleGetAllBoards handles GET all boards with pagination
+// Returns boards where user is author OR collaborator
 func (h *BoardHandler) HandleGetAllBoards(c *fiber.Ctx) error {
-	return h.HandleGetAll(
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Validate pagination parameters
+	pagination, err := validatePaginationParams(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid pagination parameters", err)
+	}
+
+	// Get all boards where user has access (author or collaborator)
+	allBoards, err := h.boardRepo.FindAllWithAccess(userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusInternalServerError, "Error retrieving boards", err)
+	}
+
+	// Apply pagination
+	totalCount := int64(len(allBoards))
+	start := pagination.Skip
+	end := start + pagination.Limit
+	if start > len(allBoards) {
+		start = len(allBoards)
+	}
+	if end > len(allBoards) {
+		end = len(allBoards)
+	}
+
+	var paginatedBoards []models.Board
+	if start < len(allBoards) {
+		paginatedBoards = allBoards[start:end]
+	} else {
+		paginatedBoards = []models.Board{}
+	}
+
+	// Map results
+	mappedResults := make([]interface{}, len(paginatedBoards))
+	for i, board := range paginatedBoards {
+		mappedResults[i] = h.BoardResponseMapper(board)
+	}
+
+	// Create pagination metadata
+	currentPage := 1
+	if pagination.Limit > 0 {
+		currentPage = (pagination.Skip / pagination.Limit) + 1
+	}
+	paginationMeta := PaginationMeta{
+		CurrentPage:  currentPage,
+		PageSize:     pagination.Limit,
+		TotalResults: totalCount,
+	}
+
+	return SendPaginatedResponse(
 		c,
-		func(authorId primitive.ObjectID) bson.M {
-			return bson.M{"authorId": authorId}
-		},
-		h.BoardResponseMapper,
-		nil,
-		"boards", // dataFieldName to match OpenAPI spec
+		fiber.StatusOK,
+		"Boards retrieved successfully",
+		mappedResults,
+		paginationMeta,
+		"boards",
 	)
 }
 
 // HandleGetBoardById handles GET board by ID
+// Returns board if user has access (author or collaborator)
 func (h *BoardHandler) HandleGetBoardById(c *fiber.Ctx) error {
-	authorId, err := GetAuthorId(c)
+	userId, err := GetAuthorId(c)
 	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
 	}
 
-	return h.HandleGetById(c, "boardId", authorId, h.BoardResponseMapper, nil)
+	// Parse board ID
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access (author or collaborator)
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Map and return board
+	response := h.BoardResponseMapper(board)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 // HandleCreateBoard handles CREATE board
@@ -126,25 +192,85 @@ func (h *BoardHandler) HandleCreateBoard(c *fiber.Ctx) error {
 }
 
 // HandleUpdateBoard handles UPDATE board
+// Requires user to be author, or collaborator with "owner" or "editor" role
 func (h *BoardHandler) HandleUpdateBoard(c *fiber.Ctx) error {
-	authorId, err := GetAuthorId(c)
+	userId, err := GetAuthorId(c)
 	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
 	}
 
-	return h.HandleUpdate(c, "boardId", authorId, func(id primitive.ObjectID, authorId primitive.ObjectID, req api.UpdateBoardRequest) (models.Board, error) {
-		return h.boardRepo.UpdateBoard(id, authorId, &req)
-	}, h.BoardResponseMapper)
+	// Parse board ID
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Check edit permission
+	if !CanEditBoard(board, userId) {
+		return SendErrorResponse(c, fiber.StatusForbidden, "You do not have permission to edit this board", nil)
+	}
+
+	// Parse request body
+	request := new(api.UpdateBoardRequest)
+	if err := c.BodyParser(request); err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid request body", err)
+	}
+
+	// Validate request
+	validationResult := h.validator.Validate(request)
+	if !validationResult.IsValid {
+		return SendValidationErrorResponse(c, validationResult)
+	}
+
+	// Update board
+	updatedBoard, err := h.boardRepo.UpdateBoardWithAccess(boardId, request)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusInternalServerError, "Failed to update board", err)
+	}
+
+	// Map and return updated board
+	response := h.BoardResponseMapper(updatedBoard)
+	return SendSuccessResponse(c, fiber.StatusOK, "Board updated successfully", response)
 }
 
 // HandleDeleteBoard handles DELETE board
+// Requires user to be author, or collaborator with "owner" role
 func (h *BoardHandler) HandleDeleteBoard(c *fiber.Ctx) error {
-	authorId, err := GetAuthorId(c)
+	userId, err := GetAuthorId(c)
 	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
 	}
 
-	return h.HandleDelete(c, "boardId", authorId)
+	// Parse board ID
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Check delete permission
+	if !CanDeleteBoard(board, userId) {
+		return SendErrorResponse(c, fiber.StatusForbidden, "You do not have permission to delete this board", nil)
+	}
+
+	// Delete board
+	err = h.boardRepo.DeleteBoardWithAccess(boardId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusInternalServerError, "Failed to delete board", err)
+	}
+
+	return SendSuccessResponse(c, fiber.StatusOK, "Board deleted successfully", nil)
 }
 
 // HandleGetDemoBoard handles GET demo board (public, no auth required)

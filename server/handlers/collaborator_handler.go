@@ -107,7 +107,30 @@ func (h *CollaboratorHandler) updateCollaboratorFromRequest(request api.UpdateCo
 }
 
 // HandleCreateCollaborator handles CREATE collaborator using array handler
+// Requires user to be author, or collaborator with "owner" role
 func (h *CollaboratorHandler) HandleCreateCollaborator(c *fiber.Ctx) error {
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Parse boardId
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Check collaborator management permission
+	if !CanManageCollaborators(board, userId) {
+		return SendErrorResponse(c, fiber.StatusForbidden, "You do not have permission to manage collaborators on this board", nil)
+	}
+
 	return h.HandleCreateInArray(
 		c,
 		"boardId",
@@ -152,7 +175,30 @@ func (h *CollaboratorHandler) HandleCreateCollaborator(c *fiber.Ctx) error {
 }
 
 // HandleUpdateCollaborator handles UPDATE collaborator using array handler
+// Requires user to be author, or collaborator with "owner" role
 func (h *CollaboratorHandler) HandleUpdateCollaborator(c *fiber.Ctx) error {
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Parse boardId
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Check collaborator management permission
+	if !CanManageCollaborators(board, userId) {
+		return SendErrorResponse(c, fiber.StatusForbidden, "You do not have permission to manage collaborators on this board", nil)
+	}
+
 	return h.HandleUpdateInArray(
 		c,
 		"boardId",
@@ -169,7 +215,30 @@ func (h *CollaboratorHandler) HandleUpdateCollaborator(c *fiber.Ctx) error {
 }
 
 // HandleDeleteCollaborator handles DELETE collaborator using array handler
+// Requires user to be author, or collaborator with "owner" role
 func (h *CollaboratorHandler) HandleDeleteCollaborator(c *fiber.Ctx) error {
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Parse boardId
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	board, err := CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
+	// Check collaborator management permission
+	if !CanManageCollaborators(board, userId) {
+		return SendErrorResponse(c, fiber.StatusForbidden, "You do not have permission to manage collaborators on this board", nil)
+	}
+
 	return h.HandleDeleteFromArray(
 		c,
 		"boardId",        // parentIdParam - this should be the board ID
@@ -179,7 +248,25 @@ func (h *CollaboratorHandler) HandleDeleteCollaborator(c *fiber.Ctx) error {
 }
 
 // HandleGetAllCollaborators handles GET all collaborators using array handler
+// Requires user to have access to the board (author or collaborator)
 func (h *CollaboratorHandler) HandleGetAllCollaborators(c *fiber.Ctx) error {
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Parse boardId
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	_, err = CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
 	return h.HandleGetAllFromArray(
 		c,
 		"boardId",       // parentIdParam - this should be the board ID
@@ -194,7 +281,25 @@ func (h *CollaboratorHandler) HandleGetAllCollaborators(c *fiber.Ctx) error {
 }
 
 // HandleGetCollaboratorById handles GET collaborator by ID using array handler
+// Requires user to have access to the board (author or collaborator)
 func (h *CollaboratorHandler) HandleGetCollaboratorById(c *fiber.Ctx) error {
+	userId, err := GetAuthorId(c)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid user ID", err)
+	}
+
+	// Parse boardId
+	boardId, err := GetValidObjectId(c, "boardId")
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid board ID", err)
+	}
+
+	// Check board access
+	_, err = CheckBoardAccess(boardId, userId)
+	if err != nil {
+		return SendErrorResponse(c, fiber.StatusNotFound, "Board not found", err)
+	}
+
 	return h.HandleGetByIdFromArray(
 		c,
 		"boardId",        // parentIdParam - this should be the board ID
