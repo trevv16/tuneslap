@@ -1,6 +1,10 @@
 package image
 
 import (
+	"bytes"
+	goimage "image"
+	"image/color"
+	"image/png"
 	"os"
 	"testing"
 	"tuneslap/models"
@@ -130,47 +134,37 @@ func isLibvipsAvailable() bool {
 }
 
 // createTestImage creates a test image with color variation for integration tests
-// The image has a red center on a white background, providing edges for blur testing
+// Uses Go's image package to create a checkerboard pattern that blur will affect
 func createTestImage(t *testing.T) []byte {
 	t.Helper()
 
-	// Create a minimal valid PNG (1x1 red pixel)
-	minimalPNG := []byte{
-		0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
-		0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
-		0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-		0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
-		0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, // IDAT chunk
-		0x54, 0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00,
-		0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x18, 0xDD,
-		0x8D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, // IEND chunk
-		0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+	// Create a 100x100 checkerboard pattern image using Go's standard library
+	img := goimage.NewRGBA(goimage.Rect(0, 0, 100, 100))
+	red := color.RGBA{255, 0, 0, 255}
+	white := color.RGBA{255, 255, 255, 255}
+
+	// Create 10x10 pixel squares in checkerboard pattern
+	for y := 0; y < 100; y++ {
+		for x := 0; x < 100; x++ {
+			// Determine which square we're in (10x10 grid)
+			squareX := x / 10
+			squareY := y / 10
+			// Checkerboard pattern: alternate colors based on position
+			if (squareX+squareY)%2 == 0 {
+				img.Set(x, y, red)
+			} else {
+				img.Set(x, y, white)
+			}
+		}
 	}
 
-	// First create a 50x50 red image
-	smallImage, err := bimg.NewImage(minimalPNG).Process(bimg.Options{
-		Width:  50,
-		Height: 50,
-		Type:   bimg.PNG,
-	})
-	if err != nil {
-		return minimalPNG
+	// Encode to PNG bytes
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		t.Fatalf("Failed to encode test image: %v", err)
 	}
 
-	// Embed it in a 100x100 canvas with white background
-	// This creates an image with red center and white border, giving blur edges to work with
-	img, err := bimg.NewImage(smallImage).Process(bimg.Options{
-		Width:      100,
-		Height:     100,
-		Embed:      true,
-		Background: bimg.Color{R: 255, G: 255, B: 255},
-		Type:       bimg.PNG,
-	})
-	if err != nil {
-		return smallImage
-	}
-
-	return img
+	return buf.Bytes()
 }
 
 func TestIntegrationNormalizeDefault(t *testing.T) {
