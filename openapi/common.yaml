@@ -58,6 +58,10 @@ components:
       example: This is a description of the resource
     PaginationMeta:
       type: object
+      required:
+        - currentPage
+        - pageSize
+        - totalResults
       properties:
         currentPage:
           type: number
@@ -86,6 +90,9 @@ components:
       example: password123
     ErrorResponse:
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean

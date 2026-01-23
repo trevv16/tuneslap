@@ -85,6 +85,11 @@ components:
     ProcessingActivity:
       title: MediaProcessingActivity
       type: object
+      required:
+        - status
+        - message
+        - createdAt
+        - updatedAt
       properties:
         status:
           $ref: '#/components/schemas/ProcessingStatus'
@@ -100,6 +105,8 @@ components:
     AudioProcessingParams:
       title: MediaProcessingParamsAudio
       type: object
+      required:
+        - outputFormats
       properties:
         contentType:
           $ref: '#/components/schemas/ContentType'
@@ -150,6 +157,8 @@ components:
           example: ["webm", "mp3"]
     ImageProcessingParams:
       type: object
+      required:
+        - format
       properties:
         resizeTo:
           type: array
@@ -188,6 +197,16 @@ components:
     MediaResponse:
       title: MediaResponse
       type: object
+      required:
+        - id
+        - authorId
+        - mediaType
+        - fileName
+        - fileUrl
+        - fileSize
+        - status
+        - createdAt
+        - updatedAt
       properties:
         id:
           $ref: './common.yaml#/components/schemas/MongoObjectId'
@@ -257,6 +276,10 @@ components:
     MediaStatsResponse:
       title: GetMyMediaStatsResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -267,6 +290,11 @@ components:
           example: Media stats retrieved successfully
         data:
           type: object
+          required:
+            - imageCount
+            - audioCount
+            - usedStorage
+            - availableStorage
           properties:
             imageCount:
               type: integer
@@ -291,6 +319,10 @@ components:
     MediaListResponse:
       title: GetAllMediaResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -302,6 +334,9 @@ components:
         data:
           title: GetAllMediaData
           type: object
+          required:
+            - media
+            - pagination
           properties:
             media:
               type: array
@@ -312,6 +347,11 @@ components:
               $ref: './common.yaml#/components/schemas/PaginationMeta'
     CreateMediaRequest:
       type: object
+      required:
+        - mediaType
+        - fileName
+        - fileUrl
+        - fileSize
       properties:
         mediaType:
           $ref: '#/components/schemas/MediaType'
@@ -355,6 +395,10 @@ components:
     CreateMediaResponse:
       title: CreateMediaResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -376,6 +420,10 @@ components:
     UpdateMediaResponse:
       title: UpdateMediaResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -388,6 +436,9 @@ components:
           $ref: '#/components/schemas/MediaResponse'
     DeleteMediaResponse:
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -399,6 +450,10 @@ components:
     ProcessMediaResponse:
       title: ProcessMediaResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean

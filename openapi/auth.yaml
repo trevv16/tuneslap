@@ -7,6 +7,10 @@ components:
   schemas:
     SignUpRequest:
       type: object
+      required:
+        - name
+        - email
+        - password
       properties:
         name:
           $ref: './common.yaml#/components/schemas/DefaultName'
@@ -17,6 +21,9 @@ components:
     SignUpResponse:
       title: SignupResponse
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -27,6 +34,9 @@ components:
           example: User created successfully
     SignInRequest:
       type: object
+      required:
+        - email
+        - password
       properties:
         email:
           $ref: './common.yaml#/components/schemas/UserEmail'
@@ -35,6 +45,10 @@ components:
     SignInResponse:
       title: SigninResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -46,6 +60,8 @@ components:
         data:
           title: SigninData
           type: object
+          required:
+            - token
           properties:
             token:
               type: string
@@ -54,12 +70,17 @@ components:
               maxLength: 2000
     ForgotPasswordRequest:
       type: object
+      required:
+        - email
       properties:
         email:
           $ref: './common.yaml#/components/schemas/UserEmail'
     ForgotPasswordResponse:
       title: ForgotResponse
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -70,6 +91,9 @@ components:
           example: Password reset email sent
     ResetPasswordRequest:
       type: object
+      required:
+        - password
+        - token
       properties:
         password:
           $ref: './common.yaml#/components/schemas/UserPassword'
@@ -81,6 +105,9 @@ components:
     ResetPasswordResponse:
       title: ResetResponse
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean

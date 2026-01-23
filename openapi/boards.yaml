@@ -36,6 +36,14 @@ components:
     KeyResponse:
       title: KeyResponse
       type: object
+      required:
+        - id
+        - boardId
+        - name
+        - audioMediaId
+        - hotKey
+        - createdAt
+        - updatedAt
       properties:
         id:
           $ref: './common.yaml#/components/schemas/MongoObjectId'
@@ -69,6 +77,10 @@ components:
     BoardListResponse:
       title: GetAllBoardsResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -79,6 +91,9 @@ components:
           example: Boards retrieved successfully
         data:
           type: object
+          required:
+            - boards
+            - pagination
           properties:
             boards:
               type: array
@@ -89,6 +104,15 @@ components:
     BoardResponse:
       title: BoardResponse
       type: object
+      required:
+        - id
+        - authorId
+        - name
+        - layout
+        - collaborators
+        - keys
+        - createdAt
+        - updatedAt
       properties:
         id:
           $ref: './common.yaml#/components/schemas/MongoObjectId'
@@ -116,6 +140,9 @@ components:
           $ref: './common.yaml#/components/schemas/Timestamp'
     CreateBoardRequest:
       type: object
+      required:
+        - name
+        - layout
       properties:
         name:
           $ref: './common.yaml#/components/schemas/DefaultName'
@@ -130,6 +157,10 @@ components:
     CreateBoardResponse:
       title: CreateBoardResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -154,6 +185,10 @@ components:
     UpdateBoardResponse:
       title: UpdateBoardResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -167,6 +202,9 @@ components:
     DeleteBoardResponse:
       title: DeleteBoardResponse
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -184,6 +222,14 @@ components:
     CollaboratorResponse:
       title: CollaboratorResponse
       type: object
+      required:
+        - id
+        - userId
+        - email
+        - name
+        - role
+        - createdAt
+        - updatedAt
       properties:
         id:
           $ref: './common.yaml#/components/schemas/MongoObjectId'
@@ -205,6 +251,9 @@ components:
           $ref: './common.yaml#/components/schemas/Timestamp'
     CreateCollaboratorRequest:
       type: object
+      required:
+        - email
+        - role
       properties:
         email:
           $ref: './common.yaml#/components/schemas/UserEmail'
@@ -213,6 +262,10 @@ components:
     CreateCollaboratorResponse:
       title: CreateCollaboratorResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -225,11 +278,17 @@ components:
           $ref: '#/components/schemas/CollaboratorResponse'
     UpdateCollaboratorRequest:
       type: object
+      required:
+        - role
       properties:
         role:
           $ref: '#/components/schemas/CollaboratorRole'
     UpdateCollaboratorResponse:
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -243,6 +302,9 @@ components:
     DeleteCollaboratorResponse:
       title: DeleteCollaboratorResponse
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -253,6 +315,10 @@ components:
           example: Collaborator removed successfully
     GetAllCollaboratorsResponse:
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -268,6 +334,10 @@ components:
     GetCollaboratorByIdResponse:
       title: GetCollaboratorByIdResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -303,6 +373,10 @@ components:
           example: D
     CreateKeyResponse:
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -332,6 +406,10 @@ components:
     UpdateKeyResponse:
       title: UpdateKeyResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -344,6 +422,9 @@ components:
           $ref: '#/components/schemas/KeyResponse'
     DeleteKeyResponse:
       type: object
+      required:
+        - success
+        - message
       properties:
         success:
           type: boolean
@@ -793,6 +874,10 @@ paths:
               schema:
                 title: GetBoardKeysResponse
                 type: object
+                required:
+                  - success
+                  - message
+                  - data
                 properties:
                   success:
                     type: boolean
@@ -883,6 +968,10 @@ paths:
               schema:
                 title: GetKeyByIdResponse
                 type: object
+                required:
+                  - success
+                  - message
+                  - data
                 properties:
                   success:
                     type: boolean

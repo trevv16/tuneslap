@@ -8,6 +8,12 @@ components:
     UserResponse:
       title: UserResponse
       type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+        - updatedAt
       properties:
         id:
           $ref: './common.yaml#/components/schemas/MongoObjectId'
@@ -31,6 +37,10 @@ components:
     UpdateMeResponse:
       title: UpdateMeResponse
       type: object
+      required:
+        - success
+        - message
+        - data
       properties:
         success:
           type: boolean
@@ -57,6 +67,10 @@ paths:
               schema:
                 title: GetMeResponse
                 type: object
+                required:
+                  - success
+                  - message
+                  - data
                 properties:
                   success:
                     type: boolean
