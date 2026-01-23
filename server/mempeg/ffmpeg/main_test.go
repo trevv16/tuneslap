@@ -534,6 +534,181 @@ func TestProcessAudioWithParams(t *testing.T) {
 	})
 }
 
+// Edge case tests for filter chain building
+func TestBuildAudioFilterChainEdgeCases(t *testing.T) {
+	t.Run("negative trim start is ignored", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: -5.0,
+		}
+		result := BuildAudioFilterChain(params)
+		// Negative values are not added (implementation checks > 0)
+		assert.NotContains(t, result, "atrim=start=-5.00")
+		// Should return default filter
+		assert.Equal(t, LoudnormFilter, result)
+	})
+
+	t.Run("very small trim values", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 0.001,
+			TrimEnd:   0.002,
+		}
+		result := BuildAudioFilterChain(params)
+		assert.Contains(t, result, "atrim=")
+	})
+
+	t.Run("very large trim values", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 3600.0, // 1 hour
+			TrimEnd:   7200.0, // 2 hours
+		}
+		result := BuildAudioFilterChain(params)
+		assert.Contains(t, result, "3600.00")
+		assert.Contains(t, result, "7200.00")
+	})
+
+	t.Run("trim end before trim start", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 30.0,
+			TrimEnd:   10.0,
+		}
+		result := BuildAudioFilterChain(params)
+		// This is technically invalid but the builder doesn't validate
+		assert.Contains(t, result, "atrim=start=30.00:end=10.00")
+	})
+
+	t.Run("zero fade duration", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			FadeIn:  0.0,
+			FadeOut: 0.0,
+		}
+		result := BuildAudioFilterChain(params)
+		// Zero fade should not add fade filters
+		assert.NotContains(t, result, "afade")
+	})
+
+	t.Run("very small fade duration", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			FadeIn: 0.01,
+		}
+		result := BuildAudioFilterChain(params)
+		assert.Contains(t, result, "afade=t=in:st=0:d=0.01")
+	})
+
+	t.Run("speed at exact boundary 0.5", func(t *testing.T) {
+		result := buildSpeedFilters(0.5)
+		assert.Len(t, result, 1)
+		assert.Equal(t, "atempo=0.5000", result[0])
+	})
+
+	t.Run("speed at exact boundary 2.0", func(t *testing.T) {
+		result := buildSpeedFilters(2.0)
+		assert.Len(t, result, 1)
+		assert.Equal(t, "atempo=2.0000", result[0])
+	})
+
+	t.Run("speed just above 2.0", func(t *testing.T) {
+		result := buildSpeedFilters(2.01)
+		// Should require chaining
+		assert.GreaterOrEqual(t, len(result), 2)
+	})
+
+	t.Run("speed just below 0.5", func(t *testing.T) {
+		result := buildSpeedFilters(0.49)
+		// Should require chaining
+		assert.GreaterOrEqual(t, len(result), 2)
+	})
+
+	t.Run("pitch at boundary 0.5", func(t *testing.T) {
+		result := buildPitchFilters(0.5)
+		assert.Len(t, result, 3)
+		assert.Contains(t, result[0], "0.5000")
+	})
+
+	t.Run("pitch at boundary 2.0", func(t *testing.T) {
+		result := buildPitchFilters(2.0)
+		assert.Len(t, result, 3)
+		assert.Contains(t, result[0], "2.0000")
+	})
+
+	t.Run("negative speed is clamped", func(t *testing.T) {
+		result := buildSpeedFilters(-1.0)
+		// Negative values should be clamped to 0.25
+		assert.NotEmpty(t, result)
+	})
+
+	t.Run("negative pitch is clamped", func(t *testing.T) {
+		result := buildPitchFilters(-1.0)
+		// Negative values should be clamped to 0.5
+		assert.Len(t, result, 3)
+	})
+
+	t.Run("all params at zero except normalize", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 0,
+			TrimEnd:   0,
+			FadeIn:    0,
+			FadeOut:   0,
+			Speed:     0,
+			Pitch:     0,
+			Normalize: true,
+		}
+		result := BuildAudioFilterChain(params)
+		// Only normalize filter should be present
+		assert.Equal(t, LoudnormFilter, result)
+	})
+}
+
+func TestBuildTrimFilterEdgeCases(t *testing.T) {
+	t.Run("floating point precision", func(t *testing.T) {
+		result := buildTrimFilter(1.005, 2.995)
+		// Should format to 2 decimal places
+		assert.Contains(t, result, "1.00") // 1.005 rounds to 1.00 or 1.01
+		assert.Contains(t, result, "3.00") // 2.995 rounds to 3.00 or 2.99
+	})
+
+	t.Run("very large values", func(t *testing.T) {
+		result := buildTrimFilter(0, 86400.0) // 24 hours in seconds
+		assert.Contains(t, result, "86400.00")
+	})
+}
+
+func TestFilterChainFormat(t *testing.T) {
+	t.Run("filter chain is properly comma-separated", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 1.0,
+			FadeIn:    0.5,
+			Normalize: true,
+		}
+		result := BuildAudioFilterChain(params)
+
+		// Should not have double commas
+		assert.NotContains(t, result, ",,")
+
+		// Should not start or end with comma
+		assert.NotEqual(t, ',', result[0])
+		assert.NotEqual(t, ',', result[len(result)-1])
+	})
+
+	t.Run("filter chain produces valid FFmpeg syntax", func(t *testing.T) {
+		params := models.AudioProcessingParams{
+			TrimStart: 2.0,
+			TrimEnd:   30.0,
+			Speed:     1.5,
+			Normalize: true,
+		}
+		result := BuildAudioFilterChain(params)
+
+		// Basic FFmpeg filter syntax validation
+		// Filters should be name=value pairs separated by commas
+		filters := strings.Split(result, ",")
+		for _, filter := range filters {
+			// Each filter should contain an equals sign or be a known format
+			assert.True(t, strings.Contains(filter, "=") || filter == LoudnormFilter,
+				"Filter should have valid syntax: %s", filter)
+		}
+	})
+}
+
 // Benchmarks for filter chain building
 func BenchmarkBuildAudioFilterChain(b *testing.B) {
 	params := models.AudioProcessingParams{

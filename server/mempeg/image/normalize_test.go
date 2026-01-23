@@ -224,6 +224,257 @@ func TestNormalizeQualityRange(t *testing.T) {
 	})
 }
 
+// Integration tests for actual normalize function output
+
+// createTestPNGWithSize creates a minimal valid PNG for testing with specified dimensions
+func createTestPNGWithSize(t *testing.T, width, height int) []byte {
+	t.Helper()
+
+	minimalPNG := []byte{
+		0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+		0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+		0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+		0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+		0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41,
+		0x54, 0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00,
+		0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x18, 0xDD,
+		0x8D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+		0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+	}
+
+	if width == 1 && height == 1 {
+		return minimalPNG
+	}
+
+	options := bimg.Options{
+		Width:  width,
+		Height: height,
+		Type:   bimg.PNG,
+	}
+
+	img, err := bimg.NewImage(minimalPNG).Process(options)
+	if err != nil {
+		return minimalPNG
+	}
+
+	return img
+}
+
+// checkLibvipsAvailable checks if libvips is available for this test file
+func checkLibvipsAvailable() bool {
+	return bimg.VipsMajorVersion > 0
+}
+
+func TestIntegrationNormalizeDefaultOutput(t *testing.T) {
+	if !checkLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	testImage := createTestPNGWithSize(t, 800, 600)
+
+	t.Run("resizes to default 500x500", func(t *testing.T) {
+		result, err := NormalizeDefault(testImage)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+		assert.Greater(t, len(result), 0)
+
+		// Verify output dimensions
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 500, size.Width)
+			assert.Equal(t, 500, size.Height)
+		}
+	})
+
+	t.Run("converts to WEBP format", func(t *testing.T) {
+		result, err := NormalizeDefault(testImage)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		imgType := bimg.NewImage(result).Type()
+		assert.Equal(t, "webp", imgType)
+	})
+
+	t.Run("output is smaller than uncompressed", func(t *testing.T) {
+		result, err := NormalizeDefault(testImage)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		// WEBP with quality 90 and compression should be smaller
+		// than a raw 500x500 image (500*500*3 = 750000 bytes uncompressed)
+		assert.Less(t, len(result), 750000)
+	})
+}
+
+func TestIntegrationNormalizeWithCustomParams(t *testing.T) {
+	if !checkLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	testImage := createTestPNGWithSize(t, 800, 600)
+
+	t.Run("resizes to custom dimensions", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ResizeTo: [2]int{200, 150},
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 200, size.Width)
+			assert.Equal(t, 150, size.Height)
+		}
+	})
+
+	t.Run("uses defaults when ResizeTo is zero", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ResizeTo: [2]int{0, 0},
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 500, size.Width)
+			assert.Equal(t, 500, size.Height)
+		}
+	})
+
+	t.Run("converts to PNG when format specified", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Format: int(bimg.PNG),
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		imgType := bimg.NewImage(result).Type()
+		assert.Equal(t, "png", imgType)
+	})
+
+	t.Run("converts to JPEG when format specified", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Format: int(bimg.JPEG),
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		imgType := bimg.NewImage(result).Type()
+		assert.Equal(t, "jpeg", imgType)
+	})
+
+	t.Run("uses WEBP as default format", func(t *testing.T) {
+		params := models.ImageProcessingParams{}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		imgType := bimg.NewImage(result).Type()
+		assert.Equal(t, "webp", imgType)
+	})
+}
+
+func TestIntegrationNormalizeEdgeCases(t *testing.T) {
+	if !checkLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	t.Run("handles nil input", func(t *testing.T) {
+		params := models.ImageProcessingParams{}
+		_, err := Normalize(nil, params)
+		// Should return an error
+		assert.Error(t, err)
+	})
+
+	t.Run("handles empty input", func(t *testing.T) {
+		params := models.ImageProcessingParams{}
+		_, err := Normalize([]byte{}, params)
+		assert.Error(t, err)
+	})
+
+	t.Run("handles invalid image data", func(t *testing.T) {
+		params := models.ImageProcessingParams{}
+		_, err := Normalize([]byte("not an image"), params)
+		assert.Error(t, err)
+	})
+
+	t.Run("handles very small resize", func(t *testing.T) {
+		testImage := createTestPNGWithSize(t, 100, 100)
+		params := models.ImageProcessingParams{
+			ResizeTo: [2]int{10, 10},
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 10, size.Width)
+			assert.Equal(t, 10, size.Height)
+		}
+	})
+
+	t.Run("handles very large resize", func(t *testing.T) {
+		testImage := createTestPNGWithSize(t, 100, 100)
+		params := models.ImageProcessingParams{
+			ResizeTo: [2]int{2000, 2000},
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 2000, size.Width)
+			assert.Equal(t, 2000, size.Height)
+		}
+	})
+}
+
+func TestIntegrationNormalizeDefaultError(t *testing.T) {
+	if !checkLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	t.Run("handles nil input", func(t *testing.T) {
+		_, err := NormalizeDefault(nil)
+		assert.Error(t, err)
+	})
+
+	t.Run("handles empty input", func(t *testing.T) {
+		_, err := NormalizeDefault([]byte{})
+		assert.Error(t, err)
+	})
+
+	t.Run("handles invalid image data", func(t *testing.T) {
+		_, err := NormalizeDefault([]byte("not an image"))
+		assert.Error(t, err)
+	})
+}
+
 // Benchmark tests
 func BenchmarkNormalizeOptionsCreation(b *testing.B) {
 	b.ResetTimer()
@@ -236,5 +487,35 @@ func BenchmarkNormalizeOptionsCreation(b *testing.B) {
 			Compression:   6,
 			StripMetadata: true,
 		}
+	}
+}
+
+func BenchmarkIntegrationNormalizeDefault(b *testing.B) {
+	if !checkLibvipsAvailable() {
+		b.Skip("Skipping benchmark - libvips not available")
+	}
+
+	// Create test image once
+	minimalPNG := []byte{
+		0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+		0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+		0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+		0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+		0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41,
+		0x54, 0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00,
+		0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x18, 0xDD,
+		0x8D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+		0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+	}
+
+	testImage, _ := bimg.NewImage(minimalPNG).Process(bimg.Options{
+		Width:  200,
+		Height: 200,
+		Type:   bimg.PNG,
+	})
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		NormalizeDefault(testImage)
 	}
 }

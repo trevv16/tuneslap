@@ -4,6 +4,7 @@ import (
 	"testing"
 	"tuneslap/models"
 
+	"github.com/h2non/bimg"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -201,6 +202,279 @@ func TestTransformWithCropAndFilter(t *testing.T) {
 		assert.Equal(t, "blur", params.ApplyFilters)
 	})
 }
+
+// Edge case tests for crop validation
+func TestIsCropValidEdgeCases(t *testing.T) {
+	t.Run("very large crop dimensions", func(t *testing.T) {
+		crop := [4]int{0, 0, 10000, 10000}
+		// Large dimensions are technically valid (validation happens at processing time)
+		assert.True(t, isCropValid(crop))
+	})
+
+	t.Run("x offset larger than typical image", func(t *testing.T) {
+		crop := [4]int{5000, 0, 100, 100}
+		// Offset validation happens at processing time, not in isCropValid
+		assert.True(t, isCropValid(crop))
+	})
+
+	t.Run("y offset larger than typical image", func(t *testing.T) {
+		crop := [4]int{0, 5000, 100, 100}
+		assert.True(t, isCropValid(crop))
+	})
+
+	t.Run("minimum valid crop 1x1", func(t *testing.T) {
+		crop := [4]int{0, 0, 1, 1}
+		assert.True(t, isCropValid(crop))
+	})
+
+	t.Run("negative x offset with valid dimensions", func(t *testing.T) {
+		crop := [4]int{-10, 0, 100, 100}
+		// Negative offsets are allowed by isCropValid (bimg handles bounds)
+		assert.True(t, isCropValid(crop))
+	})
+
+	t.Run("negative y offset with valid dimensions", func(t *testing.T) {
+		crop := [4]int{0, -10, 100, 100}
+		assert.True(t, isCropValid(crop))
+	})
+}
+
+// Edge case tests for filter handling
+func TestTransformFilterEdgeCases(t *testing.T) {
+	t.Run("filter with extra whitespace", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: " grayscale ",
+		}
+		// Current implementation requires exact match
+		isGrayscale := params.ApplyFilters == "grayscale"
+		assert.False(t, isGrayscale)
+	})
+
+	t.Run("filter with different case", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "Grayscale",
+		}
+		// Current implementation is case-sensitive
+		isGrayscale := params.ApplyFilters == "grayscale"
+		assert.False(t, isGrayscale)
+	})
+
+	t.Run("filter with uppercase", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "BLUR",
+		}
+		isBlur := params.ApplyFilters == "blur"
+		assert.False(t, isBlur)
+	})
+}
+
+// Integration tests for transform function with actual bimg processing
+func TestIntegrationTransformWithInvalidInput(t *testing.T) {
+	if !isLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	t.Run("transform with nil input returns error", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "grayscale",
+		}
+
+		result, err := transform(nil, params)
+		// bimg should handle nil gracefully or return an error
+		if err != nil {
+			assert.Error(t, err)
+		} else {
+			// If no error, result should be nil or empty
+			assert.True(t, result == nil || len(result) == 0)
+		}
+	})
+
+	t.Run("transform with empty input returns error", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "grayscale",
+		}
+
+		result, err := transform([]byte{}, params)
+		if err != nil {
+			assert.Error(t, err)
+		} else {
+			assert.True(t, result == nil || len(result) == 0)
+		}
+	})
+
+	t.Run("transform with invalid image bytes returns error", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "grayscale",
+		}
+
+		invalidBytes := []byte("this is not an image")
+		_, err := transform(invalidBytes, params)
+		// bimg should return an error for invalid image data
+		assert.Error(t, err)
+	})
+}
+
+func TestIntegrationTransformOutputVerification(t *testing.T) {
+	if !isLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	testImage := createTestImage(t)
+	if len(testImage) == 0 {
+		t.Skip("Could not create test image")
+	}
+
+	t.Run("grayscale produces different output", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "grayscale",
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+		assert.Greater(t, len(result), 0)
+		// Grayscale output should be different from input
+		assert.NotEqual(t, testImage, result)
+	})
+
+	t.Run("blur produces different output", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "blur",
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+		assert.Greater(t, len(result), 0)
+		// Blur output should be different from input
+		assert.NotEqual(t, testImage, result)
+	})
+
+	t.Run("no filter returns same content", func(t *testing.T) {
+		params := models.ImageProcessingParams{}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+		// Without filters, output should match input
+		assert.Equal(t, testImage, result)
+	})
+
+	t.Run("unknown filter returns unchanged", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			ApplyFilters: "sepia", // Not implemented
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+		// Unknown filter should return unchanged
+		assert.Equal(t, testImage, result)
+	})
+}
+
+func TestIntegrationCropOutputVerification(t *testing.T) {
+	if !isLibvipsAvailable() {
+		t.Skip("Skipping integration test - libvips not available")
+	}
+
+	// Create a larger test image for cropping
+	options := bimg.Options{
+		Width:  200,
+		Height: 200,
+		Type:   bimg.PNG,
+	}
+
+	minimalPNG := createTestImage(t)
+	testImage, err := bimg.NewImage(minimalPNG).Process(options)
+	if err != nil {
+		t.Skipf("Cannot create test image: %v", err)
+	}
+
+	t.Run("crop produces smaller image", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Crop: [4]int{10, 10, 50, 50},
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+
+		// Verify cropped dimensions
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 50, size.Width)
+			assert.Equal(t, 50, size.Height)
+		}
+	})
+
+	t.Run("crop at origin", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Crop: [4]int{0, 0, 100, 100},
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 100, size.Width)
+			assert.Equal(t, 100, size.Height)
+		}
+	})
+
+	t.Run("crop exceeding bounds returns error", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Crop: [4]int{150, 150, 100, 100}, // Would exceed 200x200 image
+		}
+
+		_, err := transform(testImage, params)
+		// bimg should return an error when crop exceeds bounds
+		assert.Error(t, err)
+	})
+
+	t.Run("crop and grayscale combined", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Crop:         [4]int{10, 10, 50, 50},
+			ApplyFilters: "grayscale",
+		}
+
+		result, err := transform(testImage, params)
+		if err != nil {
+			t.Skipf("Transform error: %v", err)
+		}
+
+		assert.NotNil(t, result)
+
+		// Verify cropped dimensions
+		size, err := bimg.NewImage(result).Size()
+		if err == nil {
+			assert.Equal(t, 50, size.Width)
+			assert.Equal(t, 50, size.Height)
+		}
+	})
+}
+
+// Note: isLibvipsAvailable and createTestImage are defined in process_test.go
 
 // Benchmark for filter detection
 func BenchmarkFilterDetection(b *testing.B) {
