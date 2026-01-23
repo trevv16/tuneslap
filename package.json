@@ -10,7 +10,6 @@
     "prepare": "husky",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset publish",
     "format": "concurrently \"yarn format:frontend\" \"yarn format:server\"",
     "format:frontend": "cd frontend && yarn lint:fix .",
     "format:server": "cd server && make fmt",
