@@ -53,9 +53,9 @@ func ProcessImage(media models.Media, params models.ImageProcessingParams) (mode
 		return models.Media{}, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	// Step 6: Normalize with default options
+	// Step 6: Normalize with params (uses defaults if params not set)
 	// (resize, strip metadata, compress, convert)
-	img, err := normalizeDefault(fileBytes)
+	img, err := Normalize(fileBytes, params)
 	if err != nil {
 		return models.Media{}, fmt.Errorf("normalization error: %w", err)
 	}

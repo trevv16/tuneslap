@@ -94,8 +94,19 @@ jobs:
       - name: Install bimg dependencies
         run: sudo apt-get update && sudo apt-get install -y libvips-dev
       
-      - name: Run Go tests
-        run: go test -v ./...
+      - name: Run Go tests with coverage
+        run: |
+          go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -func=coverage.out
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.out
+          flags: server
+          name: server-coverage
+          fail_ci_if_error: false
+          verbose: true
       
       - name: Build Go application
         run: go build -o tuneslap .

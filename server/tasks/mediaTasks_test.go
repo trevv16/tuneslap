@@ -330,22 +330,21 @@ func TestTaskConstants(t *testing.T) {
 }
 
 func TestRegisterMediaProcessTasks_NoPanic(t *testing.T) {
-	// Test that registration doesn't panic
-	mux := asynq.NewServeMux()
-	assert.NotPanics(t, func() {
-		RegisterMediaProcessTasks(mux)
-	})
-
-	// Test that calling it twice on the same mux is safe (should skip second registration)
-	assert.NotPanics(t, func() {
-		RegisterMediaProcessTasks(mux)
+	// Test that registration doesn't panic on a fresh mux
+	t.Run("registers on fresh mux", func(t *testing.T) {
+		mux := asynq.NewServeMux()
+		assert.NotPanics(t, func() {
+			RegisterMediaProcessTasks(mux)
+		})
 	})
 
 	// Test multiple registrations on different mux instances
-	assert.NotPanics(t, func() {
-		mux1 := asynq.NewServeMux()
-		mux2 := asynq.NewServeMux()
-		RegisterMediaProcessTasks(mux1)
-		RegisterMediaProcessTasks(mux2)
+	t.Run("registers on multiple mux instances", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			mux1 := asynq.NewServeMux()
+			mux2 := asynq.NewServeMux()
+			RegisterMediaProcessTasks(mux1)
+			RegisterMediaProcessTasks(mux2)
+		})
 	})
 }
