@@ -9,16 +9,16 @@ import (
 
 // Test user fixtures
 var (
-	TestUserID       = primitive.NewObjectID()
-	TestUser2ID      = primitive.NewObjectID()
-	TestBoardID      = primitive.NewObjectID()
-	TestBoard2ID     = primitive.NewObjectID()
-	TestMediaID      = primitive.NewObjectID()
-	TestMedia2ID     = primitive.NewObjectID()
-	TestKeyID        = primitive.NewObjectID()
-	TestKey2ID       = primitive.NewObjectID()
-	TestCollabID     = primitive.NewObjectID()
-	TestCollab2ID    = primitive.NewObjectID()
+	TestUserID    = primitive.NewObjectID()
+	TestUser2ID   = primitive.NewObjectID()
+	TestBoardID   = primitive.NewObjectID()
+	TestBoard2ID  = primitive.NewObjectID()
+	TestMediaID   = primitive.NewObjectID()
+	TestMedia2ID  = primitive.NewObjectID()
+	TestKeyID     = primitive.NewObjectID()
+	TestKey2ID    = primitive.NewObjectID()
+	TestCollabID  = primitive.NewObjectID()
+	TestCollab2ID = primitive.NewObjectID()
 )
 
 // CreateTestUser creates a test user with the given parameters

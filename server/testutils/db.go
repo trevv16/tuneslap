@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	TestDBName      = "tuneslap_test"
-	TestMongoURI    = "mongodb://localhost:27017"
-	DefaultTimeout  = 10 * time.Second
+	TestDBName     = "tuneslap_test"
+	TestMongoURI   = "mongodb://localhost:27017"
+	DefaultTimeout = 10 * time.Second
 )
 
 var testMongoClient *mongo.Client
@@ -66,7 +66,7 @@ func SetupTestMongoDBWithSkip(t TestingT) func() {
 // ClearTestCollections clears all test collections
 func ClearTestCollections() error {
 	collections := []string{"users", "boards", "media"}
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 

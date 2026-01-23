@@ -95,10 +95,10 @@ func TestBoardResponseMapperLogic(t *testing.T) {
 		keyID := primitive.NewObjectID()
 
 		board := models.Board{
-			ID:          boardID,
-			AuthorId:    authorID,
-			Name:        "Test Board",
-			Layout:      models.GridLayout,
+			ID:       boardID,
+			AuthorId: authorID,
+			Name:     "Test Board",
+			Layout:   models.GridLayout,
 			Keys: []models.Key{
 				{
 					ID:           keyID,

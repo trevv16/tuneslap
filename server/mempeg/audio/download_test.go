@@ -17,14 +17,14 @@ import (
 
 // MockStorageClient implements storage.ObjectStorage for testing
 type MockStorageClient struct {
-	DownloadFunc       func(ctx context.Context, objectName, destPath string) error
-	UploadFunc         func(ctx context.Context, req storage.UploadFileRequest) error
-	DeleteFunc         func(ctx context.Context, objectName string) error
-	FileExistsFunc     func(ctx context.Context, objectName string) (bool, error)
-	GenerateUploadURL  func(ctx context.Context, objectName, contentType string, expires time.Duration) (string, error)
+	DownloadFunc        func(ctx context.Context, objectName, destPath string) error
+	UploadFunc          func(ctx context.Context, req storage.UploadFileRequest) error
+	DeleteFunc          func(ctx context.Context, objectName string) error
+	FileExistsFunc      func(ctx context.Context, objectName string) (bool, error)
+	GenerateUploadURL   func(ctx context.Context, objectName, contentType string, expires time.Duration) (string, error)
 	GenerateDownloadURL func(ctx context.Context, objectName string, expires time.Duration) (string, error)
-	GetBucketNameFunc  func() string
-	GetFileURLFunc     func(objectName string) string
+	GetBucketNameFunc   func() string
+	GetFileURLFunc      func(objectName string) string
 }
 
 func (m *MockStorageClient) UploadFile(ctx context.Context, req storage.UploadFileRequest) error {

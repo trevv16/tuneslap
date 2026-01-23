@@ -188,7 +188,7 @@ func TestMediaLifecycle(t *testing.T) {
 
 		// Simulate processing update
 		updateData := &models.Media{
-			Status:       models.ProcessingStatusProcessing,
+			Status: models.ProcessingStatusProcessing,
 			ProcessingActivity: []models.ProcessingActivity{
 				{
 					Status:    models.ProcessingStatusProcessing,

@@ -71,4 +71,3 @@ func CanManageKeys(board models.Board, userId primitive.ObjectID) bool {
 	role := GetUserBoardRole(board, userId)
 	return role == RoleAuthor || role == RoleOwner || role == RoleEditor
 }
-

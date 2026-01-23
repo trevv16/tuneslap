@@ -153,8 +153,8 @@ func seedDemoMedia(ctx context.Context) error {
 						bson.M{"_id": af.MediaID},
 						bson.M{"$set": bson.M{
 							"fileUrl":      fileURL,
-							"processedUrl":  fileURL,
-							"updatedAt":     now,
+							"processedUrl": fileURL,
+							"updatedAt":    now,
 						}},
 						opts,
 					)

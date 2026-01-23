@@ -62,13 +62,13 @@ func TestCleanupStatsStruct(t *testing.T) {
 			boardsFailed        int
 			collaboratorsFailed int
 		}{
-			usersProcessed: 10,
-			usersDeleted:   8,
-			usersFailed:    2,
-			mediaDeleted:   50,
-			mediaFailed:    5,
-			boardsDeleted:  20,
-			boardsFailed:   1,
+			usersProcessed:      10,
+			usersDeleted:        8,
+			usersFailed:         2,
+			mediaDeleted:        50,
+			mediaFailed:         5,
+			boardsDeleted:       20,
+			boardsFailed:        1,
 			collaboratorsFailed: 0,
 		}
 

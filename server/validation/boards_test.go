@@ -66,10 +66,10 @@ func TestBoardValidator_Validate(t *testing.T) {
 
 func TestValidateCreateBoardRequest(t *testing.T) {
 	tests := []struct {
-		name       string
-		request    *api.CreateBoardRequest
-		expectErr  bool
-		errFields  []string
+		name      string
+		request   *api.CreateBoardRequest
+		expectErr bool
+		errFields []string
 	}{
 		{
 			name: "valid request",
