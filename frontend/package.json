@@ -9,7 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",

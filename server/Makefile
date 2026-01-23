@@ -1,3 +1,5 @@
+.PHONY: dev fmt swagger docs docs-stop docs-build docs-logs generate-types build test lint clean download-assets setup-keys docker-dev docker-dev-stop
+
 dev:
 	air
 
@@ -6,6 +8,37 @@ fmt:
 
 swagger:
 	swag init --dir ./,./handlers
+
+# Build the binary
+build:
+	go build -o bin/server main.go
+
+# Run tests with race detection
+test:
+	go test -v -race ./...
+
+# Run linter (assumes golangci-lint is installed)
+lint:
+	golangci-lint run
+
+# Clean build artifacts
+clean:
+	rm -rf bin
+
+# Download demo audio assets
+download-assets:
+	cd .. && sh scripts/download-demo-audio.sh
+
+# Setup service account keys (defaults to staging)
+setup-keys:
+	cd .. && sh scripts/setup-service-account.sh staging
+
+# Docker dev helpers (running from root)
+docker-dev:
+	cd .. && docker compose -f docker-compose.dev.yml up -d
+
+docker-dev-stop:
+	cd .. && docker compose -f docker-compose.dev.yml down
 
 docs:
 	cd ../openapi && docker compose up -d
@@ -19,6 +52,5 @@ docs-build:
 docs-logs:
 	cd ../openapi && docker compose logs -f
 
-.PHONY: generate-types
 generate-types:
 	cd .. && sh scripts/generate-types.sh
