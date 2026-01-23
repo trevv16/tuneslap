@@ -17,25 +17,26 @@ import (
 func validateSignupRequest(body *api.SignupRequest) validation.ValidationResult {
 	var errors []validation.ValidationError
 
-	if body.Name == nil || *body.Name == "" {
+	// Name, Email, Password are now required (non-pointer) fields
+	if body.Name == "" {
 		errors = append(errors, validation.ValidationError{Field: "name", Message: "Name is required"})
-	} else if len(*body.Name) < 3 || len(*body.Name) > 100 {
+	} else if len(body.Name) < 3 || len(body.Name) > 100 {
 		errors = append(errors, validation.ValidationError{Field: "name", Message: "Name must be between 3 and 100 characters"})
 	}
 
-	if body.Email == nil || *body.Email == "" {
+	if body.Email == "" {
 		errors = append(errors, validation.ValidationError{Field: "email", Message: "Email is required"})
 	} else {
 		// Use validator for email format
 		validator := validator.New()
-		if err := validator.Var(*body.Email, "email"); err != nil {
+		if err := validator.Var(body.Email, "email"); err != nil {
 			errors = append(errors, validation.ValidationError{Field: "email", Message: "Email must be a valid email address"})
 		}
 	}
 
-	if body.Password == nil || *body.Password == "" {
+	if body.Password == "" {
 		errors = append(errors, validation.ValidationError{Field: "password", Message: "Password is required"})
-	} else if len(*body.Password) < 8 || len(*body.Password) > 128 {
+	} else if len(body.Password) < 8 || len(body.Password) > 128 {
 		errors = append(errors, validation.ValidationError{Field: "password", Message: "Password must be between 8 and 128 characters"})
 	}
 
@@ -49,16 +50,17 @@ func validateSignupRequest(body *api.SignupRequest) validation.ValidationResult 
 func validateSigninRequest(body *api.SigninRequest) validation.ValidationResult {
 	var errors []validation.ValidationError
 
-	if body.Email == nil || *body.Email == "" {
+	// Email, Password are now required (non-pointer) fields
+	if body.Email == "" {
 		errors = append(errors, validation.ValidationError{Field: "email", Message: "Email is required"})
 	} else {
 		validator := validator.New()
-		if err := validator.Var(*body.Email, "email"); err != nil {
+		if err := validator.Var(body.Email, "email"); err != nil {
 			errors = append(errors, validation.ValidationError{Field: "email", Message: "Email must be a valid email address"})
 		}
 	}
 
-	if body.Password == nil || *body.Password == "" {
+	if body.Password == "" {
 		errors = append(errors, validation.ValidationError{Field: "password", Message: "Password is required"})
 	}
 
@@ -72,11 +74,12 @@ func validateSigninRequest(body *api.SigninRequest) validation.ValidationResult 
 func validateForgotRequest(body *api.ForgotRequest) validation.ValidationResult {
 	var errors []validation.ValidationError
 
-	if body.Email == nil || *body.Email == "" {
+	// Email is now a required (non-pointer) field
+	if body.Email == "" {
 		errors = append(errors, validation.ValidationError{Field: "email", Message: "Email is required"})
 	} else {
 		validator := validator.New()
-		if err := validator.Var(*body.Email, "email"); err != nil {
+		if err := validator.Var(body.Email, "email"); err != nil {
 			errors = append(errors, validation.ValidationError{Field: "email", Message: "Email must be a valid email address"})
 		}
 	}
@@ -91,15 +94,16 @@ func validateForgotRequest(body *api.ForgotRequest) validation.ValidationResult 
 func validateResetRequest(body *api.ResetRequest) validation.ValidationResult {
 	var errors []validation.ValidationError
 
-	if body.Token == nil || *body.Token == "" {
+	// Token, Password are now required (non-pointer) fields
+	if body.Token == "" {
 		errors = append(errors, validation.ValidationError{Field: "token", Message: "Token is required"})
-	} else if len(*body.Token) < 32 || len(*body.Token) > 255 {
+	} else if len(body.Token) < 32 || len(body.Token) > 255 {
 		errors = append(errors, validation.ValidationError{Field: "token", Message: "Token must be between 32 and 255 characters"})
 	}
 
-	if body.Password == nil || *body.Password == "" {
+	if body.Password == "" {
 		errors = append(errors, validation.ValidationError{Field: "password", Message: "Password is required"})
-	} else if len(*body.Password) < 8 || len(*body.Password) > 128 {
+	} else if len(body.Password) < 8 || len(body.Password) > 128 {
 		errors = append(errors, validation.ValidationError{Field: "password", Message: "Password must be between 8 and 128 characters"})
 	}
 
@@ -139,15 +143,15 @@ func SignUpHandler(c *fiber.Ctx) error {
 	}
 
 	// Hash password
-	hash, err := services.HashPassword(*body.Password)
+	hash, err := services.HashPassword(body.Password)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Error hashing password", err)
 	}
 
 	// Create user object
 	user := models.User{
-		Name:         *body.Name,
-		Email:        *body.Email,
+		Name:         body.Name,
+		Email:        body.Email,
 		PasswordHash: hash,
 	}
 
@@ -158,11 +162,7 @@ func SignUpHandler(c *fiber.Ctx) error {
 	}
 
 	// Create response using generated type
-	response := api.NewSignupResponse()
-	success := true
-	message := "User created successfully"
-	response.Success = &success
-	response.Message = &message
+	response := api.NewSignupResponse(true, "User created successfully")
 
 	return c.Status(fiber.StatusCreated).JSON(response)
 }
@@ -183,13 +183,13 @@ func SignInHandler(c *fiber.Ctx) error {
 	}
 
 	// Fetch user by email using repository
-	user, err := handler.userRepo.GetByEmail(*body.Email)
+	user, err := handler.userRepo.GetByEmail(body.Email)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusUnauthorized, "Invalid email or password", err)
 	}
 
 	// Check password
-	if err := services.CheckPasswordHash(*body.Password, user.PasswordHash); err != nil {
+	if err := services.CheckPasswordHash(body.Password, user.PasswordHash); err != nil {
 		return SendErrorResponse(c, fiber.StatusUnauthorized, "Invalid email or password", err)
 	}
 
@@ -200,16 +200,8 @@ func SignInHandler(c *fiber.Ctx) error {
 	}
 
 	// Create response using generated type
-	response := api.NewSigninResponse()
-	success := true
-	message := "User logged in successfully"
-	response.Success = &success
-	response.Message = &message
-
-	// Create data with token
-	signinData := api.NewSigninData()
-	signinData.Token = &token
-	response.Data = signinData
+	signinData := api.NewSigninData(token)
+	response := api.NewSigninResponse(true, "User logged in successfully", *signinData)
 
 	return c.Status(fiber.StatusOK).JSON(response)
 }
@@ -230,14 +222,10 @@ func ForgotPasswordHandler(c *fiber.Ctx) error {
 	}
 
 	// Fetch user by email using repository
-	user, err := handler.userRepo.GetByEmail(*body.Email)
+	user, err := handler.userRepo.GetByEmail(body.Email)
 	if err != nil {
 		// Don't reveal if user exists or not for security
-		response := api.NewForgotResponse()
-		success := true
-		message := "If the email exists, a reset link has been sent"
-		response.Success = &success
-		response.Message = &message
+		response := api.NewForgotResponse(true, "If the email exists, a reset link has been sent")
 		return c.Status(fiber.StatusOK).JSON(response)
 	}
 
@@ -256,11 +244,7 @@ func ForgotPasswordHandler(c *fiber.Ctx) error {
 
 	// TODO: Send email with reset link/token here
 
-	response := api.NewForgotResponse()
-	success := true
-	message := "If the email exists, a reset link has been sent"
-	response.Success = &success
-	response.Message = &message
+	response := api.NewForgotResponse(true, "If the email exists, a reset link has been sent")
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 
@@ -280,7 +264,7 @@ func ResetPasswordHandler(c *fiber.Ctx) error {
 	}
 
 	// Fetch user by reset token using repository
-	user, err := handler.userRepo.GetByResetToken(*body.Token)
+	user, err := handler.userRepo.GetByResetToken(body.Token)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusUnauthorized, "Invalid or expired token", err)
 	}
@@ -291,7 +275,7 @@ func ResetPasswordHandler(c *fiber.Ctx) error {
 	}
 
 	// Hash new password
-	hash, err := services.HashPassword(*body.Password)
+	hash, err := services.HashPassword(body.Password)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Error hashing password", err)
 	}
@@ -308,10 +292,6 @@ func ResetPasswordHandler(c *fiber.Ctx) error {
 
 	// TODO: Send email notification that password has been reset
 
-	response := api.NewResetResponse()
-	success := true
-	message := "Password reset successful"
-	response.Success = &success
-	response.Message = &message
+	response := api.NewResetResponse(true, "Password reset successful")
 	return c.Status(fiber.StatusOK).JSON(response)
 }

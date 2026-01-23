@@ -46,14 +46,14 @@ func TestCollaboratorResponseMapperLogic(t *testing.T) {
 		// Test the utility conversion function
 		response := utils.ToCollaboratorResponse(collaborator)
 
-		assert.NotNil(t, response.Id)
-		assert.Equal(t, collaboratorID.Hex(), *response.Id)
-		assert.NotNil(t, response.Email)
-		assert.Equal(t, "test@example.com", *response.Email)
-		assert.NotNil(t, response.UserId)
-		assert.Equal(t, userID.Hex(), *response.UserId)
-		assert.NotNil(t, response.Role)
-		assert.Equal(t, "editor", *response.Role)
+		assert.NotEmpty(t, response.Id)
+		assert.Equal(t, collaboratorID.Hex(), response.Id)
+		assert.NotEmpty(t, response.Email)
+		assert.Equal(t, "test@example.com", response.Email)
+		assert.NotEmpty(t, response.UserId)
+		assert.Equal(t, userID.Hex(), response.UserId)
+		assert.NotEmpty(t, response.Role)
+		assert.Equal(t, "editor", response.Role)
 	})
 
 	t.Run("maps collaborator without user ID (pending invitation)", func(t *testing.T) {
@@ -68,16 +68,16 @@ func TestCollaboratorResponseMapperLogic(t *testing.T) {
 
 		response := utils.ToCollaboratorResponse(collaborator)
 
-		assert.NotNil(t, response.Id)
-		assert.NotNil(t, response.Email)
-		assert.Equal(t, "pending@example.com", *response.Email)
-		// UserId should be nil for pending invitations
-		assert.Nil(t, response.UserId)
-		assert.NotNil(t, response.Role)
-		assert.Equal(t, "viewer", *response.Role)
+		assert.NotEmpty(t, response.Id)
+		assert.NotEmpty(t, response.Email)
+		assert.Equal(t, "pending@example.com", response.Email)
+		// UserId should be "000000000000000000000000" (zero ObjectID string) for pending invitations
+		assert.Equal(t, "000000000000000000000000", response.UserId)
+		assert.NotEmpty(t, response.Role)
+		assert.Equal(t, "viewer", response.Role)
 	})
 
-	t.Run("Name and ImageUrl are initially nil", func(t *testing.T) {
+	t.Run("Name and ImageUrl are initially empty", func(t *testing.T) {
 		collaborator := models.Collaborator{
 			ID:        collaboratorID,
 			Email:     "test@example.com",
@@ -89,9 +89,9 @@ func TestCollaboratorResponseMapperLogic(t *testing.T) {
 
 		response := utils.ToCollaboratorResponse(collaborator)
 
-		// Name and ImageUrl are set by CollaboratorResponseMapper after lookup
-		// ToCollaboratorResponse does not set them
-		assert.Nil(t, response.Name)
+		// Name is set by CollaboratorResponseMapper after lookup
+		// ToCollaboratorResponse sets it to collaborator.Name (empty string)
+		assert.Empty(t, response.Name)
 		assert.Nil(t, response.ImageUrl)
 	})
 }
@@ -360,13 +360,12 @@ func TestCollaboratorResponseEnrichment(t *testing.T) {
 		})
 
 		// Simulate user data enrichment
-		userName := "Test User"
 		userImageUrl := "https://example.com/avatar.png"
-		response.Name = &userName
+		response.Name = "Test User"
 		response.ImageUrl = &userImageUrl
 
-		assert.NotNil(t, response.Name)
-		assert.Equal(t, "Test User", *response.Name)
+		assert.NotEmpty(t, response.Name)
+		assert.Equal(t, "Test User", response.Name)
 		assert.NotNil(t, response.ImageUrl)
 		assert.Equal(t, "https://example.com/avatar.png", *response.ImageUrl)
 	})
@@ -382,15 +381,12 @@ func TestCollaboratorResponseEnrichment(t *testing.T) {
 		})
 
 		// Simulate user not found
-		unknownName := "Unknown User"
-		emptyImageUrl := ""
-		response.Name = &unknownName
-		response.ImageUrl = &emptyImageUrl
+		response.Name = "Unknown User"
+		response.ImageUrl = nil
 
-		assert.NotNil(t, response.Name)
-		assert.Equal(t, "Unknown User", *response.Name)
-		assert.NotNil(t, response.ImageUrl)
-		assert.Equal(t, "", *response.ImageUrl)
+		assert.NotEmpty(t, response.Name)
+		assert.Equal(t, "Unknown User", response.Name)
+		assert.Nil(t, response.ImageUrl)
 	})
 
 	t.Run("sets pending invitation when no userId", func(t *testing.T) {
@@ -404,15 +400,12 @@ func TestCollaboratorResponseEnrichment(t *testing.T) {
 		})
 
 		// Simulate pending invitation
-		pendingName := "Pending Invitation"
-		emptyImageUrl := ""
-		response.Name = &pendingName
-		response.ImageUrl = &emptyImageUrl
+		response.Name = "Pending Invitation"
+		response.ImageUrl = nil
 
-		assert.NotNil(t, response.Name)
-		assert.Equal(t, "Pending Invitation", *response.Name)
-		assert.NotNil(t, response.ImageUrl)
-		assert.Equal(t, "", *response.ImageUrl)
+		assert.NotEmpty(t, response.Name)
+		assert.Equal(t, "Pending Invitation", response.Name)
+		assert.Nil(t, response.ImageUrl)
 	})
 }
 

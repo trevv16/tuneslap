@@ -36,18 +36,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 	authorID := primitive.NewObjectID()
 
 	t.Run("CreateMedia", func(t *testing.T) {
-		mediaType := "audio"
-		fileName := "test.mp3"
-		fileUrl := "https://example.com/test.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "test.mp3",
+			FileUrl:     "https://example.com/test.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -61,18 +57,15 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 	t.Run("GetByAuthor", func(t *testing.T) {
 		// Create some media
 		for i := 0; i < 3; i++ {
-			mediaType := "audio"
 			fileName := "author_test_" + string(rune('1'+i)) + ".mp3"
-			fileUrl := "https://example.com/" + fileName
 			contentType := "audio/mpeg"
-			fileSize := int32(1024)
 
 			req := &api.CreateMediaRequest{
-				MediaType:   &mediaType,
-				FileName:    &fileName,
-				FileUrl:     &fileUrl,
+				MediaType:   "audio",
+				FileName:    fileName,
+				FileUrl:     "https://example.com/" + fileName,
 				ContentType: &contentType,
-				FileSize:    &fileSize,
+				FileSize:    1024,
 			}
 			_, err := repo.CreateMedia(req, authorID)
 			assert.NoError(t, err)
@@ -86,18 +79,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 	t.Run("GetById", func(t *testing.T) {
 		// Create media
-		mediaType := "image"
-		fileName := "getbyid.png"
-		fileUrl := "https://example.com/getbyid.png"
 		contentType := "image/png"
-		fileSize := int32(2048)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "image",
+			FileName:    "getbyid.png",
+			FileUrl:     "https://example.com/getbyid.png",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    2048,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -112,18 +101,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 	t.Run("GetByIdUnscoped", func(t *testing.T) {
 		// Create media
-		mediaType := "audio"
-		fileName := "unscoped.mp3"
-		fileUrl := "https://example.com/unscoped.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "unscoped.mp3",
+			FileUrl:     "https://example.com/unscoped.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -137,18 +122,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 	t.Run("UpdateMedia", func(t *testing.T) {
 		// Create media
-		mediaType := "audio"
-		fileName := "update.mp3"
-		fileUrl := "https://example.com/update.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "update.mp3",
+			FileUrl:     "https://example.com/update.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -167,18 +148,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 	t.Run("UpdateMediaUnscoped", func(t *testing.T) {
 		// Create media
-		mediaType := "audio"
-		fileName := "unscoped_update.mp3"
-		fileUrl := "https://example.com/unscoped_update.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "unscoped_update.mp3",
+			FileUrl:     "https://example.com/unscoped_update.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -199,18 +176,14 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 	t.Run("DeleteMedia", func(t *testing.T) {
 		// Create media
-		mediaType := "audio"
-		fileName := "delete.mp3"
-		fileUrl := "https://example.com/delete.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "delete.mp3",
+			FileUrl:     "https://example.com/delete.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 
 		created, err := repo.CreateMedia(req, authorID)
@@ -229,18 +202,15 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 		// Create multiple media items
 		var mediaIds []primitive.ObjectID
 		for i := 0; i < 3; i++ {
-			mediaType := "audio"
 			fileName := "url_test_" + string(rune('1'+i)) + ".mp3"
-			fileUrl := "https://example.com/" + fileName
 			contentType := "audio/mpeg"
-			fileSize := int32(1024)
 
 			req := &api.CreateMediaRequest{
-				MediaType:   &mediaType,
-				FileName:    &fileName,
-				FileUrl:     &fileUrl,
+				MediaType:   "audio",
+				FileName:    fileName,
+				FileUrl:     "https://example.com/" + fileName,
 				ContentType: &contentType,
-				FileSize:    &fileSize,
+				FileSize:    1024,
 			}
 
 			created, err := repo.CreateMedia(req, authorID)
@@ -265,18 +235,15 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 		// Create some audio media
 		for i := 0; i < 2; i++ {
-			mediaType := "audio"
 			fileName := "stats_audio_" + string(rune('1'+i)) + ".mp3"
-			fileUrl := "https://example.com/" + fileName
 			contentType := "audio/mpeg"
-			fileSize := int32(1000)
 
 			req := &api.CreateMediaRequest{
-				MediaType:   &mediaType,
-				FileName:    &fileName,
-				FileUrl:     &fileUrl,
+				MediaType:   "audio",
+				FileName:    fileName,
+				FileUrl:     "https://example.com/" + fileName,
 				ContentType: &contentType,
-				FileSize:    &fileSize,
+				FileSize:    1000,
 			}
 			_, err := repo.CreateMedia(req, statsAuthorID)
 			assert.NoError(t, err)
@@ -284,18 +251,15 @@ func TestMediaRepositoryIntegration(t *testing.T) {
 
 		// Create some image media
 		for i := 0; i < 3; i++ {
-			mediaType := "image"
 			fileName := "stats_image_" + string(rune('1'+i)) + ".png"
-			fileUrl := "https://example.com/" + fileName
 			contentType := "image/png"
-			fileSize := int32(500)
 
 			req := &api.CreateMediaRequest{
-				MediaType:   &mediaType,
-				FileName:    &fileName,
-				FileUrl:     &fileUrl,
+				MediaType:   "image",
+				FileName:    fileName,
+				FileUrl:     "https://example.com/" + fileName,
 				ContentType: &contentType,
-				FileSize:    &fileSize,
+				FileSize:    500,
 			}
 			_, err := repo.CreateMedia(req, statsAuthorID)
 			assert.NoError(t, err)
@@ -323,18 +287,14 @@ func BenchmarkMediaRepository_CreateMedia(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mediaType := "audio"
-		fileName := "benchmark.mp3"
-		fileUrl := "https://example.com/benchmark.mp3"
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   "audio",
+			FileName:    "benchmark.mp3",
+			FileUrl:     "https://example.com/benchmark.mp3",
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 		repo.CreateMedia(req, authorID)
 	}
@@ -359,16 +319,14 @@ func BenchmarkMediaRepository_GetMyMediaStats(b *testing.B) {
 			mediaType = "image"
 		}
 		fileName := "bench_" + string(rune('0'+i%10)) + ".mp3"
-		fileUrl := "https://example.com/" + fileName
 		contentType := "audio/mpeg"
-		fileSize := int32(1024)
 
 		req := &api.CreateMediaRequest{
-			MediaType:   &mediaType,
-			FileName:    &fileName,
-			FileUrl:     &fileUrl,
+			MediaType:   mediaType,
+			FileName:    fileName,
+			FileUrl:     "https://example.com/" + fileName,
 			ContentType: &contentType,
-			FileSize:    &fileSize,
+			FileSize:    1024,
 		}
 		repo.CreateMedia(req, authorID)
 	}

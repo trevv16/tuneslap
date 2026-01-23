@@ -155,7 +155,7 @@ func validateOneOf(field, value string, options []string) *ValidationError {
 	}
 }
 
-// validateIntRange validates integer range
+// validateIntRange validates integer range for pointer types
 func validateIntRange(field string, value *int32, min, max int64) *ValidationError {
 	if value == nil {
 		return &ValidationError{
@@ -164,6 +164,24 @@ func validateIntRange(field string, value *int32, min, max int64) *ValidationErr
 		}
 	}
 	val := int64(*value)
+	if min > 0 && val < min {
+		return &ValidationError{
+			Field:   field,
+			Message: fmt.Sprintf("%s must be at least %d", field, min),
+		}
+	}
+	if max > 0 && val > max {
+		return &ValidationError{
+			Field:   field,
+			Message: fmt.Sprintf("%s must be at most %d", field, max),
+		}
+	}
+	return nil
+}
+
+// validateInt32Range validates integer range for non-pointer types
+func validateInt32Range(field string, value int32, min, max int64) *ValidationError {
+	val := int64(value)
 	if min > 0 && val < min {
 		return &ValidationError{
 			Field:   field,

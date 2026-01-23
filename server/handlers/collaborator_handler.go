@@ -46,19 +46,15 @@ func (h *CollaboratorHandler) CollaboratorResponseMapper(collaborator models.Col
 	if !collaborator.UserId.IsZero() {
 		user, err := h.userRepo.FindOne(bson.M{"_id": collaborator.UserId})
 		if err == nil {
-			response.Name = &user.Name
+			response.Name = user.Name
 			response.ImageUrl = &user.ImageUrl
 		} else {
-			name := "Unknown User"
-			imageUrl := ""
-			response.Name = &name
-			response.ImageUrl = &imageUrl
+			response.Name = "Unknown User"
+			response.ImageUrl = nil
 		}
 	} else {
-		name := "Pending Invitation"
-		imageUrl := ""
-		response.Name = &name
-		response.ImageUrl = &imageUrl
+		response.Name = "Pending Invitation"
+		response.ImageUrl = nil
 	}
 
 	return response
@@ -99,8 +95,9 @@ func (h *CollaboratorHandler) updateCollaboratorFromRequest(request api.UpdateCo
 		"updatedAt": time.Now(),
 	}
 
-	if request.Role != nil {
-		update["role"] = request.GetRole()
+	// Role is now a required field (non-pointer)
+	if request.Role != "" {
+		update["role"] = request.Role
 	}
 
 	return update

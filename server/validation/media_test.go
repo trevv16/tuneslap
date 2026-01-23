@@ -19,18 +19,14 @@ func TestNewMediaValidator(t *testing.T) {
 func TestMediaValidator_Validate(t *testing.T) {
 	v := NewMediaValidator()
 
-	mediaType := "audio"
-	fileName := "test.mp3"
-	fileUrl := "https://example.com/test.mp3"
 	contentType := "audio/mpeg"
-	fileSize := int32(1024)
 
 	createReq := &api.CreateMediaRequest{
-		MediaType:   &mediaType,
-		FileName:    &fileName,
-		FileUrl:     &fileUrl,
+		MediaType:   "audio",
+		FileName:    "test.mp3",
+		FileUrl:     "https://example.com/test.mp3",
 		ContentType: &contentType,
-		FileSize:    &fileSize,
+		FileSize:    1024,
 	}
 
 	desc := "Updated description"
@@ -82,17 +78,13 @@ func TestValidateCreateMediaRequest(t *testing.T) {
 		{
 			name: "valid audio request",
 			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
 				contentType := "audio/mpeg"
-				fileSize := int32(1024)
 				return &api.CreateMediaRequest{
-					MediaType:   &mediaType,
-					FileName:    &fileName,
-					FileUrl:     &fileUrl,
+					MediaType:   "audio",
+					FileName:    "test.mp3",
+					FileUrl:     "https://example.com/test.mp3",
 					ContentType: &contentType,
-					FileSize:    &fileSize,
+					FileSize:    1024,
 				}
 			}(),
 			expectErr: false,
@@ -100,17 +92,13 @@ func TestValidateCreateMediaRequest(t *testing.T) {
 		{
 			name: "valid image request",
 			request: func() *api.CreateMediaRequest {
-				mediaType := "image"
-				fileName := "test.png"
-				fileUrl := "https://example.com/test.png"
 				contentType := "image/png"
-				fileSize := int32(512000)
 				return &api.CreateMediaRequest{
-					MediaType:   &mediaType,
-					FileName:    &fileName,
-					FileUrl:     &fileUrl,
+					MediaType:   "image",
+					FileName:    "test.png",
+					FileUrl:     "https://example.com/test.png",
 					ContentType: &contentType,
-					FileSize:    &fileSize,
+					FileSize:    512000,
 				}
 			}(),
 			expectErr: false,
@@ -118,20 +106,16 @@ func TestValidateCreateMediaRequest(t *testing.T) {
 		{
 			name: "valid request with optional fields",
 			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
 				contentType := "audio/mpeg"
-				fileSize := int32(1024)
 				desc := "Test description"
 				status := "pending"
 				duration := float32(120.5)
 				return &api.CreateMediaRequest{
-					MediaType:   &mediaType,
-					FileName:    &fileName,
-					FileUrl:     &fileUrl,
+					MediaType:   "audio",
+					FileName:    "test.mp3",
+					FileUrl:     "https://example.com/test.mp3",
 					ContentType: &contentType,
-					FileSize:    &fileSize,
+					FileSize:    1024,
 					Description: &desc,
 					Status:      &status,
 					Duration:    &duration,
@@ -141,162 +125,112 @@ func TestValidateCreateMediaRequest(t *testing.T) {
 		},
 		{
 			name: "missing mediaType",
-			request: func() *api.CreateMediaRequest {
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					FileName: &fileName,
-					FileUrl:  &fileUrl,
-					FileSize: &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "",
+				FileName:  "test.mp3",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"mediaType"},
 		},
 		{
 			name: "invalid mediaType",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "video"
-				fileName := "test.mp4"
-				fileUrl := "https://example.com/test.mp4"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "video",
+				FileName:  "test.mp4",
+				FileUrl:   "https://example.com/test.mp4",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"mediaType"},
 		},
 		{
 			name: "missing fileName",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"fileName"},
 		},
 		{
 			name: "fileName too short",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "AB"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "AB",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"fileName"},
 		},
 		{
 			name: "fileName with invalid characters",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test<file>.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "test<file>.mp3",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"fileName"},
 		},
 		{
 			name: "missing fileUrl",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "test.mp3",
+				FileUrl:   "",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"fileUrl"},
 		},
 		{
 			name: "invalid fileUrl",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "not-a-url"
-				fileSize := int32(1024)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "test.mp3",
+				FileUrl:   "not-a-url",
+				FileSize:  1024,
+			},
 			expectErr: true,
 			errFields: []string{"fileUrl"},
 		},
 		{
 			name: "missing fileSize",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "test.mp3",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  0,
+			},
 			expectErr: true,
 			errFields: []string{"fileSize"},
 		},
 		{
 			name: "fileSize too small",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(0)
-				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType: "audio",
+				FileName:  "test.mp3",
+				FileUrl:   "https://example.com/test.mp3",
+				FileSize:  0,
+			},
 			expectErr: true,
 			errFields: []string{"fileSize"},
 		},
 		{
 			name: "invalid status",
 			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
 				status := "invalid"
 				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
+					MediaType: "audio",
+					FileName:  "test.mp3",
+					FileUrl:   "https://example.com/test.mp3",
+					FileSize:  1024,
 					Status:    &status,
 				}
 			}(),
@@ -305,36 +239,25 @@ func TestValidateCreateMediaRequest(t *testing.T) {
 		},
 		{
 			name: "invalid dimensions count",
-			request: func() *api.CreateMediaRequest {
-				mediaType := "image"
-				fileName := "test.png"
-				fileUrl := "https://example.com/test.png"
-				fileSize := int32(1024)
-				dimensions := []int32{100}
-				return &api.CreateMediaRequest{
-					MediaType:  &mediaType,
-					FileName:   &fileName,
-					FileUrl:    &fileUrl,
-					FileSize:   &fileSize,
-					Dimensions: dimensions,
-				}
-			}(),
+			request: &api.CreateMediaRequest{
+				MediaType:  "image",
+				FileName:   "test.png",
+				FileUrl:    "https://example.com/test.png",
+				FileSize:   1024,
+				Dimensions: []int32{100},
+			},
 			expectErr: true,
 			errFields: []string{"dimensions"},
 		},
 		{
 			name: "negative duration",
 			request: func() *api.CreateMediaRequest {
-				mediaType := "audio"
-				fileName := "test.mp3"
-				fileUrl := "https://example.com/test.mp3"
-				fileSize := int32(1024)
 				duration := float32(-5)
 				return &api.CreateMediaRequest{
-					MediaType: &mediaType,
-					FileName:  &fileName,
-					FileUrl:   &fileUrl,
-					FileSize:  &fileSize,
+					MediaType: "audio",
+					FileName:  "test.mp3",
+					FileUrl:   "https://example.com/test.mp3",
+					FileSize:  1024,
 					Duration:  &duration,
 				}
 			}(),
@@ -612,17 +535,13 @@ func TestValidateMediaProcessingParamsAudio(t *testing.T) {
 
 // Benchmark tests
 func BenchmarkValidateCreateMediaRequest(b *testing.B) {
-	mediaType := "audio"
-	fileName := "test.mp3"
-	fileUrl := "https://example.com/test.mp3"
 	contentType := "audio/mpeg"
-	fileSize := int32(1024)
 	req := &api.CreateMediaRequest{
-		MediaType:   &mediaType,
-		FileName:    &fileName,
-		FileUrl:     &fileUrl,
+		MediaType:   "audio",
+		FileName:    "test.mp3",
+		FileUrl:     "https://example.com/test.mp3",
 		ContentType: &contentType,
-		FileSize:    &fileSize,
+		FileSize:    1024,
 	}
 
 	b.ResetTimer()

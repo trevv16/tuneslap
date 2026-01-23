@@ -46,12 +46,12 @@ func (h *MediaHandler) MediaResponseMapper(media models.Media) interface{} {
 }
 
 // deriveContentTypeFromFileName derives content type from file extension
-func deriveContentTypeFromFileName(fileName *string) string {
-	if fileName == nil || *fileName == "" {
+func deriveContentTypeFromFileName(fileName string) string {
+	if fileName == "" {
 		return "application/octet-stream"
 	}
 
-	lowerName := strings.ToLower(*fileName)
+	lowerName := strings.ToLower(fileName)
 
 	// Audio types
 	if strings.HasSuffix(lowerName, ".mp3") {
@@ -160,8 +160,9 @@ func (h *MediaHandler) HandleCreateMedia(c *fiber.Ctx) error {
 		// Demo mode limits
 		if config.IsDemoMode() {
 			// Check file size limit (10MB in demo mode)
-			if req.FileSize != nil && int64(*req.FileSize) > config.DemoMaxFileSize {
-				return models.Media{}, fmt.Errorf("file size (%d bytes) exceeds demo mode limit (%d bytes)", *req.FileSize, config.DemoMaxFileSize)
+			// FileSize is now a required int32 field (non-pointer)
+			if int64(req.FileSize) > config.DemoMaxFileSize {
+				return models.Media{}, fmt.Errorf("file size (%d bytes) exceeds demo mode limit (%d bytes)", req.FileSize, config.DemoMaxFileSize)
 			}
 			// Check media count limit (5 uploads in demo mode)
 			totalCount := mediaStats.ImageCount + mediaStats.AudioCount
@@ -172,8 +173,8 @@ func (h *MediaHandler) HandleCreateMedia(c *fiber.Ctx) error {
 
 		// If storage limit is set (availableStorage is not -1 for unlimited), validate
 		if mediaStats.AvailableStorage != -1 {
-			if req.FileSize != nil && int64(*req.FileSize) > mediaStats.AvailableStorage {
-				return models.Media{}, fmt.Errorf("file size (%d bytes) exceeds available storage (%d bytes)", *req.FileSize, mediaStats.AvailableStorage)
+			if int64(req.FileSize) > mediaStats.AvailableStorage {
+				return models.Media{}, fmt.Errorf("file size (%d bytes) exceeds available storage (%d bytes)", req.FileSize, mediaStats.AvailableStorage)
 			}
 		}
 

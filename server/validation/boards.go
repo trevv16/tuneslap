@@ -62,16 +62,16 @@ func ValidateCreateBoardRequest(req *api.CreateBoardRequest) ValidationResult {
 	var errors []ValidationError
 
 	// Name: required, min=MinNameLength, max=MaxNameLength, alphanumspace, excludesall=<>{}[]()&|\
-	if err := validateRequiredString("name", req.Name); err != nil {
-		errors = append(errors, *err)
-	} else if req.Name != nil {
-		if err := validateStringLength("name", *req.Name, MinNameLength, MaxNameLength); err != nil {
+	if req.Name == "" {
+		errors = append(errors, ValidationError{Field: "name", Message: "name is required"})
+	} else {
+		if err := validateStringLength("name", req.Name, MinNameLength, MaxNameLength); err != nil {
 			errors = append(errors, *err)
 		} else {
-			if err := validateAlphaNumSpaceHelper("name", *req.Name); err != nil {
+			if err := validateAlphaNumSpaceHelper("name", req.Name); err != nil {
 				errors = append(errors, *err)
 			}
-			if err := validateExcludesAllHelper("name", *req.Name, "<>{}[]()&|\\"); err != nil {
+			if err := validateExcludesAllHelper("name", req.Name, "<>{}[]()&|\\"); err != nil {
 				errors = append(errors, *err)
 			}
 		}
@@ -83,10 +83,10 @@ func ValidateCreateBoardRequest(req *api.CreateBoardRequest) ValidationResult {
 	}
 
 	// Layout: required, oneof=grid list
-	if err := validateRequiredString("layout", req.Layout); err != nil {
-		errors = append(errors, *err)
-	} else if req.Layout != nil {
-		if err := validateOneOf("layout", *req.Layout, []string{"grid", "list"}); err != nil {
+	if req.Layout == "" {
+		errors = append(errors, ValidationError{Field: "layout", Message: "layout is required"})
+	} else {
+		if err := validateOneOf("layout", req.Layout, []string{"grid", "list"}); err != nil {
 			errors = append(errors, *err)
 		}
 	}

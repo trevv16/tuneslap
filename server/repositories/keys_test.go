@@ -38,11 +38,9 @@ func TestKeyRepositoryIntegration(t *testing.T) {
 
 	// Create a board for testing
 	createBoard := func() primitive.ObjectID {
-		name := "Test Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Test Board",
+			Layout: "grid",
 		}
 		board, err := boardRepo.CreateBoard(req, authorID)
 		assert.NoError(t, err)
@@ -191,11 +189,9 @@ func BenchmarkKeyRepository_CreateKey(b *testing.B) {
 	authorID := primitive.NewObjectID()
 
 	// Create a board
-	name := "Benchmark Board"
-	layout := "grid"
 	boardReq := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "Benchmark Board",
+		Layout: "grid",
 	}
 	board, _ := boardRepo.CreateBoard(boardReq, authorID)
 

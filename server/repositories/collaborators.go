@@ -98,8 +98,9 @@ func (r *CollaboratorRepository) UpdateCollaborator(
 		"updatedAt": primitive.NewDateTimeFromTime(time.Now()),
 	}
 
-	if updateData.Role != nil {
-		update["role"] = updateData.GetRole()
+	// Role is now a required field (non-pointer)
+	if updateData.Role != "" {
+		update["role"] = updateData.Role
 	}
 
 	err := r.UpdateInArray(boardId, "collaborators", collaboratorId, update)

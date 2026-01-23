@@ -20,10 +20,9 @@ func TestBoardValidator_Validate(t *testing.T) {
 	v := NewBoardValidator()
 
 	name := "Test Board"
-	layout := "grid"
 	createReq := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "Test Board",
+		Layout: "grid",
 	}
 
 	updateReq := &api.UpdateBoardRequest{
@@ -73,27 +72,21 @@ func TestValidateCreateBoardRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request",
-			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
-				layout := "grid"
-				return &api.CreateBoardRequest{
-					Name:   &name,
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "Test Board",
+				Layout: "grid",
+			},
 			expectErr: false,
 		},
 		{
 			name: "valid request with all fields",
 			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
 				desc := "A test board description"
-				layout := "list"
 				imageUrl := "https://example.com/image.png"
 				return &api.CreateBoardRequest{
-					Name:        &name,
+					Name:        "Test Board",
 					Description: &desc,
-					Layout:      &layout,
+					Layout:      "list",
 					ImageUrl:    &imageUrl,
 				}
 			}(),
@@ -101,91 +94,66 @@ func TestValidateCreateBoardRequest(t *testing.T) {
 		},
 		{
 			name: "missing name",
-			request: func() *api.CreateBoardRequest {
-				layout := "grid"
-				return &api.CreateBoardRequest{
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "",
+				Layout: "grid",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "missing layout",
-			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
-				return &api.CreateBoardRequest{
-					Name: &name,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "Test Board",
+				Layout: "",
+			},
 			expectErr: true,
 			errFields: []string{"layout"},
 		},
 		{
 			name: "name too short",
-			request: func() *api.CreateBoardRequest {
-				name := "AB"
-				layout := "grid"
-				return &api.CreateBoardRequest{
-					Name:   &name,
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "AB",
+				Layout: "grid",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "name too long",
-			request: func() *api.CreateBoardRequest {
-				name := string(make([]byte, 101))
-				for i := range name {
-					name = name[:i] + "a" + name[i+1:]
-				}
-				layout := "grid"
-				return &api.CreateBoardRequest{
-					Name:   &name,
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   string(make([]byte, 101)),
+				Layout: "grid",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "invalid layout",
-			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
-				layout := "invalid"
-				return &api.CreateBoardRequest{
-					Name:   &name,
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "Test Board",
+				Layout: "invalid",
+			},
 			expectErr: true,
 			errFields: []string{"layout"},
 		},
 		{
 			name: "name with special characters",
-			request: func() *api.CreateBoardRequest {
-				name := "Test<Board>"
-				layout := "grid"
-				return &api.CreateBoardRequest{
-					Name:   &name,
-					Layout: &layout,
-				}
-			}(),
+			request: &api.CreateBoardRequest{
+				Name:   "Test<Board>",
+				Layout: "grid",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "description too long",
 			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
 				desc := string(make([]byte, 501))
-				layout := "grid"
 				return &api.CreateBoardRequest{
-					Name:        &name,
+					Name:        "Test Board",
 					Description: &desc,
-					Layout:      &layout,
+					Layout:      "grid",
 				}
 			}(),
 			expectErr: true,
@@ -194,12 +162,10 @@ func TestValidateCreateBoardRequest(t *testing.T) {
 		{
 			name: "invalid image URL",
 			request: func() *api.CreateBoardRequest {
-				name := "Test Board"
-				layout := "grid"
 				imageUrl := "not-a-url"
 				return &api.CreateBoardRequest{
-					Name:     &name,
-					Layout:   &layout,
+					Name:     "Test Board",
+					Layout:   "grid",
 					ImageUrl: &imageUrl,
 				}
 			}(),
@@ -365,11 +331,9 @@ func TestBoardValidator_ValidateBoardOwnership(t *testing.T) {
 func TestBoardValidator_ValidateCreateBoard(t *testing.T) {
 	v := NewBoardValidator()
 
-	name := "Test Board"
-	layout := "grid"
 	req := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "Test Board",
+		Layout: "grid",
 	}
 
 	result := v.ValidateCreateBoard(req)
@@ -390,11 +354,9 @@ func TestBoardValidator_ValidateUpdateBoard(t *testing.T) {
 
 // Benchmark tests
 func BenchmarkValidateCreateBoardRequest(b *testing.B) {
-	name := "Test Board"
-	layout := "grid"
 	req := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "Test Board",
+		Layout: "grid",
 	}
 
 	b.ResetTimer()

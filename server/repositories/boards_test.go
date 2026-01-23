@@ -38,14 +38,12 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 	authorID := primitive.NewObjectID()
 
 	t.Run("CreateBoard", func(t *testing.T) {
-		name := "Test Board"
 		desc := "Test Description"
-		layout := "grid"
 
 		req := &api.CreateBoardRequest{
-			Name:        &name,
+			Name:        "Test Board",
 			Description: &desc,
-			Layout:      &layout,
+			Layout:      "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -60,11 +58,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 	t.Run("GetByAuthor", func(t *testing.T) {
 		// Create some boards
 		for i := 0; i < 3; i++ {
-			name := "Author Board " + string(rune('1'+i))
-			layout := "grid"
 			req := &api.CreateBoardRequest{
-				Name:   &name,
-				Layout: &layout,
+				Name:   "Author Board " + string(rune('1'+i)),
+				Layout: "grid",
 			}
 			_, err := repo.CreateBoard(req, authorID)
 			assert.NoError(t, err)
@@ -78,11 +74,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 	t.Run("GetById", func(t *testing.T) {
 		// Create a board
-		name := "GetById Board"
-		layout := "list"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "GetById Board",
+			Layout: "list",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -97,11 +91,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 	t.Run("GetById_WrongAuthor", func(t *testing.T) {
 		// Create a board
-		name := "Wrong Author Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Wrong Author Board",
+			Layout: "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -115,11 +107,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 	t.Run("UpdateBoard", func(t *testing.T) {
 		// Create a board
-		name := "Update Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Update Board",
+			Layout: "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -141,11 +131,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 	t.Run("DeleteBoard", func(t *testing.T) {
 		// Create a board
-		name := "Delete Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Delete Board",
+			Layout: "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -162,11 +150,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 	t.Run("FindByIDWithAccess_AsAuthor", func(t *testing.T) {
 		// Create a board
-		name := "Access Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Access Board",
+			Layout: "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -182,11 +168,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 		collaboratorID := primitive.NewObjectID()
 
 		// Create a board with collaborator
-		name := "Collab Access Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Collab Access Board",
+			Layout: "grid",
 		}
 
 		created, err := repo.CreateBoard(req, authorID)
@@ -214,11 +198,9 @@ func TestBoardRepositoryIntegration(t *testing.T) {
 
 		// Create boards as author
 		for i := 0; i < 2; i++ {
-			name := "Access Test Board " + string(rune('1'+i))
-			layout := "grid"
 			req := &api.CreateBoardRequest{
-				Name:   &name,
-				Layout: &layout,
+				Name:   "Access Test Board " + string(rune('1'+i)),
+				Layout: "grid",
 			}
 			_, err := repo.CreateBoard(req, testAuthorID)
 			assert.NoError(t, err)
@@ -244,11 +226,9 @@ func BenchmarkBoardRepository_CreateBoard(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		name := "Benchmark Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Benchmark Board",
+			Layout: "grid",
 		}
 		repo.CreateBoard(req, authorID)
 	}
@@ -266,11 +246,9 @@ func BenchmarkBoardRepository_GetByAuthor(b *testing.B) {
 
 	// Create some boards
 	for i := 0; i < 10; i++ {
-		name := "Benchmark Board " + string(rune('0'+i))
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Benchmark Board " + string(rune('0'+i)),
+			Layout: "grid",
 		}
 		repo.CreateBoard(req, authorID)
 	}

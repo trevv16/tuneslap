@@ -12,113 +12,107 @@ import (
 func TestDeriveContentTypeFromFileName(t *testing.T) {
 	tests := []struct {
 		name        string
-		fileName    *string
+		fileName    string
 		expected    string
 		description string
 	}{
 		// Audio types
 		{
 			name:        "mp3 file",
-			fileName:    strPtr("audio.mp3"),
+			fileName:    "audio.mp3",
 			expected:    "audio/mpeg",
 			description: "MP3 audio files",
 		},
 		{
 			name:        "wav file",
-			fileName:    strPtr("audio.wav"),
+			fileName:    "audio.wav",
 			expected:    "audio/x-wav",
 			description: "WAV audio files",
 		},
 		{
 			name:        "webm audio file",
-			fileName:    strPtr("audio.webm"),
+			fileName:    "audio.webm",
 			expected:    "audio/webm",
 			description: "WebM audio files",
 		},
 		{
 			name:        "ogg file",
-			fileName:    strPtr("audio.ogg"),
+			fileName:    "audio.ogg",
 			expected:    "audio/ogg",
 			description: "OGG audio files",
 		},
 		{
 			name:        "aac file",
-			fileName:    strPtr("audio.aac"),
+			fileName:    "audio.aac",
 			expected:    "audio/aac",
 			description: "AAC audio files",
 		},
 		// Image types
 		{
 			name:        "jpg file",
-			fileName:    strPtr("image.jpg"),
+			fileName:    "image.jpg",
 			expected:    "image/jpeg",
 			description: "JPG image files",
 		},
 		{
 			name:        "jpeg file",
-			fileName:    strPtr("image.jpeg"),
+			fileName:    "image.jpeg",
 			expected:    "image/jpeg",
 			description: "JPEG image files",
 		},
 		{
 			name:        "png file",
-			fileName:    strPtr("image.png"),
+			fileName:    "image.png",
 			expected:    "image/png",
 			description: "PNG image files",
 		},
 		{
 			name:        "gif file",
-			fileName:    strPtr("image.gif"),
+			fileName:    "image.gif",
 			expected:    "image/gif",
 			description: "GIF image files",
 		},
 		{
 			name:        "webp file",
-			fileName:    strPtr("image.webp"),
+			fileName:    "image.webp",
 			expected:    "image/webp",
 			description: "WebP image files",
 		},
 		{
 			name:        "svg file",
-			fileName:    strPtr("image.svg"),
+			fileName:    "image.svg",
 			expected:    "image/svg+xml",
 			description: "SVG image files",
 		},
 		// Edge cases
 		{
-			name:        "nil filename",
-			fileName:    nil,
-			expected:    "application/octet-stream",
-			description: "Nil filename returns default",
-		},
-		{
 			name:        "empty filename",
-			fileName:    strPtr(""),
+			fileName:    "",
 			expected:    "application/octet-stream",
 			description: "Empty filename returns default",
 		},
 		{
 			name:        "unknown extension",
-			fileName:    strPtr("file.xyz"),
+			fileName:    "file.xyz",
 			expected:    "application/octet-stream",
 			description: "Unknown extension returns default",
 		},
 		{
 			name:        "no extension",
-			fileName:    strPtr("filename"),
+			fileName:    "filename",
 			expected:    "application/octet-stream",
 			description: "No extension returns default",
 		},
 		// Case insensitivity
 		{
 			name:        "uppercase MP3",
-			fileName:    strPtr("AUDIO.MP3"),
+			fileName:    "AUDIO.MP3",
 			expected:    "audio/mpeg",
 			description: "Uppercase extension handled correctly",
 		},
 		{
 			name:        "mixed case PNG",
-			fileName:    strPtr("Image.Png"),
+			fileName:    "Image.Png",
 			expected:    "image/png",
 			description: "Mixed case extension handled correctly",
 		},
@@ -382,11 +376,10 @@ func TestMediaStatsCalculation(t *testing.T) {
 // Benchmarks
 func BenchmarkDeriveContentTypeFromFileName(b *testing.B) {
 	fileName := "test-audio.mp3"
-	fileNamePtr := &fileName
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = deriveContentTypeFromFileName(fileNamePtr)
+		_ = deriveContentTypeFromFileName(fileName)
 	}
 }
 

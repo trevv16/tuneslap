@@ -434,12 +434,12 @@ func TestToUserResponse(t *testing.T) {
 	result := ToUserResponse(user)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, userID.Hex(), *result.Id)
-	assert.Equal(t, "Test User", *result.Name)
-	assert.Equal(t, "test@example.com", *result.Email)
+	assert.Equal(t, userID.Hex(), result.Id)
+	assert.Equal(t, "Test User", result.Name)
+	assert.Equal(t, "test@example.com", result.Email)
 	assert.Equal(t, "https://example.com/avatar.png", *result.ImageUrl)
-	assert.NotNil(t, result.CreatedAt)
-	assert.NotNil(t, result.UpdatedAt)
+	assert.NotZero(t, result.CreatedAt)
+	assert.NotZero(t, result.UpdatedAt)
 }
 
 func TestToCollaboratorResponse(t *testing.T) {
@@ -459,10 +459,10 @@ func TestToCollaboratorResponse(t *testing.T) {
 	result := ToCollaboratorResponse(collaborator)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, collabID.Hex(), *result.Id)
-	assert.Equal(t, userID.Hex(), *result.UserId)
-	assert.Equal(t, "collab@example.com", *result.Email)
-	assert.Equal(t, "editor", *result.Role)
+	assert.Equal(t, collabID.Hex(), result.Id)
+	assert.Equal(t, userID.Hex(), result.UserId)
+	assert.Equal(t, "collab@example.com", result.Email)
+	assert.Equal(t, "editor", result.Role)
 }
 
 func TestToKeyResponse(t *testing.T) {
@@ -489,12 +489,12 @@ func TestToKeyResponse(t *testing.T) {
 	result := ToKeyResponse(key)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, keyID.Hex(), *result.Id)
-	assert.Equal(t, boardID.Hex(), *result.BoardId)
-	assert.Equal(t, "Test Key", *result.Name)
+	assert.Equal(t, keyID.Hex(), result.Id)
+	assert.Equal(t, boardID.Hex(), result.BoardId)
+	assert.Equal(t, "Test Key", result.Name)
 	assert.Equal(t, "A test key", *result.Description)
-	assert.Equal(t, audioMediaID.Hex(), *result.AudioMediaId)
-	assert.Equal(t, "A", *result.HotKey)
+	assert.Equal(t, audioMediaID.Hex(), result.AudioMediaId)
+	assert.Equal(t, "A", result.HotKey)
 }
 
 func TestToMediaProcessingParamsAudio(t *testing.T) {
@@ -663,22 +663,20 @@ func TestToMediaProcessingActivity(t *testing.T) {
 	result := ToMediaProcessingActivity(activity)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, "done", *result.Status)
-	assert.Equal(t, "Processing completed", *result.Message)
-	assert.NotNil(t, result.CreatedAt)
-	assert.NotNil(t, result.UpdatedAt)
+	assert.Equal(t, "done", result.Status)
+	assert.Equal(t, "Processing completed", result.Message)
+	assert.NotZero(t, result.CreatedAt)
+	assert.NotZero(t, result.UpdatedAt)
 }
 
 func TestProcessingActivityFromAPI(t *testing.T) {
 	now := time.Now()
-	status := "processing"
-	message := "Processing in progress"
 
 	activity := &api.MediaProcessingActivity{
-		Status:    &status,
-		Message:   &message,
-		CreatedAt: &now,
-		UpdatedAt: &now,
+		Status:    "processing",
+		Message:   "Processing in progress",
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	result := ProcessingActivityFromAPI(activity)
@@ -722,11 +720,11 @@ func TestToMediaResponse(t *testing.T) {
 	result := ToMediaResponse(media)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, mediaID.Hex(), *result.Id)
-	assert.Equal(t, authorID.Hex(), *result.AuthorId)
-	assert.Equal(t, "audio", *result.MediaType)
-	assert.Equal(t, "test.mp3", *result.FileName)
-	assert.Equal(t, "done", *result.Status)
+	assert.Equal(t, mediaID.Hex(), result.Id)
+	assert.Equal(t, authorID.Hex(), result.AuthorId)
+	assert.Equal(t, "audio", result.MediaType)
+	assert.Equal(t, "test.mp3", result.FileName)
+	assert.Equal(t, "done", result.Status)
 	assert.Equal(t, float32(120.5), *result.Duration)
 }
 
@@ -770,25 +768,23 @@ func TestToBoardResponse(t *testing.T) {
 	result := ToBoardResponse(board)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, boardID.Hex(), *result.Id)
-	assert.Equal(t, authorID.Hex(), *result.AuthorId)
-	assert.Equal(t, "Test Board", *result.Name)
-	assert.Equal(t, "grid", *result.Layout)
+	assert.Equal(t, boardID.Hex(), result.Id)
+	assert.Equal(t, authorID.Hex(), result.AuthorId)
+	assert.Equal(t, "Test Board", result.Name)
+	assert.Equal(t, "grid", result.Layout)
 	assert.Len(t, result.Collaborators, 1)
 	assert.Len(t, result.Keys, 1)
 }
 
 func TestBoardFromCreateRequest(t *testing.T) {
 	authorID := primitive.NewObjectID()
-	name := "New Board"
 	desc := "A new board"
-	layout := "grid"
 	imageUrl := "https://example.com/image.png"
 
 	req := &api.CreateBoardRequest{
-		Name:        &name,
+		Name:        "New Board",
 		Description: &desc,
-		Layout:      &layout,
+		Layout:      "grid",
 		ImageUrl:    &imageUrl,
 	}
 
@@ -806,12 +802,10 @@ func TestBoardFromCreateRequest(t *testing.T) {
 
 func TestBoardFromCreateRequest_ListLayout(t *testing.T) {
 	authorID := primitive.NewObjectID()
-	name := "New Board"
-	layout := "list"
 
 	req := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "New Board",
+		Layout: "list",
 	}
 
 	result := BoardFromCreateRequest(req, authorID)
@@ -857,21 +851,17 @@ func TestBoardFromUpdateRequest(t *testing.T) {
 
 func TestMediaFromCreateRequest(t *testing.T) {
 	authorID := primitive.NewObjectID()
-	mediaType := "audio"
-	fileName := "test.mp3"
 	desc := "Test file"
-	fileUrl := "https://example.com/test.mp3"
 	contentType := "audio/mpeg"
-	fileSize := int32(1024)
 	duration := float32(60.0)
 
 	req := &api.CreateMediaRequest{
-		MediaType:   &mediaType,
-		FileName:    &fileName,
+		MediaType:   "audio",
+		FileName:    "test.mp3",
 		Description: &desc,
-		FileUrl:     &fileUrl,
+		FileUrl:     "https://example.com/test.mp3",
 		ContentType: &contentType,
-		FileSize:    &fileSize,
+		FileSize:    1024,
 		Duration:    &duration,
 	}
 
@@ -916,12 +906,9 @@ func TestKeyFromCreateRequest(t *testing.T) {
 }
 
 func TestCollaboratorFromCreateRequest(t *testing.T) {
-	email := "test@example.com"
-	role := "editor"
-
 	req := &api.CreateCollaboratorRequest{
-		Email: &email,
-		Role:  &role,
+		Email: "test@example.com",
+		Role:  "editor",
 	}
 
 	result := CollaboratorFromCreateRequest(req)

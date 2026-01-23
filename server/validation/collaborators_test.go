@@ -19,16 +19,13 @@ func TestNewCollaboratorValidator(t *testing.T) {
 func TestCollaboratorValidator_Validate(t *testing.T) {
 	v := NewCollaboratorValidator()
 
-	email := "test@example.com"
-	role := "editor"
-
 	createReq := &api.CreateCollaboratorRequest{
-		Email: &email,
-		Role:  &role,
+		Email: "test@example.com",
+		Role:  "editor",
 	}
 
 	updateReq := &api.UpdateCollaboratorRequest{
-		Role: &role,
+		Role: "editor",
 	}
 
 	tests := []struct {
@@ -74,111 +71,79 @@ func TestValidateCreateCollaboratorRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request with editor role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				role := "editor"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "editor",
+			},
 			expectErr: false,
 		},
 		{
 			name: "valid request with viewer role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				role := "viewer"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "viewer",
+			},
 			expectErr: false,
 		},
 		{
 			name: "valid request with owner role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				role := "owner"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "owner",
+			},
 			expectErr: false,
 		},
 		{
 			name: "missing email",
-			request: func() *api.CreateCollaboratorRequest {
-				role := "editor"
-				return &api.CreateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "",
+				Role:  "editor",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "empty email",
-			request: func() *api.CreateCollaboratorRequest {
-				email := ""
-				role := "editor"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "",
+				Role:  "editor",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "invalid email format",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "not-an-email"
-				role := "editor"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "not-an-email",
+				Role:  "editor",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "missing role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
 		{
 			name: "empty role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				role := ""
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
 		{
 			name: "invalid role",
-			request: func() *api.CreateCollaboratorRequest {
-				email := "test@example.com"
-				role := "admin"
-				return &api.CreateCollaboratorRequest{
-					Email: &email,
-					Role:  &role,
-				}
-			}(),
+			request: &api.CreateCollaboratorRequest{
+				Email: "test@example.com",
+				Role:  "admin",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
@@ -217,59 +182,46 @@ func TestValidateUpdateCollaboratorRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request with editor role",
-			request: func() *api.UpdateCollaboratorRequest {
-				role := "editor"
-				return &api.UpdateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.UpdateCollaboratorRequest{
+				Role: "editor",
+			},
 			expectErr: false,
 		},
 		{
 			name: "valid request with viewer role",
-			request: func() *api.UpdateCollaboratorRequest {
-				role := "viewer"
-				return &api.UpdateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.UpdateCollaboratorRequest{
+				Role: "viewer",
+			},
 			expectErr: false,
 		},
 		{
 			name: "valid request with owner role",
-			request: func() *api.UpdateCollaboratorRequest {
-				role := "owner"
-				return &api.UpdateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.UpdateCollaboratorRequest{
+				Role: "owner",
+			},
 			expectErr: false,
 		},
 		{
-			name:      "missing role",
-			request:   &api.UpdateCollaboratorRequest{},
+			name: "missing role",
+			request: &api.UpdateCollaboratorRequest{
+				Role: "",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
 		{
 			name: "empty role",
-			request: func() *api.UpdateCollaboratorRequest {
-				role := ""
-				return &api.UpdateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.UpdateCollaboratorRequest{
+				Role: "",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
 		{
 			name: "invalid role",
-			request: func() *api.UpdateCollaboratorRequest {
-				role := "admin"
-				return &api.UpdateCollaboratorRequest{
-					Role: &role,
-				}
-			}(),
+			request: &api.UpdateCollaboratorRequest{
+				Role: "admin",
+			},
 			expectErr: true,
 			errFields: []string{"role"},
 		},
@@ -341,11 +293,9 @@ func TestCollaboratorValidator_ValidateCollaboratorUniqueness(t *testing.T) {
 func TestCollaboratorValidator_ValidateCreateCollaborator(t *testing.T) {
 	v := NewCollaboratorValidator()
 
-	email := "test@example.com"
-	role := "editor"
 	req := &api.CreateCollaboratorRequest{
-		Email: &email,
-		Role:  &role,
+		Email: "test@example.com",
+		Role:  "editor",
 	}
 
 	result := v.ValidateCreateCollaborator(req)
@@ -355,9 +305,8 @@ func TestCollaboratorValidator_ValidateCreateCollaborator(t *testing.T) {
 func TestCollaboratorValidator_ValidateUpdateCollaborator(t *testing.T) {
 	v := NewCollaboratorValidator()
 
-	role := "viewer"
 	req := &api.UpdateCollaboratorRequest{
-		Role: &role,
+		Role: "viewer",
 	}
 
 	result := v.ValidateUpdateCollaborator(req)
@@ -366,11 +315,9 @@ func TestCollaboratorValidator_ValidateUpdateCollaborator(t *testing.T) {
 
 // Benchmark tests
 func BenchmarkValidateCreateCollaboratorRequest(b *testing.B) {
-	email := "test@example.com"
-	role := "editor"
 	req := &api.CreateCollaboratorRequest{
-		Email: &email,
-		Role:  &role,
+		Email: "test@example.com",
+		Role:  "editor",
 	}
 
 	b.ResetTimer()

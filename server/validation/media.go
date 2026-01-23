@@ -75,26 +75,26 @@ func ValidateCreateMediaRequest(req *api.CreateMediaRequest) ValidationResult {
 	var errors []ValidationError
 
 	// MediaType: required, oneof=image audio
-	if err := validateRequiredString("mediaType", req.MediaType); err != nil {
-		errors = append(errors, *err)
-	} else if req.MediaType != nil {
-		if err := validateOneOf("mediaType", *req.MediaType, []string{"image", "audio"}); err != nil {
+	if req.MediaType == "" {
+		errors = append(errors, ValidationError{Field: "mediaType", Message: "mediaType is required"})
+	} else {
+		if err := validateOneOf("mediaType", req.MediaType, []string{"image", "audio"}); err != nil {
 			errors = append(errors, *err)
 		}
 	}
 
 	// FileName: required, min=MinFileNameLength, max=MaxFileNameLength, allows alphanumeric, spaces, hyphens, underscores, and dots
-	if err := validateRequiredString("fileName", req.FileName); err != nil {
-		errors = append(errors, *err)
-	} else if req.FileName != nil {
-		if err := validateStringLength("fileName", *req.FileName, MinFileNameLength, MaxFileNameLength); err != nil {
+	if req.FileName == "" {
+		errors = append(errors, ValidationError{Field: "fileName", Message: "fileName is required"})
+	} else {
+		if err := validateStringLength("fileName", req.FileName, MinFileNameLength, MaxFileNameLength); err != nil {
 			errors = append(errors, *err)
 		} else {
 			// Allow alphanumeric, spaces, hyphens, underscores, and dots for filenames
-			if err := validateFileNameHelper("fileName", *req.FileName); err != nil {
+			if err := validateFileNameHelper("fileName", req.FileName); err != nil {
 				errors = append(errors, *err)
 			}
-			if err := validateExcludesAllHelper("fileName", *req.FileName, "<>{}[]()&|\\"); err != nil {
+			if err := validateExcludesAllHelper("fileName", req.FileName, "<>{}[]()&|\\"); err != nil {
 				errors = append(errors, *err)
 			}
 		}
@@ -108,13 +108,13 @@ func ValidateCreateMediaRequest(req *api.CreateMediaRequest) ValidationResult {
 	}
 
 	// FileUrl: required, url, excludesall=<>{}[]()&|\
-	if err := validateRequiredString("fileUrl", req.FileUrl); err != nil {
-		errors = append(errors, *err)
-	} else if req.FileUrl != nil {
-		if err := validateURLHelper("fileUrl", *req.FileUrl); err != nil {
+	if req.FileUrl == "" {
+		errors = append(errors, ValidationError{Field: "fileUrl", Message: "fileUrl is required"})
+	} else {
+		if err := validateURLHelper("fileUrl", req.FileUrl); err != nil {
 			errors = append(errors, *err)
 		}
-		if err := validateExcludesAllHelper("fileUrl", *req.FileUrl, "<>{}[]()&|\\"); err != nil {
+		if err := validateExcludesAllHelper("fileUrl", req.FileUrl, "<>{}[]()&|\\"); err != nil {
 			errors = append(errors, *err)
 		}
 	}
@@ -135,8 +135,8 @@ func ValidateCreateMediaRequest(req *api.CreateMediaRequest) ValidationResult {
 		}
 	}
 
-	// FileSize: required, min=1, max=MaxFileSize
-	if err := validateIntRange("fileSize", req.FileSize, 1, MaxFileSize); err != nil {
+	// FileSize: required (int32, not pointer), min=1, max=MaxFileSize
+	if err := validateInt32Range("fileSize", req.FileSize, 1, MaxFileSize); err != nil {
 		errors = append(errors, *err)
 	}
 

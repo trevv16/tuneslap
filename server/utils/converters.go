@@ -112,43 +112,43 @@ func int32ArrayToInt4Array(arr []int32) [4]int {
 // User conversions
 func ToUserResponse(user models.User) *api.UserResponse {
 	return &api.UserResponse{
-		Id:        objectIDToString(user.ID),
-		Name:      stringPtr(user.Name),
-		Email:     stringPtr(user.Email),
+		Id:        user.ID.Hex(),
+		Name:      user.Name,
+		Email:     user.Email,
 		ImageUrl:  stringPtr(user.ImageUrl),
-		CreatedAt: dateTimeToTime(primitive.NewDateTimeFromTime(user.CreatedAt)),
-		UpdatedAt: dateTimeToTime(primitive.NewDateTimeFromTime(user.UpdatedAt)),
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 }
 
 // Collaborator conversions
 func ToCollaboratorResponse(collaborator models.Collaborator) *api.CollaboratorResponse {
 	return &api.CollaboratorResponse{
-		Id:        objectIDToString(collaborator.ID),
-		UserId:    objectIDToString(collaborator.UserId),
-		Email:     stringPtr(collaborator.Email),
-		Name:      nil, // Name is not in internal Collaborator model
-		Role:      stringPtr(collaborator.Role),
+		Id:        collaborator.ID.Hex(),
+		UserId:    collaborator.UserId.Hex(),
+		Email:     collaborator.Email,
+		Name:      "", // Name is not in internal Collaborator model
+		Role:      collaborator.Role,
 		ImageUrl:  nil, // ImageUrl is not in internal Collaborator model
-		CreatedAt: dateTimeToTime(primitive.NewDateTimeFromTime(collaborator.CreatedAt)),
-		UpdatedAt: dateTimeToTime(primitive.NewDateTimeFromTime(collaborator.UpdatedAt)),
+		CreatedAt: collaborator.CreatedAt,
+		UpdatedAt: collaborator.UpdatedAt,
 	}
 }
 
 // Key conversions
 func ToKeyResponse(key models.Key) *api.KeyResponse {
 	return &api.KeyResponse{
-		Id:           objectIDToString(key.ID),
-		BoardId:      objectIDToString(key.BoardId),
-		Name:         stringPtr(key.Name),
+		Id:           key.ID.Hex(),
+		BoardId:      key.BoardId.Hex(),
+		Name:         key.Name,
 		Description:  stringPtr(key.Description),
-		AudioMediaId: objectIDToString(key.AudioMediaId),
+		AudioMediaId: key.AudioMediaId.Hex(),
 		AudioUrl:     stringPtr(key.AudioUrl),
 		ImageMediaId: objectIDToString(key.ImageMediaId),
 		ImageUrl:     stringPtr(key.ImageUrl),
-		HotKey:       stringPtr(key.HotKey),
-		CreatedAt:    dateTimeToTime(primitive.NewDateTimeFromTime(key.CreatedAt)),
-		UpdatedAt:    dateTimeToTime(primitive.NewDateTimeFromTime(key.UpdatedAt)),
+		HotKey:       key.HotKey,
+		CreatedAt:    key.CreatedAt,
+		UpdatedAt:    key.UpdatedAt,
 	}
 }
 
@@ -192,7 +192,7 @@ func ToMediaProcessingParamsImage(params models.ImageProcessingParams) *api.Medi
 
 	return &api.MediaProcessingParamsImage{
 		ResizeTo:     resizeTo,
-		Format:       stringPtr(formatStr),
+		Format:       formatStr,
 		Crop:         crop,
 		AspectRatio:  stringPtr(params.AspectRatio),
 		ApplyFilters: applyFilters,
@@ -240,9 +240,9 @@ func ProcessingParamsFromAPI(params *api.MediaProcessingParams) models.Processin
 				resizeTo = int32ArrayToIntArray(params.Image.ResizeTo)
 			}
 			formatInt := 0
-			if params.Image.Format != nil && *params.Image.Format != "" {
+			if params.Image.Format != "" {
 				// Convert format string to int if needed
-				formatInt = int((*params.Image.Format)[0])
+				formatInt = int(params.Image.Format[0])
 			}
 			applyFilters := ""
 			if len(params.Image.ApplyFilters) > 0 {
@@ -278,29 +278,19 @@ func ToMediaProcessingActivity(activity models.ProcessingActivity) *api.MediaPro
 	}
 
 	return &api.MediaProcessingActivity{
-		Status:    stringPtr(activity.Status),
-		Message:   stringPtr(activity.Message),
-		CreatedAt: &createdAt,
-		UpdatedAt: &updatedAt,
+		Status:    activity.Status,
+		Message:   activity.Message,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 }
 
 func ProcessingActivityFromAPI(activity *api.MediaProcessingActivity) models.ProcessingActivity {
 	result := models.ProcessingActivity{
-		Status:  stringVal(activity.Status),
-		Message: stringVal(activity.Message),
-	}
-
-	if activity.CreatedAt != nil {
-		result.CreatedAt = primitive.NewDateTimeFromTime(*activity.CreatedAt)
-	} else {
-		result.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
-	}
-
-	if activity.UpdatedAt != nil {
-		result.UpdatedAt = primitive.NewDateTimeFromTime(*activity.UpdatedAt)
-	} else {
-		result.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
+		Status:    activity.Status,
+		Message:   activity.Message,
+		CreatedAt: primitive.NewDateTimeFromTime(activity.CreatedAt),
+		UpdatedAt: primitive.NewDateTimeFromTime(activity.UpdatedAt),
 	}
 
 	return result
@@ -366,23 +356,23 @@ func ToMediaResponse(media models.Media) *api.MediaResponse {
 	}
 
 	return &api.MediaResponse{
-		Id:                 objectIDToString(media.ID),
-		AuthorId:           objectIDToString(media.AuthorId),
-		MediaType:          stringPtr(media.MediaType),
-		FileName:           stringPtr(media.FileName),
+		Id:                 media.ID.Hex(),
+		AuthorId:           media.AuthorId.Hex(),
+		MediaType:          media.MediaType,
+		FileName:           media.FileName,
 		Description:        stringPtr(media.Description),
-		FileUrl:            stringPtr(media.FileUrl),
+		FileUrl:            media.FileUrl,
 		ProcessedUrl:       stringPtr(media.ProcessedUrl),
 		WaveformUrl:        stringPtr(media.WaveformUrl),
 		ContentType:        stringPtr(media.ContentType),
-		FileSize:           intToInt32(int(media.FileSize)),
-		Status:             stringPtr(media.Status),
+		FileSize:           int32(media.FileSize),
+		Status:             media.Status,
 		ProcessingParams:   ToMediaProcessingParams(media.ProcessingParams),
 		ProcessingActivity: apiActivities,
 		Dimensions:         dimensions,
 		Duration:           duration,
-		CreatedAt:          &createdAt,
-		UpdatedAt:          &updatedAt,
+		CreatedAt:          createdAt,
+		UpdatedAt:          updatedAt,
 	}
 }
 
@@ -401,33 +391,30 @@ func ToBoardResponse(board models.Board) *api.BoardResponse {
 	}
 
 	return &api.BoardResponse{
-		Id:            objectIDToString(board.ID),
-		AuthorId:      objectIDToString(board.AuthorId),
-		Name:          stringPtr(board.Name),
+		Id:            board.ID.Hex(),
+		AuthorId:      board.AuthorId.Hex(),
+		Name:          board.Name,
 		Description:   stringPtr(board.Description),
-		Layout:        stringPtr(string(board.Layout)),
+		Layout:        string(board.Layout),
 		ImageUrl:      stringPtr(board.ImageUrl),
 		Collaborators: collaborators,
 		Keys:          keys,
-		CreatedAt:     dateTimeToTime(primitive.NewDateTimeFromTime(board.CreatedAt)),
-		UpdatedAt:     dateTimeToTime(primitive.NewDateTimeFromTime(board.UpdatedAt)),
+		CreatedAt:     board.CreatedAt,
+		UpdatedAt:     board.UpdatedAt,
 	}
 }
 
 // Request to Model conversions
 func BoardFromCreateRequest(req *api.CreateBoardRequest, authorId primitive.ObjectID) models.Board {
 	layout := models.GridLayout
-	if req.Layout != nil {
-		layoutStr := *req.Layout
-		if layoutStr == "list" {
-			layout = models.ListLayout
-		}
+	if req.Layout == "list" {
+		layout = models.ListLayout
 	}
 
 	return models.Board{
 		ID:            primitive.NewObjectID(),
 		AuthorId:      authorId,
-		Name:          stringVal(req.Name),
+		Name:          req.Name,
 		Description:   stringVal(req.Description),
 		Layout:        layout,
 		ImageUrl:      stringVal(req.ImageUrl),
@@ -472,10 +459,7 @@ func MediaFromCreateRequest(req *api.CreateMediaRequest, authorId primitive.Obje
 		dimensions = [2]int{int(req.Dimensions[0]), int(req.Dimensions[1])}
 	}
 
-	var fileSize int64
-	if req.FileSize != nil {
-		fileSize = int64(*req.FileSize)
-	}
+	fileSize := int64(req.FileSize)
 
 	var duration float64
 	if req.Duration != nil {
@@ -485,10 +469,10 @@ func MediaFromCreateRequest(req *api.CreateMediaRequest, authorId primitive.Obje
 	return models.Media{
 		ID:          primitive.NewObjectID(),
 		AuthorId:    authorId,
-		MediaType:   stringVal(req.MediaType),
-		FileName:    stringVal(req.FileName),
+		MediaType:   req.MediaType,
+		FileName:    req.FileName,
 		Description: stringVal(req.Description),
-		FileUrl:     stringVal(req.FileUrl),
+		FileUrl:     req.FileUrl,
 		ContentType: stringVal(req.ContentType),
 		FileSize:    fileSize,
 		Dimensions:  dimensions,
@@ -541,8 +525,8 @@ func KeyFromCreateRequest(req *api.CreateKeyRequest, boardId primitive.ObjectID)
 func CollaboratorFromCreateRequest(req *api.CreateCollaboratorRequest) models.Collaborator {
 	return models.Collaborator{
 		ID:        primitive.NewObjectID(),
-		Email:     stringVal(req.Email),
-		Role:      stringVal(req.Role),
+		Email:     req.Email,
+		Role:      req.Role,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

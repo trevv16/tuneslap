@@ -44,11 +44,9 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	// Create a board for testing
 	createBoard := func() primitive.ObjectID {
-		name := "Collab Test Board"
-		layout := "grid"
 		req := &api.CreateBoardRequest{
-			Name:   &name,
-			Layout: &layout,
+			Name:   "Collab Test Board",
+			Layout: "grid",
 		}
 		board, err := boardRepo.CreateBoard(req, authorID)
 		assert.NoError(t, err)
@@ -57,12 +55,10 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("CreateCollaborator", func(t *testing.T) {
 		boardID := createBoard()
-		email := "newcollab@test.com"
-		role := "editor"
 
 		req := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "newcollab@test.com",
+			Role:  "editor",
 		}
 
 		board, err := collabRepo.CreateCollaborator(boardID, req, authorID)
@@ -74,12 +70,10 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("CreateCollaborator_ViewerRole", func(t *testing.T) {
 		boardID := createBoard()
-		email := "viewer@test.com"
-		role := "viewer"
 
 		req := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "viewer@test.com",
+			Role:  "viewer",
 		}
 
 		board, err := collabRepo.CreateCollaborator(boardID, req, authorID)
@@ -90,13 +84,11 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("UpdateCollaborator", func(t *testing.T) {
 		boardID := createBoard()
-		email := "updatecollab@test.com"
-		role := "viewer"
 
 		// Create collaborator first
 		createReq := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "updatecollab@test.com",
+			Role:  "viewer",
 		}
 
 		board, err := collabRepo.CreateCollaborator(boardID, createReq, authorID)
@@ -104,9 +96,8 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 		collabID := board.Collaborators[0].ID
 
 		// Update role
-		newRole := "editor"
 		updateReq := &api.UpdateCollaboratorRequest{
-			Role: &newRole,
+			Role: "editor",
 		}
 
 		updatedBoard, err := collabRepo.UpdateCollaborator(boardID, collabID, updateReq)
@@ -116,13 +107,10 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("DeleteCollaborator", func(t *testing.T) {
 		boardID := createBoard()
-		email := "deletecollab@test.com"
-		role := "editor"
-
 		// Create collaborator first
 		createReq := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "deletecollab@test.com",
+			Role:  "editor",
 		}
 
 		board, err := collabRepo.CreateCollaborator(boardID, createReq, authorID)
@@ -137,12 +125,10 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("CreateCollaborator_InvalidValidation", func(t *testing.T) {
 		boardID := createBoard()
-		email := "invalid-email"
-		role := "editor"
 
 		req := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "invalid-email",
+			Role:  "editor",
 		}
 
 		_, err := collabRepo.CreateCollaborator(boardID, req, authorID)
@@ -151,12 +137,10 @@ func TestCollaboratorRepositoryIntegration(t *testing.T) {
 
 	t.Run("CreateCollaborator_InvalidRole", func(t *testing.T) {
 		boardID := createBoard()
-		email := "valid@test.com"
-		role := "invalid_role"
 
 		req := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "valid@test.com",
+			Role:  "invalid_role",
 		}
 
 		_, err := collabRepo.CreateCollaborator(boardID, req, authorID)
@@ -177,21 +161,17 @@ func BenchmarkCollaboratorRepository_CreateCollaborator(b *testing.B) {
 	authorID := primitive.NewObjectID()
 
 	// Create a board
-	name := "Benchmark Board"
-	layout := "grid"
 	boardReq := &api.CreateBoardRequest{
-		Name:   &name,
-		Layout: &layout,
+		Name:   "Benchmark Board",
+		Layout: "grid",
 	}
 	board, _ := boardRepo.CreateBoard(boardReq, authorID)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		email := "bench" + string(rune('0'+i%10)) + "@test.com"
-		role := "editor"
 		req := &api.CreateCollaboratorRequest{
-			Email: &email,
-			Role:  &role,
+			Email: "bench" + string(rune('0'+i%10)) + "@test.com",
+			Role:  "editor",
 		}
 		collabRepo.CreateCollaborator(board.ID, req, authorID)
 	}

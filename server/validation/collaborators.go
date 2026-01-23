@@ -64,19 +64,19 @@ func ValidateCreateCollaboratorRequest(req *api.CreateCollaboratorRequest) Valid
 	var errors []ValidationError
 
 	// Email: required, email
-	if err := validateRequiredString("email", req.Email); err != nil {
-		errors = append(errors, *err)
-	} else if req.Email != nil {
-		if err := validateEmailHelper("email", *req.Email); err != nil {
+	if req.Email == "" {
+		errors = append(errors, ValidationError{Field: "email", Message: "email is required"})
+	} else {
+		if err := validateEmailHelper("email", req.Email); err != nil {
 			errors = append(errors, *err)
 		}
 	}
 
 	// Role: required, oneof=owner editor viewer
-	if err := validateRequiredString("role", req.Role); err != nil {
-		errors = append(errors, *err)
-	} else if req.Role != nil {
-		if err := validateOneOf("role", *req.Role, []string{"owner", "editor", "viewer"}); err != nil {
+	if req.Role == "" {
+		errors = append(errors, ValidationError{Field: "role", Message: "role is required"})
+	} else {
+		if err := validateOneOf("role", req.Role, []string{"owner", "editor", "viewer"}); err != nil {
 			errors = append(errors, *err)
 		}
 	}
@@ -92,10 +92,10 @@ func ValidateUpdateCollaboratorRequest(req *api.UpdateCollaboratorRequest) Valid
 	var errors []ValidationError
 
 	// Role: required, oneof=owner editor viewer
-	if err := validateRequiredString("role", req.Role); err != nil {
-		errors = append(errors, *err)
-	} else if req.Role != nil {
-		if err := validateOneOf("role", *req.Role, []string{"owner", "editor", "viewer"}); err != nil {
+	if req.Role == "" {
+		errors = append(errors, ValidationError{Field: "role", Message: "role is required"})
+	} else {
+		if err := validateOneOf("role", req.Role, []string{"owner", "editor", "viewer"}); err != nil {
 			errors = append(errors, *err)
 		}
 	}

@@ -17,129 +17,90 @@ func TestValidateSignupRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				email := "test@example.com"
-				password := "password123"
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "test@example.com",
+				Password: "password123",
+			},
 			expectErr: false,
 		},
 		{
 			name: "missing name",
-			request: func() *api.SignupRequest {
-				email := "test@example.com"
-				password := "password123"
-				return &api.SignupRequest{
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "",
+				Email:    "test@example.com",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "missing email",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				password := "password123"
-				return &api.SignupRequest{
-					Name:     &name,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "missing password",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				email := "test@example.com"
-				return &api.SignupRequest{
-					Name:  &name,
-					Email: &email,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "test@example.com",
+				Password: "",
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
 		{
 			name: "name too short",
-			request: func() *api.SignupRequest {
-				name := "AB"
-				email := "test@example.com"
-				password := "password123"
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "AB",
+				Email:    "test@example.com",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "name too long",
-			request: func() *api.SignupRequest {
-				name := string(make([]byte, 101))
-				email := "test@example.com"
-				password := "password123"
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     string(make([]byte, 101)),
+				Email:    "test@example.com",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"name"},
 		},
 		{
 			name: "invalid email",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				email := "invalid-email"
-				password := "password123"
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "invalid-email",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "password too short",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				email := "test@example.com"
-				password := "short"
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "test@example.com",
+				Password: "short",
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
 		{
 			name: "password too long",
-			request: func() *api.SignupRequest {
-				name := "Test User"
-				email := "test@example.com"
-				password := string(make([]byte, 129))
-				return &api.SignupRequest{
-					Name:     &name,
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SignupRequest{
+				Name:     "Test User",
+				Email:    "test@example.com",
+				Password: string(make([]byte, 129)),
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
@@ -177,48 +138,36 @@ func TestValidateSigninRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request",
-			request: func() *api.SigninRequest {
-				email := "test@example.com"
-				password := "password123"
-				return &api.SigninRequest{
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SigninRequest{
+				Email:    "test@example.com",
+				Password: "password123",
+			},
 			expectErr: false,
 		},
 		{
 			name: "missing email",
-			request: func() *api.SigninRequest {
-				password := "password123"
-				return &api.SigninRequest{
-					Password: &password,
-				}
-			}(),
+			request: &api.SigninRequest{
+				Email:    "",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "missing password",
-			request: func() *api.SigninRequest {
-				email := "test@example.com"
-				return &api.SigninRequest{
-					Email: &email,
-				}
-			}(),
+			request: &api.SigninRequest{
+				Email:    "test@example.com",
+				Password: "",
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
 		{
 			name: "invalid email",
-			request: func() *api.SigninRequest {
-				email := "invalid"
-				password := "password123"
-				return &api.SigninRequest{
-					Email:    &email,
-					Password: &password,
-				}
-			}(),
+			request: &api.SigninRequest{
+				Email:    "invalid",
+				Password: "password123",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
@@ -245,30 +194,24 @@ func TestValidateForgotRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request",
-			request: func() *api.ForgotRequest {
-				email := "test@example.com"
-				return &api.ForgotRequest{
-					Email: &email,
-				}
-			}(),
+			request: &api.ForgotRequest{
+				Email: "test@example.com",
+			},
 			expectErr: false,
 		},
 		{
 			name: "missing email",
-			request: func() *api.ForgotRequest {
-				return &api.ForgotRequest{}
-			}(),
+			request: &api.ForgotRequest{
+				Email: "",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
 		{
 			name: "invalid email",
-			request: func() *api.ForgotRequest {
-				email := "invalid"
-				return &api.ForgotRequest{
-					Email: &email,
-				}
-			}(),
+			request: &api.ForgotRequest{
+				Email: "invalid",
+			},
 			expectErr: true,
 			errFields: []string{"email"},
 		},
@@ -295,61 +238,45 @@ func TestValidateResetRequest(t *testing.T) {
 	}{
 		{
 			name: "valid request",
-			request: func() *api.ResetRequest {
-				token := "12345678901234567890123456789012" // 32 chars
-				password := "newpassword123"
-				return &api.ResetRequest{
-					Token:    &token,
-					Password: &password,
-				}
-			}(),
+			request: &api.ResetRequest{
+				Token:    "12345678901234567890123456789012", // 32 chars
+				Password: "newpassword123",
+			},
 			expectErr: false,
 		},
 		{
 			name: "missing token",
-			request: func() *api.ResetRequest {
-				password := "newpassword123"
-				return &api.ResetRequest{
-					Password: &password,
-				}
-			}(),
+			request: &api.ResetRequest{
+				Token:    "",
+				Password: "newpassword123",
+			},
 			expectErr: true,
 			errFields: []string{"token"},
 		},
 		{
 			name: "token too short",
-			request: func() *api.ResetRequest {
-				token := "short"
-				password := "newpassword123"
-				return &api.ResetRequest{
-					Token:    &token,
-					Password: &password,
-				}
-			}(),
+			request: &api.ResetRequest{
+				Token:    "short",
+				Password: "newpassword123",
+			},
 			expectErr: true,
 			errFields: []string{"token"},
 		},
 		{
 			name: "missing password",
-			request: func() *api.ResetRequest {
-				token := "12345678901234567890123456789012"
-				return &api.ResetRequest{
-					Token: &token,
-				}
-			}(),
+			request: &api.ResetRequest{
+				Token:    "12345678901234567890123456789012",
+				Password: "",
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
 		{
 			name: "password too short",
-			request: func() *api.ResetRequest {
-				token := "12345678901234567890123456789012"
-				password := "short"
-				return &api.ResetRequest{
-					Token:    &token,
-					Password: &password,
-				}
-			}(),
+			request: &api.ResetRequest{
+				Token:    "12345678901234567890123456789012",
+				Password: "short",
+			},
 			expectErr: true,
 			errFields: []string{"password"},
 		},
@@ -376,13 +303,10 @@ func TestNewAuthHandler(t *testing.T) {
 
 // Benchmark tests
 func BenchmarkValidateSignupRequest(b *testing.B) {
-	name := "Test User"
-	email := "test@example.com"
-	password := "password123"
 	req := &api.SignupRequest{
-		Name:     &name,
-		Email:    &email,
-		Password: &password,
+		Name:     "Test User",
+		Email:    "test@example.com",
+		Password: "password123",
 	}
 
 	b.ResetTimer()
@@ -392,11 +316,9 @@ func BenchmarkValidateSignupRequest(b *testing.B) {
 }
 
 func BenchmarkValidateSigninRequest(b *testing.B) {
-	email := "test@example.com"
-	password := "password123"
 	req := &api.SigninRequest{
-		Email:    &email,
-		Password: &password,
+		Email:    "test@example.com",
+		Password: "password123",
 	}
 
 	b.ResetTimer()
