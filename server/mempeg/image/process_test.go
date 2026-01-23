@@ -129,21 +129,12 @@ func isLibvipsAvailable() bool {
 	return bimg.VipsMajorVersion > 0
 }
 
-// createTestImage creates a simple test image for integration tests
+// createTestImage creates a test image with color variation for integration tests
+// The image has a red center on a white background, providing edges for blur testing
 func createTestImage(t *testing.T) []byte {
 	t.Helper()
 
-	// Create a simple 100x100 PNG image using bimg
-	// If this fails, libvips is not available
-	options := bimg.Options{
-		Width:  100,
-		Height: 100,
-		Type:   bimg.PNG,
-	}
-
-	// Create a blank image (bimg needs input bytes to work with)
-	// We'll use a minimal valid PNG to start
-	// This is a 1x1 red PNG
+	// Create a minimal valid PNG (1x1 red pixel)
 	minimalPNG := []byte{
 		0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
 		0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
@@ -156,11 +147,27 @@ func createTestImage(t *testing.T) []byte {
 		0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
 	}
 
-	// Resize to create a larger test image
-	img, err := bimg.NewImage(minimalPNG).Process(options)
+	// First create a 50x50 red image
+	smallImage, err := bimg.NewImage(minimalPNG).Process(bimg.Options{
+		Width:  50,
+		Height: 50,
+		Type:   bimg.PNG,
+	})
 	if err != nil {
-		// If bimg fails, libvips might not be available
 		return minimalPNG
+	}
+
+	// Embed it in a 100x100 canvas with white background
+	// This creates an image with red center and white border, giving blur edges to work with
+	img, err := bimg.NewImage(smallImage).Process(bimg.Options{
+		Width:      100,
+		Height:     100,
+		Embed:      true,
+		Background: bimg.Color{R: 255, G: 255, B: 255},
+		Type:       bimg.PNG,
+	})
+	if err != nil {
+		return smallImage
 	}
 
 	return img
