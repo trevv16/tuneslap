@@ -80,9 +80,8 @@ export default function KeyForm({
     },
   });
 
-  const mediaArray = mediaData || [];
-  const audioMedia = useMemo(() => mediaArray.filter((m: Media) => m.mediaType === "audio"), [mediaArray]);
-  const imageMedia = useMemo(() => mediaArray.filter((m: Media) => m.mediaType === "image"), [mediaArray]);
+  const audioMedia = useMemo(() => (mediaData || []).filter((m: Media) => m.mediaType === "audio"), [mediaData]);
+  const imageMedia = useMemo(() => (mediaData || []).filter((m: Media) => m.mediaType === "image"), [mediaData]);
 
   const handleAudioSelect = (id: string) => {
     if (selectedAudio === id) {

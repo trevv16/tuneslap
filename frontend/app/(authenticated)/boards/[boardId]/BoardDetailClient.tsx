@@ -42,30 +42,26 @@ export default function BoardDetailClient() {
     }
   }
 
-  const HeaderActions = ({ boardId, onAddKey }: HeaderActionsProps) => {
-    return (
-      <div className="flex items-center gap-3">
-        <Button variant="outline" asChild>
-          <Link href={`/boards/${boardId}/edit`}>
-            <Pencil className="mr-1.5 -ml-0.5 h-5 w-5" />
-            Edit
-          </Link>
-        </Button>
-        <Button onClick={onAddKey}>
-          <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
-          Add Key
-        </Button>
-      </div>
-    )
-  }
-
   return (
     <>
       <Header
         pageTitle={board?.name || "Board Detail"}
-        headerActions={<HeaderActions boardId={boardId as string} onAddKey={() => setAddKeyOpen(true)} />}
+        headerActions={
+          <div className="flex items-center gap-3">
+            <Button variant="outline" asChild>
+              <Link href={`/boards/${boardId}/edit`}>
+                <Pencil className="mr-1.5 -ml-0.5 h-5 w-5" />
+                Edit
+              </Link>
+            </Button>
+            <Button onClick={() => setAddKeyOpen(true)}>
+              <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
+              Add Key
+            </Button>
+          </div>
+        }
       />
-      <SoundBoard keys={board?.keys || []} />
+      <SoundBoard keys={board?.keys || []} onAddKey={() => setAddKeyOpen(true)} />
 
       {/* Add Key Sheet */}
       <Sheet open={addKeyOpen} onOpenChange={setAddKeyOpen}>

@@ -1,5 +1,6 @@
-import { getStoredToken, removeStoredToken } from "@/utils/token";
 import type { UserResponse } from "@/api/models";
+import { getStoredToken, removeStoredToken } from "@/utils/token";
+import { useRouter } from "next/navigation";
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { useGetMe } from "../hooks/users";
 
@@ -14,6 +15,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   const token = getStoredToken();
   const { data: userData, isLoading, error } = useGetMe(token || "");
   const [user, setUser] = useState<UserResponse | null>(null);
@@ -21,10 +23,12 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   const signOut = () => {
     removeStoredToken();
     setUser(null);
+    router.push("/auth/signin");
   }
 
   useEffect(() => {
     if (userData?.data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(userData.data);
     } else if (error || !token) {
       // Clear user if there's an error or no token
@@ -32,10 +36,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }
   }, [userData, error, token]);
 
-  // Consider loading if:
-  // 1. We have a token and the query is loading, OR
-  // 2. We have a token but user data is not set yet (waiting for useEffect to run)
-  const isActuallyLoading = (isLoading && !!token) || (!!token && !user && !!userData);
+  // Consider loading if we have a token but haven't resolved the user yet
+  // (and there's no error that would indicate auth failure)
+  const isActuallyLoading = !!token && !user && !error;
 
   // Consider authenticated if we have both token and user
   const isAuthenticated = !!token && !!user;

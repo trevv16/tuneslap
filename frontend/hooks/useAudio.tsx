@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
 export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: string) => void) {
@@ -10,7 +10,7 @@ export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: st
   // Load audio buffer
   useEffect(() => {
     if (!audioUrl) {
-      toast.error(`Missing audio url for key: ${hotKey}`);
+      if (hotKey) toast.error(`Missing audio url for key: ${hotKey}`);
       return;
     }
 
@@ -31,9 +31,15 @@ export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: st
     return () => {
       ctx.close();
     };
-  }, [audioUrl]);
+  }, [audioUrl, hotKey, onError]);
 
-  const play = () => {
+  const stop = useCallback(() => {
+    sourceRef.current?.stop();
+    sourceRef.current?.disconnect();
+    sourceRef.current = null;
+  }, []);
+
+  const play = useCallback(() => {
     if (!audioCtxRef.current || !bufferRef.current) return;
 
     // Stop any currently playing audio first
@@ -44,13 +50,7 @@ export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: st
     source.connect(audioCtxRef.current.destination);
     source.start(0);
     sourceRef.current = source;
-  };
-
-  const stop = () => {
-    sourceRef.current?.stop();
-    sourceRef.current?.disconnect();
-    sourceRef.current = null;
-  };
+  }, [stop]);
 
   // Optional keyboard binding
   useEffect(() => {
@@ -76,7 +76,7 @@ export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: st
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };
-  }, [hotKey]);
+  }, [hotKey, play, stop]);
 
   // Bind to any DOM element
   const bindPressHandlers = (element: HTMLElement | null) => {
