@@ -1,5 +1,6 @@
 "use client"
 
+import { Logo } from "@/components/Logo"
 import { Dialog, DialogPanel } from "@headlessui/react"
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
@@ -19,7 +20,7 @@ export default function Header() {
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">TuneSlap</span>
-            <img alt="" src="/logo.png" className="h-8 w-auto" />
+            <Logo />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -51,7 +52,7 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">TuneSlap</span>
-              <img alt="" src="/logo.png" className="h-8 w-auto" />
+              <Logo />
             </Link>
             <button
               type="button"

@@ -1,5 +1,6 @@
 'use client'
 
+import { Logo } from "@/components/Logo"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -51,12 +52,8 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Desktop Nav */}
           <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="flex-shrink-0">
-              <img
-                alt="TuneSlap"
-                src="/logo.png"
-                className="h-8 w-auto"
-              />
+            <Link href="/dashboard" className="shrink-0">
+              <Logo />
             </Link>
 
             {/* Desktop Navigation */}

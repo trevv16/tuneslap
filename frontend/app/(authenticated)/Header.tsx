@@ -2,7 +2,7 @@
 
 import { useMediaStats } from "@/hooks/media"
 import { formatBytes } from "@/utils/helpers"
-import { FileAudio, HardDrive, Image } from "lucide-react"
+import { FileAudio, HardDrive, Image as ImageIcon } from "lucide-react"
 
 type HeaderProps = {
   pageTitle: string
@@ -26,7 +26,7 @@ export default function Header({ pageTitle, headerActions }: HeaderProps) {
                 {mediaStats.data?.audioCount || 0} Audio
               </div>
               <div className="mt-2 flex items-center text-sm text-muted-foreground">
-                <Image className="mr-1.5 h-5 w-5 shrink-0" />
+                <ImageIcon className="mr-1.5 h-5 w-5 shrink-0" />
                 {mediaStats.data?.imageCount || 0} Images
               </div>
               <div className="mt-2 flex items-center text-sm text-muted-foreground">

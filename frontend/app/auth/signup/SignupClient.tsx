@@ -1,5 +1,6 @@
 'use client'
 
+import { Logo } from "@/components/Logo"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,13 +50,9 @@ export default function SignupClient() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col items-center">
         <Link href="/">
-          <img
-            alt="TuneSlap"
-            src="/logo.png"
-            className="mx-auto h-10 w-auto"
-          />
+          <Logo />
         </Link>
         <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-foreground">
           Create your account

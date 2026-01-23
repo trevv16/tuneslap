@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo"
 import Link from "next/link"
 
 export default function Footer() {
@@ -6,7 +7,7 @@ export default function Footer() {
       <div className="border-t border-muted py-12">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-center gap-3 sm:items-start">
-            <img alt="TuneSlap" src="/logo.png" className="h-9" />
+            <Logo />
             <p className="text-sm text-base max-w-xs text-center sm:text-left">
               Create and trigger sounds for your streams and content.
             </p>

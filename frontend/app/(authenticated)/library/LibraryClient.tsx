@@ -28,6 +28,7 @@ export default function LibraryClient() {
   const { tab, view, mediaType, setTab, setView } = useLibraryParams()
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasMounted(true)
   }, [])
 
