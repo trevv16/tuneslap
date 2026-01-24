@@ -30,6 +30,44 @@ func NewArrayHandler[T any, CreateRequest any, UpdateRequest any](
 	}
 }
 
+// validateAndParseParentId validates auth and parses parent ID
+func (h *ArrayHandler[T, CreateRequest, UpdateRequest]) validateAndParseParentId(
+	c *fiber.Ctx,
+	parentIdParam string,
+) (primitive.ObjectID, error) {
+	if _, err := GetAuthorId(c); err != nil {
+		return primitive.NilObjectID, SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+	}
+	parentId, err := GetValidObjectId(c, parentIdParam)
+	if err != nil {
+		return primitive.NilObjectID, SendErrorResponse(c, fiber.StatusBadRequest, "Invalid parent ID", err)
+	}
+	return parentId, nil
+}
+
+// parseAndValidateRequest parses body and validates request
+func (h *ArrayHandler[T, CreateRequest, UpdateRequest]) parseAndValidateRequest(
+	c *fiber.Ctx,
+	request interface{},
+) error {
+	if err := c.BodyParser(request); err != nil {
+		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid request body", err)
+	}
+	validationResult := h.validator.Validate(request)
+	if !validationResult.IsValid {
+		return SendValidationErrorResponse(c, validationResult)
+	}
+	return nil
+}
+
+// mapResponse maps result using responseMapper if provided
+func mapResponse(data interface{}, responseMapper func(interface{}) interface{}) interface{} {
+	if responseMapper != nil {
+		return responseMapper(data)
+	}
+	return data
+}
+
 // HandleCreateInArray handles CREATE operations for embedded arrays
 func (h *ArrayHandler[T, CreateRequest, UpdateRequest]) HandleCreateInArray(
 	c *fiber.Ctx,
@@ -39,55 +77,29 @@ func (h *ArrayHandler[T, CreateRequest, UpdateRequest]) HandleCreateInArray(
 	responseMapper func(interface{}) interface{},
 	preCreateHook ...func(*fiber.Ctx, primitive.ObjectID, *CreateRequest) error,
 ) error {
-	// Get and validate authorId for authentication
-	_, err := GetAuthorId(c)
+	parentId, err := h.validateAndParseParentId(c, parentIdParam)
 	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+		return err
 	}
 
-	// Parse parent ID
-	parentId, err := GetValidObjectId(c, parentIdParam)
-	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid parent ID", err)
-	}
-
-	// Parse request body
 	request := new(CreateRequest)
-	if err := c.BodyParser(request); err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid request body", err)
-	}
-
-	// Validate request
-	validationResult := h.validator.Validate(request)
-	if !validationResult.IsValid {
-		return SendValidationErrorResponse(c, validationResult)
+	if err := h.parseAndValidateRequest(c, request); err != nil {
+		return err
 	}
 
 	// Call pre-create hook if provided
 	if len(preCreateHook) > 0 && preCreateHook[0] != nil {
 		if err := preCreateHook[0](c, parentId, request); err != nil {
-			return err // Hook should return appropriate error response
+			return err
 		}
 	}
 
-	// Create the array element
 	element := createFunc(*request)
-
-	// Add to array
-	_, err = h.arrayRepo.CreateInArray(parentId, arrayField, element)
-	if err != nil {
+	if _, err = h.arrayRepo.CreateInArray(parentId, arrayField, element); err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Failed to create array element", err)
 	}
 
-	// Map result if mapper provided
-	var data interface{}
-	if responseMapper != nil {
-		data = responseMapper(element)
-	} else {
-		data = element
-	}
-
-	return SendSuccessResponse(c, fiber.StatusCreated, "Array element created successfully", data)
+	return SendSuccessResponse(c, fiber.StatusCreated, "Array element created successfully", mapResponse(element, responseMapper))
 }
 
 // HandleUpdateInArray handles UPDATE operations for embedded arrays
@@ -99,60 +111,31 @@ func (h *ArrayHandler[T, CreateRequest, UpdateRequest]) HandleUpdateInArray(
 	updateFunc func(UpdateRequest) bson.M,
 	responseMapper func(interface{}) interface{},
 ) error {
-	// Get and validate authorId for authentication
-	_, err := GetAuthorId(c)
+	parentId, err := h.validateAndParseParentId(c, parentIdParam)
 	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid author ID", err)
+		return err
 	}
 
-	// Parse parent ID
-	parentId, err := GetValidObjectId(c, parentIdParam)
-	if err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid parent ID", err)
-	}
-
-	// Parse element ID
 	elementId, err := GetValidObjectId(c, elementIdParam)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid element ID", err)
 	}
 
-	// Parse request body
 	request := new(UpdateRequest)
-	if err := c.BodyParser(request); err != nil {
-		return SendErrorResponse(c, fiber.StatusBadRequest, "Invalid request body", err)
+	if err := h.parseAndValidateRequest(c, request); err != nil {
+		return err
 	}
 
-	// Validate request
-	validationResult := h.validator.Validate(request)
-	if !validationResult.IsValid {
-		return SendValidationErrorResponse(c, validationResult)
-	}
-
-	// Create update document
-	update := updateFunc(*request)
-
-	// Update array element
-	err = h.arrayRepo.UpdateInArray(parentId, arrayField, elementId, update)
-	if err != nil {
+	if err = h.arrayRepo.UpdateInArray(parentId, arrayField, elementId, updateFunc(*request)); err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Failed to update array element", err)
 	}
 
-	// Fetch the updated element
 	updatedElement, err := h.arrayRepo.GetArrayElement(parentId, arrayField, elementId)
 	if err != nil {
 		return SendErrorResponse(c, fiber.StatusInternalServerError, "Failed to retrieve updated element", err)
 	}
 
-	// Map result if mapper provided
-	var data interface{}
-	if responseMapper != nil {
-		data = responseMapper(updatedElement)
-	} else {
-		data = updatedElement
-	}
-
-	return SendSuccessResponse(c, fiber.StatusOK, "Array element updated successfully", data)
+	return SendSuccessResponse(c, fiber.StatusOK, "Array element updated successfully", mapResponse(updatedElement, responseMapper))
 }
 
 // HandleDeleteFromArray handles DELETE operations for embedded arrays
