@@ -54,7 +54,7 @@ terraform destroy
 
 ### Production
 
-- Service Account: `tuneslap-api@amunene-dev.iam.gserviceaccount.com`
+- Service Account: `tuneslap-api@munene-dev.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-prod`
 - Media Bucket: `tuneslap-media-prod`
 
