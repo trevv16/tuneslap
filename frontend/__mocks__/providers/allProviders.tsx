@@ -14,14 +14,17 @@ interface AllProvidersProps {
   }
 }
 
+import { useMemo } from 'react'
+
 export function AllProviders({ children, queryClient, authState }: AllProvidersProps) {
-  const client = queryClient ?? createTestQueryClient()
+  const client = useMemo(() => queryClient ?? createTestQueryClient(), [queryClient])
   
   return React.createElement(
     QueryClientWrapper,
     { client },
     React.createElement(MockAuthProvider, { value: authState }, children)
   )
+}
 }
 
 // Custom render function with all providers
