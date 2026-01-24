@@ -3,20 +3,19 @@ info:
   title: Common Components
   version: '1.0.0'
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
 # Common components file - security is defined in the main openapi.yaml
 # This file only contains shared schemas and parameters
 security:
   - {}
 
 paths: {}
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     page:
       name: page
