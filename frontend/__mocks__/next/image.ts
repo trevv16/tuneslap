@@ -13,7 +13,7 @@ interface ImageProps {
   onError?: () => void
 }
 
-function MockImage({ src, alt, width, height, className, onLoad, onError, ...props }: ImageProps) {
+function MockImage({ src, alt, width, height, className, onLoad, onError, fill, priority, ...props }: ImageProps) {
   return React.createElement('img', {
     src,
     alt,
@@ -24,6 +24,8 @@ function MockImage({ src, alt, width, height, className, onLoad, onError, ...pro
     onError,
     'data-testid': 'next-image',
     ...props,
+  })
+}
   })
 }
 
