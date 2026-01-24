@@ -4,6 +4,7 @@ FROM golang:1.25-bookworm AS builder
 # Install build dependencies (required for bimg/libvips) and code generation tools
 # Install Node.js 24 from NodeSource for openapi-generator
 # Package versions pinned for reproducibility (Debian bookworm)
+ARG NODEJS_VERSION=24.13.0-1nodesource1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-dev=8.14.1-3 \
     gcc=4:12.2.0-3 \
@@ -11,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     default-jre-headless=2:1.17-74 \
     curl=7.88.1-10+deb12u8 \
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
+    && apt-get install -y --no-install-recommends nodejs=${NODEJS_VERSION} \
     && rm -rf /var/lib/apt/lists/*
 
 # Work from project root structure so generate-types.sh paths work
