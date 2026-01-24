@@ -41,7 +41,7 @@ class IntersectionObserverMock {
   disconnect = jest.fn()
   root = null
   rootMargin = ''
-  thresholds = []
+  thresholds: number[] = []
 }
 Object.defineProperty(window, 'IntersectionObserver', { value: IntersectionObserverMock })
 
@@ -63,22 +63,28 @@ class AudioContextMock {
 }
 Object.defineProperty(window, 'AudioContext', { value: AudioContextMock, writable: true, configurable: true })
 
-// Mock Image
-class ImageMock {
-  onload: (() => void) | null = null
-  onerror: (() => void) | null = null
-  src = ''
-}
-Object.defineProperty(window, 'Image', { value: ImageMock, writable: true, configurable: true })
+// Mock Image as a jest.fn() so tests can mockImplementation
+const createImageMock = jest.fn(() => {
+  const img = {
+    onload: null as (() => void) | null,
+    onerror: null as (() => void) | null,
+    src: '',
+  }
+  return img
+})
+Object.defineProperty(window, 'Image', { value: createImageMock, writable: true, configurable: true })
 
-// Mock Audio
-class AudioMock {
-  oncanplaythrough: (() => void) | null = null
-  onerror: (() => void) | null = null
-  src = ''
-  load = jest.fn()
-}
-Object.defineProperty(window, 'Audio', { value: AudioMock, writable: true, configurable: true })
+// Mock Audio as a jest.fn() so tests can mockImplementation
+const createAudioMock = jest.fn(() => {
+  const audio = {
+    oncanplaythrough: null as (() => void) | null,
+    onerror: null as (() => void) | null,
+    src: '',
+    load: jest.fn(),
+  }
+  return audio
+})
+Object.defineProperty(window, 'Audio', { value: createAudioMock, writable: true, configurable: true })
 
 // Reset mocks before each test
 beforeEach(() => {

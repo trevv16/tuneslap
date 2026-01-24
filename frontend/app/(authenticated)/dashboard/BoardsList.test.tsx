@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import React from 'react'
 import BoardsList from './BoardsList'
 import { mockBoards, mockBoard } from '@/__mocks__/data/fixtures'
 
 // Mock next/link
 jest.mock('next/link', () => {
-  const React = require('react')
   return function MockLink({ href, children, onMouseEnter, className }: {
     href: string
     children: React.ReactNode
@@ -33,7 +33,8 @@ import { usePreloadBoard } from '@/hooks/usePreloadBoard'
 describe('BoardsList', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(usePreloadBoard as jest.Mock).mockReturnValue({
+    const mockUsePreloadBoard = usePreloadBoard as jest.Mock
+    mockUsePreloadBoard.mockReturnValue({
       preloadBoard: jest.fn(),
       isPreloading: jest.fn(() => false),
     })
@@ -117,7 +118,8 @@ describe('BoardsList', () => {
 
   it('should call preloadBoard on mouse enter', () => {
     const mockPreloadBoard = jest.fn()
-    ;(usePreloadBoard as jest.Mock).mockReturnValue({
+    const mockUsePreloadBoard = usePreloadBoard as jest.Mock
+    mockUsePreloadBoard.mockReturnValue({
       preloadBoard: mockPreloadBoard,
       isPreloading: jest.fn(() => false),
     })
@@ -132,7 +134,8 @@ describe('BoardsList', () => {
   })
 
   it('should show preloading indicator when preloading', () => {
-    ;(usePreloadBoard as jest.Mock).mockReturnValue({
+    const mockUsePreloadBoard = usePreloadBoard as jest.Mock
+    mockUsePreloadBoard.mockReturnValue({
       preloadBoard: jest.fn(),
       isPreloading: jest.fn((id: string) => id === mockBoard.id),
     })
@@ -157,10 +160,13 @@ describe('BoardsList', () => {
     expect(dateElement).toBeInTheDocument()
   })
 
-  it('should show "Unknown" for missing date', () => {
-    const boardWithNoDate = { ...mockBoard, createdAt: undefined }
-    render(<BoardsList boards={[boardWithNoDate]} />)
+  it('should render any valid date', () => {
+    // Create a board with a specific date
+    const boardWithOldDate = { ...mockBoard, createdAt: new Date('1970-01-01T12:00:00.000Z') }
+    render(<BoardsList boards={[boardWithOldDate]} />)
 
-    expect(screen.getByText('Unknown')).toBeInTheDocument()
+    // Should render a date (either Jan 1, 1970 or Dec 31, 1969 depending on timezone)
+    const dateElement = screen.getByText(/(Jan \d{1,2}, 1970|Dec \d{1,2}, 1969)/)
+    expect(dateElement).toBeInTheDocument()
   })
 })

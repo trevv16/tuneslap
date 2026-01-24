@@ -1,19 +1,20 @@
 // localStorage mock utilities
 
-interface StorageData {
-  [key: string]: string
-}
+type StorageData = Record<string, string>
 
 export function createLocalStorageMock(initialData: StorageData = {}) {
   let store: StorageData = { ...initialData }
 
   return {
-    getItem: jest.fn((key: string) => store[key] ?? null),
+    getItem: jest.fn((key: string) => {
+      return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null
+    }),
     setItem: jest.fn((key: string, value: string) => {
-      store[key] = value
+      store = { ...store, [key]: value }
     }),
     removeItem: jest.fn((key: string) => {
-      delete store[key]
+      const { [key]: _, ...rest } = store
+      store = rest
     }),
     clear: jest.fn(() => {
       store = {}
@@ -23,7 +24,7 @@ export function createLocalStorageMock(initialData: StorageData = {}) {
     },
     key: jest.fn((index: number) => {
       const keys = Object.keys(store)
-      return keys[index] ?? null
+      return index >= 0 && index < keys.length ? keys[index] : null
     }),
     // Helper methods for testing
     _getStore: () => ({ ...store }),

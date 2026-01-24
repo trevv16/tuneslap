@@ -43,17 +43,22 @@ describe('AuthContextProvider', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-    ;(getStoredToken as jest.Mock).mockReturnValue(null)
-    ;(useGetMe as jest.Mock).mockReturnValue({
+    const mockUseRouter = useRouter as jest.Mock
+    mockUseRouter.mockReturnValue(mockRouter)
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue(null)
+    const mockUseGetMe = useGetMe as jest.Mock
+    mockUseGetMe.mockReturnValue({
       data: undefined,
       error: undefined,
     })
   })
 
   it('should show loading state when token exists but user not resolved', () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue('mock-token')
-    ;(useGetMe as jest.Mock).mockReturnValue({
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('mock-token')
+    const mockUseGetMe = useGetMe as jest.Mock
+    mockUseGetMe.mockReturnValue({
       data: undefined,
       error: undefined,
     })
@@ -69,8 +74,10 @@ describe('AuthContextProvider', () => {
   })
 
   it('should be authenticated when token and user exist', async () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue('mock-token')
-    ;(useGetMe as jest.Mock).mockReturnValue({
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('mock-token')
+    const mockUseGetMe = useGetMe as jest.Mock
+    mockUseGetMe.mockReturnValue({
       data: { data: mockUser },
       error: undefined,
     })
@@ -89,7 +96,8 @@ describe('AuthContextProvider', () => {
   })
 
   it('should not be authenticated when no token', () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue(null)
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue(null)
 
     render(
       <AuthContextProvider>
@@ -103,8 +111,10 @@ describe('AuthContextProvider', () => {
   })
 
   it('should clear user on error', async () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue('mock-token')
-    ;(useGetMe as jest.Mock).mockReturnValue({
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('mock-token')
+    const mockUseGetMe = useGetMe as jest.Mock
+    mockUseGetMe.mockReturnValue({
       data: undefined,
       error: new Error('Unauthorized'),
     })
@@ -122,8 +132,10 @@ describe('AuthContextProvider', () => {
 
   it('should handle signOut correctly', async () => {
     const user = userEvent.setup()
-    ;(getStoredToken as jest.Mock).mockReturnValue('mock-token')
-    ;(useGetMe as jest.Mock).mockReturnValue({
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('mock-token')
+    const mockUseGetMe = useGetMe as jest.Mock
+    mockUseGetMe.mockReturnValue({
       data: { data: mockUser },
       error: undefined,
     })

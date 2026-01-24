@@ -25,9 +25,10 @@ describe('useSignUp', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(AuthApi as jest.Mock).mockImplementation(() => ({
+    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    MockAuthApi.mockImplementation(() => ({
       signup: mockSignup,
-    }))
+    }) as unknown as InstanceType<typeof AuthApi>)
   })
 
   it('should call signup API with request data', async () => {
@@ -43,7 +44,9 @@ describe('useSignUp', () => {
       name: 'Test User',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockSignup).toHaveBeenCalledWith({
       signupRequest: {
@@ -68,7 +71,9 @@ describe('useSignUp', () => {
       name: 'Test User',
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Email already exists')
   })
 })
@@ -78,9 +83,10 @@ describe('useSignIn', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(AuthApi as jest.Mock).mockImplementation(() => ({
+    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    MockAuthApi.mockImplementation(() => ({
       signin: mockSignin,
-    }))
+    }) as unknown as InstanceType<typeof AuthApi>)
   })
 
   it('should call signin API and store token on success', async () => {
@@ -95,7 +101,9 @@ describe('useSignIn', () => {
       password: 'password123',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockSignin).toHaveBeenCalledWith({
       signinRequest: {
@@ -119,7 +127,9 @@ describe('useSignIn', () => {
       password: 'wrong-password',
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(setStoredToken).not.toHaveBeenCalled()
   })
 
@@ -138,7 +148,9 @@ describe('useSignIn', () => {
       password: 'password123',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
     expect(setStoredToken).not.toHaveBeenCalled()
   })
 })
@@ -148,9 +160,10 @@ describe('useForgotPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(AuthApi as jest.Mock).mockImplementation(() => ({
+    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    MockAuthApi.mockImplementation(() => ({
       forgot: mockForgot,
-    }))
+    }) as unknown as InstanceType<typeof AuthApi>)
   })
 
   it('should call forgot password API', async () => {
@@ -167,7 +180,9 @@ describe('useForgotPassword', () => {
       email: 'test@example.com',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockForgot).toHaveBeenCalledWith({
       forgotRequest: {
@@ -188,7 +203,9 @@ describe('useForgotPassword', () => {
       email: 'nonexistent@example.com',
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('User not found')
   })
 })
@@ -198,9 +215,10 @@ describe('useResetPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(AuthApi as jest.Mock).mockImplementation(() => ({
+    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    MockAuthApi.mockImplementation(() => ({
       reset: mockReset,
-    }))
+    }) as unknown as InstanceType<typeof AuthApi>)
   })
 
   it('should call reset password API', async () => {
@@ -218,7 +236,9 @@ describe('useResetPassword', () => {
       password: 'new-password',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockReset).toHaveBeenCalledWith({
       resetRequest: {
@@ -241,7 +261,9 @@ describe('useResetPassword', () => {
       password: 'new-password',
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Token expired')
   })
 })

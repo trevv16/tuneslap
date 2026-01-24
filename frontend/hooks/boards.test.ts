@@ -9,6 +9,7 @@ import {
 } from './boards'
 import { createWrapper } from '@/__mocks__/providers/allProviders'
 import { mockBoards, mockBoard } from '@/__mocks__/data/fixtures'
+import { CreateBoardRequestLayoutEnum } from '@/api/models'
 
 // Mock the API and config modules
 jest.mock('@/api', () => ({
@@ -40,9 +41,10 @@ describe('useGetBoards', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(BoardsApi as jest.Mock).mockImplementation(() => ({
+    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    MockBoardsApi.mockImplementation(() => ({
       getAllBoards: mockGetAllBoards,
-    }))
+    }) as unknown as InstanceType<typeof BoardsApi>)
   })
 
   it('should fetch all boards successfully', async () => {
@@ -54,7 +56,9 @@ describe('useGetBoards', () => {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(result.current.data).toEqual(mockBoards)
     expect(mockGetAllBoards).toHaveBeenCalledWith({})
@@ -69,12 +73,14 @@ describe('useGetBoards', () => {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(result.current.data).toEqual([])
   })
 
-  it('should not fetch when token is empty', async () => {
+  it('should not fetch when token is empty', () => {
     jest.requireMock('@/utils/token').getStoredToken.mockReturnValue('')
 
     const { result } = renderHook(() => useGetBoards(), {
@@ -93,9 +99,10 @@ describe('useGetBoardById', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.requireMock('@/utils/token').getStoredToken.mockReturnValue('mock-token')
-    ;(BoardsApi as jest.Mock).mockImplementation(() => ({
+    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    MockBoardsApi.mockImplementation(() => ({
       getBoardById: mockGetBoardById,
-    }))
+    }) as unknown as InstanceType<typeof BoardsApi>)
   })
 
   it('should fetch board by ID successfully', async () => {
@@ -105,7 +112,9 @@ describe('useGetBoardById', () => {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(result.current.data).toEqual(mockBoard)
     expect(mockGetBoardById).toHaveBeenCalledWith({ boardId: 'board-1' })
@@ -119,7 +128,9 @@ describe('useGetBoardById', () => {
       wrapper: createWrapper(),
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Board not found')
   })
 })
@@ -129,9 +140,10 @@ describe('useCreateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(BoardsApi as jest.Mock).mockImplementation(() => ({
+    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    MockBoardsApi.mockImplementation(() => ({
       createBoard: mockCreateBoard,
-    }))
+    }) as unknown as InstanceType<typeof BoardsApi>)
   })
 
   it('should create board successfully', async () => {
@@ -147,14 +159,18 @@ describe('useCreateBoard', () => {
     result.current.mutate({
       name: 'New Board',
       description: 'A new test board',
+      layout: CreateBoardRequestLayoutEnum.Grid,
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockCreateBoard).toHaveBeenCalledWith({
       createBoardRequest: {
         name: 'New Board',
         description: 'A new test board',
+        layout: CreateBoardRequestLayoutEnum.Grid,
       },
     })
   })
@@ -169,9 +185,12 @@ describe('useCreateBoard', () => {
 
     result.current.mutate({
       name: 'New Board',
+      layout: CreateBoardRequestLayoutEnum.Grid,
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Failed to create board')
   })
 })
@@ -181,9 +200,10 @@ describe('useUpdateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(BoardsApi as jest.Mock).mockImplementation(() => ({
+    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    MockBoardsApi.mockImplementation(() => ({
       updateBoard: mockUpdateBoard,
-    }))
+    }) as unknown as InstanceType<typeof BoardsApi>)
   })
 
   it('should update board successfully', async () => {
@@ -201,7 +221,9 @@ describe('useUpdateBoard', () => {
       name: 'Updated Board',
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockUpdateBoard).toHaveBeenCalledWith({
       boardId: 'board-1',
@@ -224,7 +246,9 @@ describe('useUpdateBoard', () => {
       name: 'Updated Board',
     })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Unauthorized')
   })
 })
@@ -234,9 +258,10 @@ describe('useDeleteBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(BoardsApi as jest.Mock).mockImplementation(() => ({
+    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    MockBoardsApi.mockImplementation(() => ({
       deleteBoard: mockDeleteBoard,
-    }))
+    }) as unknown as InstanceType<typeof BoardsApi>)
   })
 
   it('should delete board successfully', async () => {
@@ -248,7 +273,9 @@ describe('useDeleteBoard', () => {
 
     result.current.mutate('board-1')
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(mockDeleteBoard).toHaveBeenCalledWith({ boardId: 'board-1' })
   })
@@ -263,7 +290,9 @@ describe('useDeleteBoard', () => {
 
     result.current.mutate('nonexistent')
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true)
+    })
     expect(result.current.error?.message).toBe('Board not found')
   })
 })

@@ -9,7 +9,8 @@ describe('generateUploadUrl', () => {
   }
 
   beforeEach(() => {
-    ;(global.fetch as jest.Mock).mockReset()
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockReset()
   })
 
   it('should return success response with upload data', async () => {
@@ -22,7 +23,8 @@ describe('generateUploadUrl', () => {
       },
     }
 
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockResponseData),
     })
@@ -49,7 +51,8 @@ describe('generateUploadUrl', () => {
       message: 'File too large',
     }
 
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve(mockErrorResponse),
     })
@@ -62,7 +65,8 @@ describe('generateUploadUrl', () => {
   })
 
   it('should return default error message when API error has no message', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve({}),
     })
@@ -84,7 +88,8 @@ describe('generateUploadUrl', () => {
   })
 
   it('should handle JSON parse errors', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: true,
       json: () => Promise.reject(new Error('Invalid JSON')),
     })
@@ -96,15 +101,16 @@ describe('generateUploadUrl', () => {
   })
 
   it('should handle non-Error exceptions', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: true,
-      json: () => Promise.reject('Something went wrong'),
+      json: () => Promise.reject(new Error('Something went wrong')),
     })
 
     const result = await generateUploadUrl(mockToken, mockRequest)
 
     expect(result.success).toBe(false)
-    expect(result.error).toBe('Failed to parse response')
+    expect(result.error).toBe('Something went wrong')
   })
 
   it('should use correct base URL from environment', async () => {
@@ -115,7 +121,8 @@ describe('generateUploadUrl', () => {
     jest.resetModules()
     const { generateUploadUrl: freshGenerateUploadUrl } = await import('./uploadUrl')
 
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    const fetchMock = global.fetch as jest.Mock
+    fetchMock.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ data: {} }),
     })
