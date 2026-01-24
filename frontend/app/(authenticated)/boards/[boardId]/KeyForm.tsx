@@ -62,9 +62,7 @@ export default function KeyForm({
   const [selectedImage, setSelectedImage] = useState<string | null>(initialData?.imageMediaId || null);
 
   const existingHotKeys = useMemo(() =>
-    existingKeys
-      .filter((k) => k.hotKey != null)
-      .map((k) => k.hotKey?.toUpperCase()),
+    existingKeys.flatMap((k) => k.hotKey ? [k.hotKey.toUpperCase()] : []),
     [existingKeys]
   );
   const excludeHotKey = mode === 'edit' && initialData?.hotKey ? initialData.hotKey : undefined;
