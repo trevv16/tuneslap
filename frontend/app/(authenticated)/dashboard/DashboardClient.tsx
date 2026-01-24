@@ -12,7 +12,7 @@ export default function DashboardClient({ onOpenCreateModal }: DashboardClientPr
   const { data: boards } = useGetBoards();
 
   const boardsArray = Array.isArray(boards) ? boards : [];
-  if (!boardsArray || boardsArray.length === 0) {
+  if (boardsArray.length === 0) {
     return (
       <EmptyState
         title="Create Your First Soundboard"

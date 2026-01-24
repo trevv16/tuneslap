@@ -4,7 +4,7 @@ A backend and frontend system for handling real-time and batch media processing 
 
 ---
 
-### 🔧 **Core Use Case**
+## 🔧 **Core Use Case**
 
 Users upload audio or image media for their soundboard app. The app allows:
 

@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { useAllMedia } from "@/hooks/media";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Music, Image as ImageIcon } from "lucide-react";
+import { Check, Image as ImageIcon, Music } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,7 +43,7 @@ interface KeyFormProps {
   existingKeys: Key[];
   mode: 'add' | 'edit';
   initialData?: Key;
-  onSubmit: (data: KeyFormData & { boardId: string }) => void;
+  onSubmit: (data: KeyFormData & { boardId: string }) => void | Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
@@ -266,8 +266,8 @@ export default function KeyForm({
           disabled={isSubmitting}
           className="flex-1"
         >
-          {isSubmitting 
-            ? (mode === 'add' ? 'Adding...' : 'Saving...') 
+          {isSubmitting
+            ? (mode === 'add' ? 'Adding...' : 'Saving...')
             : (mode === 'add' ? 'Add Key' : 'Save Changes')
           }
         </Button>

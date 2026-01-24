@@ -151,6 +151,7 @@ components:
           example: 0.0
         outputFormats:
           type: array
+          maxItems: 10
           items:
             $ref: '#/components/schemas/AudioOutputFormat'
           description: Output formats
