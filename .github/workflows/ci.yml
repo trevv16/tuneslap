@@ -8,8 +8,8 @@ on:
     branches: [main]
 
 jobs:
-  frontend-ci:
-    name: Frontend - Continuous Integration
+  frontend-lint:
+    name: Frontend - Lint & Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -46,20 +46,75 @@ jobs:
             nextjs-
       
       - name: Run type check
-        working-directory: ./frontend
         run: yarn tsc --noEmit
       
       - name: Run linting
-        working-directory: ./frontend
         run: yarn lint
       
       - name: Build application
-        working-directory: ./frontend
         run: yarn build
+
+  frontend-unit-tests:
+    name: Frontend - Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
       
-      # Uncomment when you have tests set up
-      # - name: Run tests
-      #   run: yarn test
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: './frontend/.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: './frontend/yarn.lock'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Install root dependencies
+        working-directory: ./
+        run: yarn install
+      
+      - name: Generate types
+        working-directory: ./
+        run: ./scripts/generate-types.sh --frontend-only
+      
+      - name: Run unit tests
+        run: yarn test:unit
+
+  frontend-integration-tests:
+    name: Frontend - Integration Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: './frontend/.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: './frontend/yarn.lock'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Install root dependencies
+        working-directory: ./
+        run: yarn install
+      
+      - name: Generate types
+        working-directory: ./
+        run: ./scripts/generate-types.sh --frontend-only
+      
+      - name: Run integration tests
+        run: yarn test:integration
 
   backend-ci:
     name: Backend - Continuous Integration
