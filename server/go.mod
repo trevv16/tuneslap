@@ -1,6 +1,6 @@
 module tuneslap
 
-go 1.24.3
+go 1.24.12
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.1
@@ -8,11 +8,11 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.7
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.19
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.1
-	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/gofiber/fiber/v2 v2.52.10
 	github.com/hibiken/asynq v0.25.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.10.0
-	go.mongodb.org/mongo-driver v1.17.4
+	go.mongodb.org/mongo-driver v1.17.7
 	google.golang.org/api v0.235.0
 )
 
