@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate-types": "cd .. && bash scripts/generate-types.sh",
+    "generate-types": "cd .. && bash scripts/generate-types.sh --frontend-only",
     "prebuild": "yarn run generate-types",
     "predev": "yarn run generate-types",
     "dev": "next dev",
