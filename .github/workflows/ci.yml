@@ -116,11 +116,15 @@ jobs:
       
       - name: Run Go vet
         run: go vet ./...
+        env:
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
       
       - name: Run Go tests with coverage
         run: |
           go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
           go tool cover -func=coverage.out
+        env:
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -133,3 +137,5 @@ jobs:
       
       - name: Build Go application
         run: go build -o tuneslap .
+        env:
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
