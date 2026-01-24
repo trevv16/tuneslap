@@ -17,7 +17,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const token = getStoredToken();
-  const { data: userData, isLoading, error } = useGetMe(token || "");
+  const { data: userData, error } = useGetMe(token || "");
   const [user, setUser] = useState<UserResponse | null>(null);
 
   const signOut = () => {

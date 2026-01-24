@@ -19,11 +19,6 @@ import { toast } from "sonner"
 import Header from "../../Header"
 import KeyForm from "./KeyForm"
 
-interface HeaderActionsProps {
-  boardId: string
-  onAddKey: () => void
-}
-
 export default function BoardDetailClient() {
   const { boardId } = useParams()
   const { data: board } = useGetBoardById(boardId as string)
