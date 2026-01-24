@@ -1,18 +1,16 @@
 import type { Config } from 'jest'
-import path from 'path'
-
-const rootDir = path.resolve(__dirname)
 
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: [path.join(rootDir, 'jest.setup.ts')],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': path.join(rootDir, '$1'),
+    '^@/(.*)$': '<rootDir>/$1',
   },
   testPathIgnorePatterns: [
-    path.join(rootDir, 'node_modules'),
-    path.join(rootDir, '.next'),
+    '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/__tests__/integration/setup/',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -23,9 +21,19 @@ const config: Config = {
         moduleResolution: 'node',
       },
     }],
+    // Transform ESM dependencies from node_modules
+    '^.+\\.js$': ['ts-jest', {
+      tsconfig: {
+        allowJs: true,
+        esModuleInterop: true,
+        module: 'commonjs',
+      },
+    }],
   },
+  // Transform MSW v2 and its ESM dependencies
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$))',
+    'node_modules/\\.pnpm',
+    'node_modules/(?!(@?msw|@mswjs|until-async|@bundled-es-modules|@open-draft|outvariant|strict-event-emitter|path-to-regexp|headers-polyfill|cookie|statuses|graphql|is-node-process|type-fest)/)',
   ],
   collectCoverageFrom: [
     'utils/**/*.{ts,tsx}',

@@ -25,6 +25,7 @@ describe('useAudio', () => {
   let mockFetchResponse: {
     arrayBuffer: jest.Mock
   }
+  let fetchSpy: jest.SpyInstance
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -52,7 +53,11 @@ describe('useAudio', () => {
     }
 
     ;(window.AudioContext as unknown as jest.Mock) = jest.fn(() => mockAudioContext)
-    ;(global.fetch as jest.Mock).mockResolvedValue(mockFetchResponse)
+    fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(mockFetchResponse as unknown as Response)
+  })
+
+  afterEach(() => {
+    fetchSpy.mockRestore()
   })
 
   it('should load audio on mount', async () => {
@@ -65,7 +70,7 @@ describe('useAudio', () => {
       await new Promise(resolve => setTimeout(resolve, 0))
     })
 
-    expect(global.fetch).toHaveBeenCalledWith(audioUrl)
+    expect(fetchSpy).toHaveBeenCalledWith(audioUrl)
     expect(mockAudioContext.decodeAudioData).toHaveBeenCalled()
   })
 
@@ -76,7 +81,7 @@ describe('useAudio', () => {
       await new Promise(resolve => setTimeout(resolve, 0))
     })
 
-    expect(global.fetch).not.toHaveBeenCalled()
+    expect(fetchSpy).not.toHaveBeenCalled()
   })
 
   it('should provide play function', async () => {
@@ -124,7 +129,7 @@ describe('useAudio', () => {
   it('should call onError callback when fetch fails', async () => {
     const onError = jest.fn()
     const error = new Error('Network error')
-    ;(global.fetch as jest.Mock).mockRejectedValue(error)
+    fetchSpy.mockRejectedValue(error)
 
     renderHook(() => useAudio('https://example.com/audio.mp3', undefined, onError))
 

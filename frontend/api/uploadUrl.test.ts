@@ -7,10 +7,14 @@ describe('generateUploadUrl', () => {
     contentType: 'audio/mpeg',
     fileSize: 1024 * 1024,
   }
+  let fetchSpy: jest.SpyInstance
 
   beforeEach(() => {
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockReset()
+    fetchSpy = jest.spyOn(global, 'fetch')
+  })
+
+  afterEach(() => {
+    fetchSpy.mockRestore()
   })
 
   it('should return success response with upload data', async () => {
@@ -23,8 +27,7 @@ describe('generateUploadUrl', () => {
       },
     }
 
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockResponseData),
     })
@@ -33,7 +36,7 @@ describe('generateUploadUrl', () => {
 
     expect(result.success).toBe(true)
     expect(result.data).toEqual(mockResponseData.data)
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(fetchSpy).toHaveBeenCalledWith(
       expect.stringContaining('/media/upload-url'),
       expect.objectContaining({
         method: 'POST',
@@ -51,8 +54,7 @@ describe('generateUploadUrl', () => {
       message: 'File too large',
     }
 
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve(mockErrorResponse),
     })
@@ -65,8 +67,7 @@ describe('generateUploadUrl', () => {
   })
 
   it('should return default error message when API error has no message', async () => {
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve({}),
     })
@@ -78,8 +79,7 @@ describe('generateUploadUrl', () => {
   })
 
   it('should handle network errors gracefully', async () => {
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockImplementationOnce(() => Promise.reject(new Error('Network request failed')))
+    fetchSpy.mockImplementationOnce(() => Promise.reject(new Error('Network request failed')))
 
     const result = await generateUploadUrl(mockToken, mockRequest)
 
@@ -88,8 +88,7 @@ describe('generateUploadUrl', () => {
   })
 
   it('should handle JSON parse errors', async () => {
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: true,
       json: () => Promise.reject(new Error('Invalid JSON')),
     })
@@ -101,8 +100,7 @@ describe('generateUploadUrl', () => {
   })
 
   it('should handle non-Error exceptions', async () => {
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: true,
       json: () => Promise.reject(new Error('Something went wrong')),
     })
@@ -121,15 +119,14 @@ describe('generateUploadUrl', () => {
     jest.resetModules()
     const { generateUploadUrl: freshGenerateUploadUrl } = await import('./uploadUrl')
 
-    const fetchMock = global.fetch as jest.Mock
-    fetchMock.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ data: {} }),
     })
 
     await freshGenerateUploadUrl(mockToken, mockRequest)
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(fetchSpy).toHaveBeenCalledWith(
       'https://api.custom.com/api/v1/media/upload-url',
       expect.any(Object)
     )

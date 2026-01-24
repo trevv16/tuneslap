@@ -2,7 +2,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type { UserResponse } from '@/api/models'
 import React from 'react'
-import { MockAuthProvider } from './authContext'
+import { AuthContext } from '@/contexts/AuthContext'
 import { createTestQueryClient, QueryClientWrapper } from './queryClient'
 
 interface AuthState {
@@ -17,14 +17,31 @@ interface AllProvidersProps {
   authState?: AuthState
 }
 
+const defaultUser: UserResponse = {
+  id: 'user-1',
+  email: 'test@example.com',
+  name: 'Test User',
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+}
+
 export function AllProviders({ children, queryClient, authState }: AllProvidersProps) {
   const client = queryClient ?? createTestQueryClient()
   
+  // Use the real AuthContext with mock values
+  const authValue = {
+    isLoading: authState?.isLoading ?? false,
+    isAuthenticated: authState?.isAuthenticated ?? true,
+    user: authState?.user ?? defaultUser,
+    setUser: jest.fn(),
+    signOut: jest.fn(),
+  }
+  
   return (
     <QueryClientWrapper client={client}>
-      <MockAuthProvider value={authState}>
+      <AuthContext.Provider value={authValue}>
         {children}
-      </MockAuthProvider>
+      </AuthContext.Provider>
     </QueryClientWrapper>
   )
 }
