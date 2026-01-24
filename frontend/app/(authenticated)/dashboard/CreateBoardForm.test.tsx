@@ -24,7 +24,8 @@ describe('CreateBoardForm', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useCreateBoard as jest.Mock).mockReturnValue({
+    const mockUseCreateBoard = useCreateBoard as jest.Mock
+    mockUseCreateBoard.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     })
@@ -123,6 +124,7 @@ describe('CreateBoardForm', () => {
   it('should show error toast on failed creation', async () => {
     const user = userEvent.setup()
     mockMutateAsync.mockRejectedValue(new Error('Failed'))
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
     render(<CreateBoardForm setOpen={mockSetOpen} />, {
       wrapper: createWrapper(),
@@ -135,6 +137,8 @@ describe('CreateBoardForm', () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Failed to create board. Please try again.')
     })
+
+    consoleSpy.mockRestore()
   })
 
   it('should close dialog when cancel is clicked', async () => {
@@ -150,7 +154,8 @@ describe('CreateBoardForm', () => {
   })
 
   it('should disable inputs when pending', () => {
-    ;(useCreateBoard as jest.Mock).mockReturnValue({
+    const mockUseCreateBoard = useCreateBoard as jest.Mock
+    mockUseCreateBoard.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: true,
     })
@@ -166,7 +171,8 @@ describe('CreateBoardForm', () => {
   })
 
   it('should show "Creating..." text when pending', () => {
-    ;(useCreateBoard as jest.Mock).mockReturnValue({
+    const mockUseCreateBoard = useCreateBoard as jest.Mock
+    mockUseCreateBoard.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: true,
     })

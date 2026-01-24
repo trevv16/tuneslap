@@ -9,10 +9,11 @@ import { mockBoard, mockKeys } from '@/__mocks__/data/fixtures'
 
 describe('preloadImage', () => {
   let mockImage: { onload: (() => void) | null; onerror: (() => void) | null; src: string }
+  const ImageMock = window.Image as jest.Mock
 
   beforeEach(() => {
     mockImage = { onload: null, onerror: null, src: '' }
-    ;(window.Image as unknown as jest.Mock) = jest.fn(() => mockImage)
+    ImageMock.mockImplementation(() => mockImage)
     jest.useFakeTimers()
   })
 
@@ -80,10 +81,11 @@ describe('preloadImage', () => {
 
 describe('preloadAudio', () => {
   let mockAudio: { oncanplaythrough: (() => void) | null; onerror: (() => void) | null; src: string; load: jest.Mock }
+  const AudioMock = window.Audio as jest.Mock
 
   beforeEach(() => {
     mockAudio = { oncanplaythrough: null, onerror: null, src: '', load: jest.fn() }
-    ;(window.Audio as unknown as jest.Mock) = jest.fn(() => mockAudio)
+    AudioMock.mockImplementation(() => mockAudio)
     jest.useFakeTimers()
   })
 
@@ -130,12 +132,14 @@ describe('preloadAudio', () => {
 })
 
 describe('preloadImages', () => {
-  let mockImages: Array<{ onload: (() => void) | null; onerror: (() => void) | null; src: string }>
+  type MockImageType = { onload: (() => void) | null; onerror: (() => void) | null; src: string }
+  let mockImages: MockImageType[]
+  const ImageMock = window.Image as jest.Mock
 
   beforeEach(() => {
     mockImages = []
-    ;(window.Image as unknown as jest.Mock) = jest.fn(() => {
-      const img = { onload: null, onerror: null, src: '' }
+    ImageMock.mockImplementation(() => {
+      const img: MockImageType = { onload: null, onerror: null, src: '' }
       mockImages.push(img)
       return img
     })
@@ -186,12 +190,14 @@ describe('preloadImages', () => {
 })
 
 describe('preloadAudios', () => {
-  let mockAudios: Array<{ oncanplaythrough: (() => void) | null; onerror: (() => void) | null; src: string; load: jest.Mock }>
+  type MockAudioType = { oncanplaythrough: (() => void) | null; onerror: (() => void) | null; src: string; load: jest.Mock }
+  let mockAudios: MockAudioType[]
+  const AudioMock = window.Audio as jest.Mock
 
   beforeEach(() => {
     mockAudios = []
-    ;(window.Audio as unknown as jest.Mock) = jest.fn(() => {
-      const audio = { oncanplaythrough: null, onerror: null, src: '', load: jest.fn() }
+    AudioMock.mockImplementation(() => {
+      const audio: MockAudioType = { oncanplaythrough: null, onerror: null, src: '', load: jest.fn() }
       mockAudios.push(audio)
       return audio
     })
@@ -257,8 +263,11 @@ describe('extractMediaUrls', () => {
     const boardWithNoImage = { ...mockBoard, imageUrl: undefined }
     const result = extractMediaUrls(boardWithNoImage)
 
-    // Should not include undefined board image
-    expect(result.images.every(url => url !== undefined)).toBe(true)
+    // Should not include undefined board image - all URLs should be strings
+    result.images.forEach(url => {
+      expect(typeof url).toBe('string')
+      expect(url.length).toBeGreaterThan(0)
+    })
   })
 
   it('should filter out empty string URLs', () => {
@@ -269,7 +278,11 @@ describe('extractMediaUrls', () => {
     }
     const result = extractMediaUrls(boardWithEmptyUrls)
 
-    expect(result.images.every(url => url !== '')).toBe(true)
-    expect(result.audios.every(url => url !== '')).toBe(true)
+    result.images.forEach(url => {
+      expect(url).not.toBe('')
+    })
+    result.audios.forEach(url => {
+      expect(url).not.toBe('')
+    })
   })
 })

@@ -14,7 +14,8 @@ describe('getApiConfig', () => {
   beforeEach(() => {
     jest.resetModules()
     process.env = { ...originalEnv }
-    ;(getStoredToken as jest.Mock).mockReset()
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReset()
   })
 
   afterAll(() => {
@@ -23,7 +24,8 @@ describe('getApiConfig', () => {
 
   it('should return configuration with basePath from env', () => {
     process.env.NEXT_PUBLIC_API_URL = 'https://api.test.com/api/v1'
-    ;(getStoredToken as jest.Mock).mockReturnValue('test-token')
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('test-token')
 
     const config = getApiConfig()
 
@@ -32,7 +34,8 @@ describe('getApiConfig', () => {
 
   it('should use production URL when env is not set', () => {
     delete process.env.NEXT_PUBLIC_API_URL
-    ;(getStoredToken as jest.Mock).mockReturnValue('test-token')
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('test-token')
 
     const config = getApiConfig()
 
@@ -40,7 +43,8 @@ describe('getApiConfig', () => {
   })
 
   it('should return accessToken function that gets token', () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue('my-jwt-token')
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue('my-jwt-token')
 
     const config = getApiConfig()
     const token = config.accessToken?.()
@@ -50,7 +54,8 @@ describe('getApiConfig', () => {
   })
 
   it('should return empty string when no token exists', () => {
-    ;(getStoredToken as jest.Mock).mockReturnValue(null)
+    const mockGetStoredToken = getStoredToken as jest.Mock
+    mockGetStoredToken.mockReturnValue(null)
 
     const config = getApiConfig()
     const token = config.accessToken?.()

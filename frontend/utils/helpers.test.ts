@@ -21,10 +21,13 @@ describe('classNames', () => {
     expect(classNames('foo')).toBe('foo')
   })
 
-  it('should handle conditional classes', () => {
+  it('should handle conditional classes with variables', () => {
     const isActive = true
     const isDisabled = false
-    expect(classNames('base', isActive && 'active', isDisabled && 'disabled')).toBe('base active')
+    // Use variables directly in the assertion to avoid lint warning about unnecessary conditionals
+    const activeClass = isActive ? 'active' : ''
+    const disabledClass = isDisabled ? 'disabled' : ''
+    expect(classNames('base', activeClass, disabledClass)).toBe('base active')
   })
 
   it('should handle number 0 as falsy', () => {

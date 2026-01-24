@@ -6,6 +6,13 @@ import type {
   MediaResponse,
   CollaboratorResponse,
 } from '@/api/models'
+import {
+  BoardResponseLayoutEnum,
+  CollaboratorResponseRoleEnum,
+  MediaResponseMediaTypeEnum,
+  MediaResponseStatusEnum,
+  MediaResponseContentTypeEnum,
+} from '@/api/models'
 
 // User fixtures
 export const mockUser: UserResponse = {
@@ -32,8 +39,8 @@ export const mockKey: KeyResponse = {
   id: 'key-1',
   name: 'Test Key',
   hotKey: 'A',
-  audioUrl: 'https://example.com/audio/test.mp3',
   audioMediaId: 'media-1',
+  audioUrl: 'https://example.com/audio/test.mp3',
   imageUrl: 'https://example.com/images/test.png',
   boardId: 'board-1',
   createdAt: new Date('2024-01-01'),
@@ -46,8 +53,8 @@ export const mockKeys: KeyResponse[] = [
     id: 'key-2',
     name: 'Second Key',
     hotKey: 'B',
+    audioMediaId: 'media-2',
     audioUrl: 'https://example.com/audio/test2.mp3',
-    audioMediaId: 'media-1',
     imageUrl: 'https://example.com/images/test2.png',
     boardId: 'board-1',
     createdAt: new Date('2024-01-02'),
@@ -57,23 +64,22 @@ export const mockKeys: KeyResponse[] = [
     id: 'key-3',
     name: 'Third Key',
     hotKey: 'C',
+    audioMediaId: 'media-3',
     audioUrl: 'https://example.com/audio/test3.mp3',
-    audioMediaId: 'media-1',
     imageUrl: undefined,
     boardId: 'board-1',
     createdAt: new Date('2024-01-03'),
     updatedAt: new Date('2024-01-03'),
   },
 ]
-]
 
 // Collaborator fixtures
 export const mockCollaborator: CollaboratorResponse = {
   id: 'collab-1',
   userId: 'user-2',
-  boardId: 'board-1',
-  role: 'editor',
-  user: mockUsers[1],
+  email: 'user2@example.com',
+  name: 'Second User',
+  role: CollaboratorResponseRoleEnum.Editor,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
 }
@@ -88,8 +94,8 @@ export const mockBoard: BoardResponse = {
   name: 'Test Board',
   description: 'A test soundboard',
   imageUrl: 'https://example.com/images/board.png',
-  layout: 'grid',
-  ownerId: 'user-1',
+  layout: BoardResponseLayoutEnum.Grid,
+  authorId: 'user-1',
   keys: mockKeys,
   collaborators: mockCollaborators,
   createdAt: new Date('2024-01-01'),
@@ -103,8 +109,8 @@ export const mockBoards: BoardResponse[] = [
     name: 'Second Board',
     description: 'Another test soundboard',
     imageUrl: undefined,
-    layout: 'list',
-    ownerId: 'user-1',
+    layout: BoardResponseLayoutEnum.List,
+    authorId: 'user-1',
     keys: [],
     collaborators: [],
     createdAt: new Date('2024-01-02'),
@@ -115,24 +121,26 @@ export const mockBoards: BoardResponse[] = [
 // Media fixtures
 export const mockAudioMedia: MediaResponse = {
   id: 'media-1',
-  name: 'Test Audio',
-  type: 'audio',
-  url: 'https://example.com/audio/test.mp3',
-  size: 1024 * 1024,
-  mimeType: 'audio/mpeg',
-  ownerId: 'user-1',
+  fileName: 'Test Audio',
+  mediaType: MediaResponseMediaTypeEnum.Audio,
+  fileUrl: 'https://example.com/audio/test.mp3',
+  fileSize: 1024 * 1024,
+  contentType: MediaResponseContentTypeEnum.AudioMp3,
+  status: MediaResponseStatusEnum.Done,
+  authorId: 'user-1',
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
 }
 
 export const mockImageMedia: MediaResponse = {
   id: 'media-2',
-  name: 'Test Image',
-  type: 'image',
-  url: 'https://example.com/images/test.png',
-  size: 512 * 1024,
-  mimeType: 'image/png',
-  ownerId: 'user-1',
+  fileName: 'Test Image',
+  mediaType: MediaResponseMediaTypeEnum.Image,
+  fileUrl: 'https://example.com/images/test.png',
+  fileSize: 512 * 1024,
+  contentType: MediaResponseContentTypeEnum.ImagePng,
+  status: MediaResponseStatusEnum.Done,
+  authorId: 'user-1',
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
 }

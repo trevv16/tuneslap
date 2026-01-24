@@ -6,7 +6,7 @@ interface MockAuthContextValue {
   isLoading: boolean
   isAuthenticated: boolean
   user: UserResponse | null
-  setUser: (user: UserResponse | null) => void
+  setUser: React.Dispatch<React.SetStateAction<UserResponse | null>>
   signOut: () => void
 }
 

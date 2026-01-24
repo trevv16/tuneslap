@@ -1,16 +1,19 @@
 import type { Config } from 'jest'
+import path from 'path'
+
+const rootDir = path.resolve(__dirname)
 
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: [path.join(rootDir, 'jest.setup.ts')],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': path.join(rootDir, '$1'),
   },
   testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/.next/',
-    '<rootDir>/__tests__/integration/setup/',
+    path.join(rootDir, 'node_modules'),
+    path.join(rootDir, '.next'),
+    path.join(rootDir, '__tests__/integration/setup'),
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -30,8 +33,7 @@ const config: Config = {
       },
     }],
   },
-  // Transform all files except for .mjs and ES modules in node_modules
-  // MSW v2 and its dependencies use ESM, so they need to be transformed
+  // Transform MSW v2 and its ESM dependencies
   transformIgnorePatterns: [
     'node_modules/\\.pnpm',
     'node_modules/(?!(@?msw|@mswjs|until-async|@bundled-es-modules|@open-draft|outvariant|strict-event-emitter|path-to-regexp|headers-polyfill|cookie|statuses|graphql|is-node-process|type-fest)/)',

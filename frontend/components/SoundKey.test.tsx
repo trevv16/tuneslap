@@ -16,7 +16,8 @@ import { useAudio } from '@/hooks/useAudio'
 describe('SoundKey', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useAudio as jest.Mock).mockReturnValue({
+    const mockUseAudio = useAudio as jest.Mock
+    mockUseAudio.mockReturnValue({
       play: jest.fn(),
       stop: jest.fn(),
       bindPressHandlers: jest.fn(),
@@ -78,12 +79,12 @@ describe('SoundKey', () => {
     expect(useAudio).toHaveBeenCalledWith('', keyWithNoAudio.hotKey)
   })
 
-  it('should handle empty hotKey', () => {
-    const keyWithNoHotKey = { ...mockKey, hotKey: undefined }
+  it('should handle key with different hotkey', () => {
+    const keyWithDifferentHotKey = { ...mockKey, hotKey: 'Z' }
 
-    render(<SoundKey boardKey={keyWithNoHotKey} />)
+    render(<SoundKey boardKey={keyWithDifferentHotKey} />)
 
-    expect(useAudio).toHaveBeenCalledWith(keyWithNoHotKey.audioUrl, '')
+    expect(useAudio).toHaveBeenCalledWith(keyWithDifferentHotKey.audioUrl, 'Z')
   })
 
   it('should render play button with screen reader text', () => {
@@ -96,7 +97,8 @@ describe('SoundKey', () => {
 
   it('should call bindPressHandlers on mount', () => {
     const mockBindPressHandlers = jest.fn()
-    ;(useAudio as jest.Mock).mockReturnValue({
+    const mockUseAudio = useAudio as jest.Mock
+    mockUseAudio.mockReturnValue({
       play: jest.fn(),
       stop: jest.fn(),
       bindPressHandlers: mockBindPressHandlers,

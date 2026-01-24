@@ -13,7 +13,18 @@ interface ImageProps {
   onError?: () => void
 }
 
-function MockImage({ src, alt, width, height, className, onLoad, onError, fill, priority, ...props }: ImageProps) {
+function MockImage({
+  src,
+  alt,
+  width,
+  height,
+  className,
+  onLoad,
+  onError,
+  fill: _fill,
+  priority: _priority,
+}: ImageProps) {
+  // Note: fill and priority are Next.js-specific props that don't apply to native img
   return React.createElement('img', {
     src,
     alt,
@@ -23,9 +34,6 @@ function MockImage({ src, alt, width, height, className, onLoad, onError, fill, 
     onLoad,
     onError,
     'data-testid': 'next-image',
-    ...props,
-  })
-}
   })
 }
 
