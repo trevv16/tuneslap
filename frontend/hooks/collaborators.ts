@@ -58,7 +58,9 @@ export const useCreateCollaborator = (boardId: string) => {
       const boardsApi = new BoardsApi(getApiConfig());
       return await boardsApi.createCollaborator({ boardId, createCollaboratorRequest: request });
     },
-    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
+    onSuccess: () => {
+      invalidateCollaboratorQueries(queryClient, boardId);
+    },
   });
 };
 
@@ -77,7 +79,9 @@ export const useUpdateCollaborator = (boardId: string) => {
         updateCollaboratorRequest: request.data,
       });
     },
-    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
+    onSuccess: () => {
+      invalidateCollaboratorQueries(queryClient, boardId);
+    },
   });
 };
 
@@ -89,6 +93,8 @@ export const useDeleteCollaborator = (boardId: string) => {
       const boardsApi = new BoardsApi(getApiConfig());
       return await boardsApi.deleteCollaborator({ boardId, collaboratorId });
     },
-    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
+    onSuccess: () => {
+      invalidateCollaboratorQueries(queryClient, boardId);
+    },
   });
 };
