@@ -7,7 +7,6 @@ import {
   userEvent,
   mockKeys,
   mockAudioMedia,
-  mockImageMedia,
 } from '../../setup/test-utils'
 import KeyForm from '@/app/(authenticated)/boards/[boardId]/KeyForm'
 
@@ -33,7 +32,7 @@ describe('KeyForm Integration', () => {
     mockOnCancel.mockClear()
   })
 
-  it('renders the key form with all fields', async () => {
+  it('renders the key form with all fields', () => {
     renderWithProviders(
       <KeyForm
         boardId="board-1"
