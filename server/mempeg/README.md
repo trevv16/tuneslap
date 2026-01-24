@@ -104,7 +104,6 @@ Users upload audio or image media for their soundboard app. The app allows:
 - **MongoDB** – File metadata & job tracking
 - **S3** – File storage
 - **CloudFront** – Media delivery (CDN)
-- **Sentry** – Error logging
 - **Asynqmon** – Job dashboard (like BullBoard)
 
 ---
