@@ -2,6 +2,8 @@
 
 This document describes how files are uploaded to TuneSlap using signed URLs and direct-to-storage transfers.
 
+> **Try it out:** Test the upload endpoints at [openapi.tuneslap.com](https://openapi.tuneslap.com) to see the request/response formats.
+
 ## How It Works
 
 TuneSlap uses a three-step upload process:

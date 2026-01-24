@@ -39,7 +39,7 @@ git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 
 # 2. Set up your environment
-cp server/.env.example server/.env
+cp server/example.env server/.env
 
 # 3. Launch TuneSlap
 docker-compose up -d
@@ -50,6 +50,8 @@ That's it!
 *   **API**: [http://localhost:8082](http://localhost:8082)
 *   **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
+> **Tip:** Try out the live API at [openapi.tuneslap.com](https://openapi.tuneslap.com) to explore all available endpoints.
+
 For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## For Developers
@@ -57,7 +59,7 @@ For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.
 TuneSlap is built with a modern, performance-focused stack.
 
 ### Frontend
-*   **Next.js 15** & **React 19** – The latest in modern web development.
+*   **Next.js 16** & **React 19** – The latest in modern web development.
 *   **TypeScript** – For type-safe, maintainable code.
 *   **TanStack Query** – Efficient data fetching and state management.
 *   **Web Audio API** – Native browser audio processing.
@@ -65,11 +67,11 @@ TuneSlap is built with a modern, performance-focused stack.
 ### Backend
 *   **Go (Fiber)** – High-performance API server.
 *   **MongoDB** – Flexible document storage.
-*   **Redis** – Fast caching and job queues.
+*   **Redis + Asynq** – Fast caching and background job queues.
 *   **FFmpeg** – Industrial-strength media processing.
 
 ### API & Documentation
-Explore the full API documentation in our [OpenAPI explorer](http://localhost:8081) or view the specification in `openapi/openapi.yaml`.
+Explore the full API documentation in our [OpenAPI explorer](https://openapi.tuneslap.com) or view the specification in `openapi/openapi.yaml`. The explorer lets you browse all endpoints, see request/response schemas, and try out API calls directly.
 
 For details on media uploads, storage, and processing, see the [Media System documentation](docs/media/README.md).
 

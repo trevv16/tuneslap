@@ -18,7 +18,7 @@ cd tuneslap
 
 2. Create environment file:
 ```bash
-cp server/.env.example server/.env
+cp server/example.env server/.env
 ```
 
 3. Configure environment variables in `server/.env` (see Configuration section below)
@@ -37,7 +37,7 @@ docker-compose up -d
 **Production URLs** (with custom domains):
 - Frontend: https://tuneslap.com
 - Backend API: https://api.tuneslap.com
-- API Explorer: https://openapi.tuneslap.com
+- API Explorer: https://openapi.tuneslap.com (browse and test all API endpoints)
 - MinIO Storage: https://media.tuneslap.com
 
 ## Configuration

@@ -467,7 +467,7 @@ export function useAudioProcessingForm(mediaId: string) {
           fadeOut: data.fadeOut,
           speed: data.speed,
           pitch: data.pitch,
-          outputFormats: data.outputFormats,
+          outputFormats: data.outputFormats ?? [MediaProcessingParamsAudioOutputFormatsEnum.Webm],
         },
       };
 
@@ -518,7 +518,7 @@ export function useImageProcessingForm(mediaId: string) {
     try {
       const processingParams: MediaProcessingParams = {
         image: {
-          format: data.format,
+          format: data.format ?? MediaProcessingParamsImageFormatEnum.Webp,
           aspectRatio: data.aspectRatio,
           resizeTo: data.resizeWidth && data.resizeHeight
             ? [data.resizeWidth, data.resizeHeight]

@@ -93,25 +93,25 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
     const result = await handleSubmit(data)
     if (result.success && result.data) {
       toast.success('Media uploaded! Configure processing options.')
-      const mediaItem = {
+      const mediaItem: MediaListItem = {
         id: result.data.id,
         authorId: result.data.authorId,
-        mediaType: result.data.mediaType as MediaListItem['mediaType'],
+        mediaType: result.data.mediaType as unknown as MediaListItem['mediaType'],
         fileName: result.data.fileName,
         description: result.data.description,
         fileUrl: result.data.fileUrl,
         processedUrl: result.data.processedUrl,
         waveformUrl: result.data.waveformUrl,
-        contentType: result.data.contentType as MediaListItem['contentType'],
+        contentType: result.data.contentType as unknown as MediaListItem['contentType'],
         fileSize: result.data.fileSize,
-        status: result.data.status as MediaListItem['status'],
+        status: result.data.status as unknown as MediaListItem['status'],
         processingParams: result.data.processingParams,
         processingActivity: result.data.processingActivity,
         dimensions: result.data.dimensions,
         duration: result.data.duration,
         createdAt: result.data.createdAt,
         updatedAt: result.data.updatedAt,
-      } as MediaListItem
+      }
       setCreatedMedia(mediaItem)
       setShowProcessModal(true)
       form.reset()

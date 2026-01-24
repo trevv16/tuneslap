@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
-    "lint:fix": "eslint --fix '**/*.{js,jsx,ts,tsx}'"
+    "lint:fix": "eslint --fix '**/*.{js,jsx,ts,tsx}'",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",

@@ -33,10 +33,12 @@ COPY --from=deps /workspace/frontend/node_modules ./frontend/node_modules
 # Accept build arguments
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_DEMO_MODE
 
 # Set environment variables for build time
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_DEMO_MODE=$NEXT_PUBLIC_DEMO_MODE
 
 # Generate TypeScript API client from OpenAPI spec
 RUN npm install -g @openapitools/openapi-generator-cli swagger-cli && \

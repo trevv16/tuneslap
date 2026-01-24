@@ -1,10 +1,17 @@
-.PHONY: dev fmt swagger docs docs-stop docs-build docs-logs generate-types build test lint clean download-assets setup-keys docker-dev docker-dev-stop
+.PHONY: dev fmt fmt-check swagger docs docs-stop docs-build docs-logs generate-types build test lint clean download-assets setup-keys docker-dev docker-dev-stop
 
 dev:
 	air
 
 fmt:
 	go list ./... | grep -v /generated | xargs go fmt
+
+fmt-check:
+	@if [ "$$(gofmt -s -l . | grep -v '^generated/' | wc -l)" -gt 0 ]; then \
+		echo "Code is not formatted. Run 'make fmt'"; \
+		gofmt -s -l . | grep -v "^generated/"; \
+		exit 1; \
+	fi
 
 swagger:
 	swag init --dir ./,./handlers
@@ -17,9 +24,9 @@ build:
 test:
 	go test -v -race ./...
 
-# Run linter (assumes golangci-lint is installed)
+# Run linter (uses standard library go vet)
 lint:
-	golangci-lint run
+	go vet ./...
 
 # Clean build artifacts
 clean:
