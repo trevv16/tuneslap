@@ -62,7 +62,7 @@ terraform destroy
 
 - Service Account: `tuneslap-api-staging@munene-dev-staging.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-staging`
-- Storage Bucket: `tuneslap-media-staging`
+- Media Bucket: `tuneslap-media-staging`
 
 ## Bucket Access Policies
 

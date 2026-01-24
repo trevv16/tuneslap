@@ -343,7 +343,7 @@ export function useProcessMedia() {
     },
     onSuccess: (data, variables) => {
       // Invalidate and refetch media lists
-      queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
       void queryClient.invalidateQueries({ queryKey: mediaKeys.detail(variables.mediaId) });
     },
   });

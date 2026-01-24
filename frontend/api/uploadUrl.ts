@@ -1,4 +1,8 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8082/api/v1';
+const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL =
+  rawBaseUrl && rawBaseUrl.trim() !== ''
+    ? rawBaseUrl
+    : 'http://localhost:8082/api/v1';
 
 export interface GenerateUploadUrlRequest {
   fileName: string;
