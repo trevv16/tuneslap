@@ -3,6 +3,10 @@ info:
   title: Auth API
   version: '1.0.0'
 
+# Note: Auth endpoints are public and don't require authentication
+# Global security is defined in openapi.yaml, these endpoints override with security: []
+security: []
+
 components:
   schemas:
     SignUpRequest:

@@ -235,7 +235,7 @@ export default function KeyForm({
                       : "border-border hover:border-muted-foreground/50",
                     isSubmitting && "opacity-50 cursor-not-allowed"
                   )}
-                  onClick={() => img.id && handleImageSelect(img.id)}
+                  onClick={() => { if (img.id) handleImageSelect(img.id); }}
                 >
                   <img src={img.fileUrl} alt={img.fileName} className="w-full h-full object-cover" />
                   {selectedImage === img.id && (

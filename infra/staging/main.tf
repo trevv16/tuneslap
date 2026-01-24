@@ -34,6 +34,10 @@ resource "google_storage_bucket" "media_bucket" {
 
   uniform_bucket_level_access = true
 
+  versioning {
+    enabled = true
+  }
+
   logging {
     log_bucket = google_storage_bucket.logs_bucket.name
   }
@@ -71,6 +75,10 @@ resource "google_storage_bucket" "system_bucket" {
 
   uniform_bucket_level_access = true
 
+  versioning {
+    enabled = true
+  }
+
   logging {
     log_bucket = google_storage_bucket.logs_bucket.name
   }
@@ -86,6 +94,10 @@ resource "google_storage_bucket" "user_uploads_bucket" {
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  versioning {
+    enabled = true
+  }
 
   logging {
     log_bucket = google_storage_bucket.logs_bucket.name

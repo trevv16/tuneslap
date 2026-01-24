@@ -4,6 +4,11 @@ info:
   version: '1.0.0'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     boardId:
       name: boardId
@@ -129,10 +134,12 @@ components:
           $ref: './common.yaml#/components/schemas/ImageUrl'
         collaborators:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/CollaboratorResponse'
         keys:
           type: array
+          maxItems: 500
           items:
             $ref: '#/components/schemas/KeyResponse'
         createdAt:
@@ -330,6 +337,7 @@ components:
           example: Collaborators retrieved successfully
         data:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/CollaboratorResponse'
     GetCollaboratorByIdResponse:
@@ -434,6 +442,10 @@ components:
           minLength: 1
           maxLength: 255
           example: Key deleted successfully
+
+security:
+  - bearerAuth: []
+
 paths:
   /boards:
     get:

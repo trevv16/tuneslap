@@ -63,8 +63,12 @@ if [ "$GENERATE_FRONTEND" = true ]; then
 
     # Clean up old generated files (but preserve custom files)
     # Backup custom files
-    [ -f frontend/api/config.ts ] && cp frontend/api/config.ts /tmp/api-config.ts.bak || true
-    [ -f frontend/api/uploadUrl.ts ] && cp frontend/api/uploadUrl.ts /tmp/api-uploadUrl.ts.bak || true
+    if [ -f frontend/api/config.ts ]; then
+        cp frontend/api/config.ts /tmp/api-config.ts.bak
+    fi
+    if [ -f frontend/api/uploadUrl.ts ]; then
+        cp frontend/api/uploadUrl.ts /tmp/api-uploadUrl.ts.bak
+    fi
 
     # Remove generated directories and files
     rm -rf frontend/api/models
@@ -81,8 +85,12 @@ if [ "$GENERATE_FRONTEND" = true ]; then
       --additional-properties=supportsES6=true,withInterfaces=true,useSingleRequestParameter=true,modelPropertyNaming=camelCase,fileNaming=PascalCase,stringEnums=true
 
     # Restore custom files if they were backed up
-    [ -f /tmp/api-config.ts.bak ] && mv /tmp/api-config.ts.bak frontend/api/config.ts || true
-    [ -f /tmp/api-uploadUrl.ts.bak ] && mv /tmp/api-uploadUrl.ts.bak frontend/api/uploadUrl.ts || true
+    if [ -f /tmp/api-config.ts.bak ]; then
+        mv /tmp/api-config.ts.bak frontend/api/config.ts
+    fi
+    if [ -f /tmp/api-uploadUrl.ts.bak ]; then
+        mv /tmp/api-uploadUrl.ts.bak frontend/api/uploadUrl.ts
+    fi
 fi
 
 echo "✅ Type generation completed successfully!"
