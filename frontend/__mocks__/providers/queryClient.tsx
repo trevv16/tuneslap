@@ -24,8 +24,12 @@ interface QueryClientWrapperProps {
 }
 
 export function QueryClientWrapper({ children, client }: QueryClientWrapperProps) {
-  const queryClient = client ?? createTestQueryClient()
+  const queryClient = React.useMemo(
+    () => client ?? createTestQueryClient(),
+    [client]
+  )
   return React.createElement(QueryClientProvider, { client: queryClient }, children)
+}
 }
 
 // Helper to wrap a component with QueryClient for testing
