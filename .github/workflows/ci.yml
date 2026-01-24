@@ -127,11 +127,16 @@ jobs:
           go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
           go tool cover -func=coverage.out
       
+      - name: Convert coverage to Cobertura format
+        run: |
+          go install github.com/boumenot/gocover-cobertura@latest
+          gocover-cobertura < coverage.out > coverage.xml
+      
       - name: Upload coverage to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: ./server/coverage.out
+          coverage-reports: ./server/coverage.xml
       
       - name: Build Go application
         run: go build -o tuneslap .
