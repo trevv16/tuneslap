@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
-export function useAudio(audioUrl: string, hotKey?: string, onError?: (_error: string) => void) {
+export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: string) => void) {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const bufferRef = useRef<AudioBuffer | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);

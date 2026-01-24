@@ -43,7 +43,7 @@ interface KeyFormProps {
   existingKeys: Key[];
   mode: 'add' | 'edit';
   initialData?: Key;
-  onSubmit: (_data: KeyFormData & { boardId: string }) => void | Promise<void>;
+  onSubmit: (data: KeyFormData & { boardId: string }) => void | Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
