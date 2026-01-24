@@ -17,7 +17,7 @@ When a media file is uploaded:
 
 Audio files are processed using FFmpeg via the `mempeg/audio` and `mempeg/ffmpeg` packages.
 
-### Default Normalization
+### Audio Normalization
 
 All audio files are normalized with these settings:
 
@@ -70,7 +70,7 @@ type AudioProcessingParams struct {
 }
 ```
 
-### Extracted Metadata
+### Audio Metadata
 
 After processing, these fields are populated on the media record:
 
@@ -83,7 +83,7 @@ After processing, these fields are populated on the media record:
 
 Images are processed using [bimg](https://github.com/h2non/bimg) (libvips bindings) via the `mempeg/image` package.
 
-### Default Normalization
+### Image Normalization
 
 All images are normalized with these settings:
 
@@ -122,7 +122,7 @@ type ImageProcessingParams struct {
 }
 ```
 
-### Extracted Metadata
+### Image Metadata
 
 After processing, these fields are populated on the media record:
 
