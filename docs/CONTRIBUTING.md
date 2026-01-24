@@ -23,7 +23,7 @@ cd tuneslap
 ```bash
 cd server
 go mod download
-cp .env.example .env
+cp example.env .env
 # Edit .env with your configuration
 ```
 

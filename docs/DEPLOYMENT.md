@@ -18,7 +18,7 @@ cd tuneslap
 
 2. Create environment file:
 ```bash
-cp server/.env.example server/.env
+cp server/example.env server/.env
 ```
 
 3. Configure environment variables in `server/.env` (see Configuration section below)

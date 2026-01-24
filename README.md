@@ -39,7 +39,7 @@ git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 
 # 2. Set up your environment
-cp server/.env.example server/.env
+cp server/example.env server/.env
 
 # 3. Launch TuneSlap
 docker-compose up -d
