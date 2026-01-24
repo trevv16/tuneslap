@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns=__tests__/integration",
-    "test:integration": "jest --testPathPatterns=__tests__/integration",
+    "test:integration": "jest --testPathPatterns=__tests__/integration --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
