@@ -27,14 +27,15 @@ resource "google_storage_bucket" "logs_bucket" {
   }
 }
 
+# Media bucket intentionally allows public access for serving processed audio/images
+# Files are served via direct URLs for low-latency playback
+#checkov:skip=CKV_GCP_28:Media bucket requires public access for serving media files to users
 resource "google_storage_bucket" "media_bucket" {
   name          = "tuneslap-media-staging"
   location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
-  # Media bucket needs public access for serving processed audio/images to users
-  # Files are served via direct URLs for low-latency playback
 
   versioning {
     enabled = true
