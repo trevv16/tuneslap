@@ -59,9 +59,9 @@ docker-compose up -d
 
 That's it!
 
-* **App**: [http://localhost:3001](http://localhost:3001)
-* **API**: [http://localhost:8082](http://localhost:8082)
-* **API Explorer**: [http://localhost:8081](http://localhost:8081)
+- **App**: [http://localhost:3001](http://localhost:3001)
+- **API**: [http://localhost:8082](http://localhost:8082)
+- **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
 > **Tip:** Try out the live API at [openapi.tuneslap.com](https://openapi.tuneslap.com) to explore all available endpoints.
 
