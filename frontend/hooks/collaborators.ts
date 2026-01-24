@@ -9,7 +9,7 @@ import type {
   UpdateCollaboratorRequest,
   UpdateCollaboratorResponse,
 } from "@/api/models";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { boardKeys } from "./boards";
 
 // Query key factory for collaborators
@@ -17,6 +17,12 @@ export const collaboratorKeys = {
   all: (boardId: string) => ["collaborators", boardId] as const,
   detail: (boardId: string, collaboratorId: string) => ["collaborator", boardId, collaboratorId] as const,
 };
+
+// Shared helper to invalidate collaborator and board queries after mutations
+function invalidateCollaboratorQueries(queryClient: QueryClient, boardId: string) {
+  void queryClient.invalidateQueries({ queryKey: collaboratorKeys.all(boardId) });
+  void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+}
 
 export const useGetCollaborators = (boardId: string) => {
   return useQuery<GetAllCollaboratorsResponse>({
@@ -52,14 +58,7 @@ export const useCreateCollaborator = (boardId: string) => {
       const boardsApi = new BoardsApi(getApiConfig());
       return await boardsApi.createCollaborator({ boardId, createCollaboratorRequest: request });
     },
-    onSuccess: () => {
-      // Invalidate collaborators for the specific board
-      void queryClient.invalidateQueries({
-        queryKey: collaboratorKeys.all(boardId),
-      });
-      // Also invalidate the board data since collaborators are part of the board
-      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-    },
+    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
   });
 };
 
@@ -78,14 +77,7 @@ export const useUpdateCollaborator = (boardId: string) => {
         updateCollaboratorRequest: request.data,
       });
     },
-    onSuccess: () => {
-      // Invalidate collaborators for the specific board
-      void queryClient.invalidateQueries({
-        queryKey: collaboratorKeys.all(boardId),
-      });
-      // Also invalidate the board data
-      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-    },
+    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
   });
 };
 
@@ -97,13 +89,6 @@ export const useDeleteCollaborator = (boardId: string) => {
       const boardsApi = new BoardsApi(getApiConfig());
       return await boardsApi.deleteCollaborator({ boardId, collaboratorId });
     },
-    onSuccess: () => {
-      // Invalidate collaborators for the specific board
-      void queryClient.invalidateQueries({
-        queryKey: collaboratorKeys.all(boardId),
-      });
-      // Also invalidate the board data
-      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-    },
+    onSuccess: () => invalidateCollaboratorQueries(queryClient, boardId),
   });
 };
