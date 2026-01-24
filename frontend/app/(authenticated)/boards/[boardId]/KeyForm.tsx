@@ -102,7 +102,7 @@ export default function KeyForm({
   };
 
   const handleFormSubmit = form.handleSubmit((data) => {
-    onSubmit({ ...data, boardId });
+    void onSubmit({ ...data, boardId });
   });
 
   return (

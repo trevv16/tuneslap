@@ -313,7 +313,7 @@ export function useDeleteMedia() {
       const mediaApi = new MediaApi(getApiConfig());
       return await mediaApi.deleteMedia({ mediaId });
     },
-    onSuccess: (data, mediaId) => {
+    onSuccess: (_data, mediaId) => {
       // Remove the deleted media from cache
       queryClient.removeQueries({ queryKey: mediaKeys.detail(mediaId) });
       // Invalidate and refetch media lists
@@ -341,7 +341,7 @@ export function useProcessMedia() {
         mediaProcessingParams: processingParams,
       });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       // Invalidate and refetch media lists
       void queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
       void queryClient.invalidateQueries({ queryKey: mediaKeys.detail(variables.mediaId) });

@@ -68,7 +68,7 @@ export const useUpdateBoard = () => {
       const { boardId, ...updateRequest } = request;
       return await boardsApi.updateBoard({ boardId, updateBoardRequest: updateRequest });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       // Invalidate both the specific board and the boards list
       void queryClient.invalidateQueries({ queryKey: boardKeys.detail(variables.boardId) });
       void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
