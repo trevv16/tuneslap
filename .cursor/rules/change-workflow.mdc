@@ -68,8 +68,28 @@ After completing the changes:
 **You must ask:**
 > "I've made the following changes. Please review and let me know if everything looks good, or if you'd like any adjustments."
 
-### Step 4: Stage and Commit (After Approval Only)
-Once the user confirms the changes are good:
+### Step 4: Verify Changes Pass All Checks
+Before staging or committing, run verification to ensure changes don't break the build:
+
+1. **Determine which verification to run based on what files changed:**
+   - Frontend changes only (`frontend/` directory): `yarn verify:frontend`
+   - Server changes only (`server/` directory): `yarn verify:server`
+   - Both or unsure: `yarn verify`
+
+2. **What these commands check:**
+   - `yarn verify:frontend`: Runs lint, typecheck, build, and tests for frontend
+   - `yarn verify:server`: Runs lint, test, and build for the Go server
+   - `yarn verify`: Runs both frontend and server verification
+
+3. **Fix any errors before proceeding**
+   - If verification fails, fix the issues
+   - Re-run verification until it passes
+   - Do NOT commit code that fails verification
+
+**Important:** Never skip this step. Pushing code that fails CI wastes time and blocks other work.
+
+### Step 5: Stage and Commit (After Approval Only)
+Once the user confirms the changes are good and verification passes:
 
 1. **Stage all changes**
    ```bash
@@ -81,7 +101,7 @@ Once the user confirms the changes are good:
    - Use the proper commit message format
    - Use a HEREDOC for the commit message
 
-### Step 5: Push and Create Pull Request
+### Step 6: Push and Create Pull Request
 After committing:
 
 1. **Push the branch**
@@ -94,7 +114,7 @@ After committing:
    - Follow the pull request template exactly
    - Fill in all sections of the template
 
-### Step 6: Cleanup After PR Merge
+### Step 7: Cleanup After PR Merge
 After your PR is merged, clean up the worktree and branch:
 
 1. **Remove the worktree** (if working in a Cursor worktree)
@@ -285,7 +305,10 @@ git checkout -b feat/add-user-settings
 # 4. Ask user for feedback
 # "I've made the following changes. Please review..."
 
-# 5. After user approval, commit
+# 5. Run verification (after user approves)
+yarn verify:frontend  # or yarn verify:server, or yarn verify
+
+# 6. After verification passes, commit
 git add .
 git commit -m "$(cat <<'EOF'
 feat: add user settings page
@@ -294,13 +317,14 @@ Add a new settings page where users can update their preferences.
 EOF
 )"
 
-# 6. Push and create PR
+# 7. Push and create PR
 git push -u origin HEAD
 gh pr create --title "feat: add user settings page" --body "..."
 ```
 **Why this is better:**
 - Changes are isolated on a feature branch
 - User can review before anything is committed
+- Verification catches issues before they hit CI
 - PR follows project standards
 - Easy to track and review changes
 
