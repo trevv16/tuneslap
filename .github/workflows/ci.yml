@@ -103,7 +103,7 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libvips-dev libhdf5-dev
-          version: 1.1
+          version: 2.0
       
       # Run fast checks first for quick feedback
       - name: Run Go fmt check
