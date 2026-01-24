@@ -2,6 +2,8 @@
 
 This section documents the media handling system in TuneSlap, covering file uploads, storage, processing, and background tasks.
 
+> **API Reference:** Explore the media API endpoints at [openapi.tuneslap.com](https://openapi.tuneslap.com). The explorer lets you view request/response schemas and test endpoints directly.
+
 ## Contents
 
 - [Upload Flow](./upload-flow.md) - How files are uploaded using signed URLs and direct-to-storage transfers.

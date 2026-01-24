@@ -37,7 +37,7 @@ docker-compose up -d
 **Production URLs** (with custom domains):
 - Frontend: https://tuneslap.com
 - Backend API: https://api.tuneslap.com
-- API Explorer: https://openapi.tuneslap.com
+- API Explorer: https://openapi.tuneslap.com (browse and test all API endpoints)
 - MinIO Storage: https://media.tuneslap.com
 
 ## Configuration

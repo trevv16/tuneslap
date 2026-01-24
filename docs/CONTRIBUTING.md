@@ -160,8 +160,12 @@ tuneslap/
 │   ├── CONTRIBUTING.md
 │   └── DEPLOYMENT.md
 ├── scripts/           # Utility scripts
-└── openapi/           # API specification
+└── openapi/           # API specification (browse at openapi.tuneslap.com)
 ```
+
+### API Reference
+
+The full API documentation is available at [openapi.tuneslap.com](https://openapi.tuneslap.com). Use the explorer to browse endpoints, view request/response schemas, and test API calls.
 
 ## Testing
 

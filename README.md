@@ -50,6 +50,8 @@ That's it!
 *   **API**: [http://localhost:8082](http://localhost:8082)
 *   **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
+> **Tip:** Try out the live API at [openapi.tuneslap.com](https://openapi.tuneslap.com) to explore all available endpoints.
+
 For a detailed deployment guide, check out [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## For Developers
@@ -69,7 +71,7 @@ TuneSlap is built with a modern, performance-focused stack.
 *   **FFmpeg** – Industrial-strength media processing.
 
 ### API & Documentation
-Explore the full API documentation in our [OpenAPI explorer](http://localhost:8081) or view the specification in `openapi/openapi.yaml`.
+Explore the full API documentation in our [OpenAPI explorer](https://openapi.tuneslap.com) or view the specification in `openapi/openapi.yaml`. The explorer lets you browse all endpoints, see request/response schemas, and try out API calls directly.
 
 For details on media uploads, storage, and processing, see the [Media System documentation](docs/media/README.md).
 
