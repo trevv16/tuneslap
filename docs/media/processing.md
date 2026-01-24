@@ -32,6 +32,7 @@ All audio files are normalized with these settings:
 ### Output Formats
 
 Audio is encoded to:
+
 - **WebM (Opus)** at 128 kbps - Primary format for web playback
 - **MP3** at 128 kbps - Fallback for older browsers
 

@@ -19,11 +19,6 @@ import { toast } from "sonner"
 import Header from "../../Header"
 import KeyForm from "./KeyForm"
 
-type HeaderActionsProps = {
-  boardId: string
-  onAddKey: () => void
-}
-
 export default function BoardDetailClient() {
   const { boardId } = useParams()
   const { data: board } = useGetBoardById(boardId as string)
@@ -54,14 +49,14 @@ export default function BoardDetailClient() {
                 Edit
               </Link>
             </Button>
-            <Button onClick={() => setAddKeyOpen(true)}>
+            <Button onClick={() => { setAddKeyOpen(true); }}>
               <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
               Add Key
             </Button>
           </div>
         }
       />
-      <SoundBoard keys={board?.keys || []} onAddKey={() => setAddKeyOpen(true)} />
+      <SoundBoard keys={board?.keys || []} onAddKey={() => { setAddKeyOpen(true); }} />
 
       {/* Add Key Sheet */}
       <Sheet open={addKeyOpen} onOpenChange={setAddKeyOpen}>
@@ -78,7 +73,7 @@ export default function BoardDetailClient() {
               existingKeys={board?.keys || []}
               mode="add"
               onSubmit={handleAddKey}
-              onCancel={() => setAddKeyOpen(false)}
+              onCancel={() => { setAddKeyOpen(false); }}
               isSubmitting={createKeyMutation.isPending}
             />
           </div>

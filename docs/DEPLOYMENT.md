@@ -11,12 +11,14 @@ This guide covers deploying TuneSlap using Docker Compose for self-hosting.
 ## Quick Start
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 ```
 
 2. Create environment file:
+
 ```bash
 cp server/example.env server/.env
 ```
@@ -24,21 +26,24 @@ cp server/example.env server/.env
 3. Configure environment variables in `server/.env` (see Configuration section below)
 
 4. Start services:
+
 ```bash
 docker-compose up -d
 ```
 
 **Development URLs** (localhost):
-- Frontend: http://localhost:3001
-- Backend API: http://localhost:8082
-- API Explorer: http://localhost:8081
-- MinIO Storage: http://localhost:9000
+
+- Frontend: <http://localhost:3001>
+- Backend API: <http://localhost:8082>
+- API Explorer: <http://localhost:8081>
+- MinIO Storage: <http://localhost:9000>
 
 **Production URLs** (with custom domains):
-- Frontend: https://tuneslap.com
-- Backend API: https://api.tuneslap.com
-- API Explorer: https://openapi.tuneslap.com (browse and test all API endpoints)
-- MinIO Storage: https://media.tuneslap.com
+
+- Frontend: <https://tuneslap.com>
+- Backend API: <https://api.tuneslap.com>
+- API Explorer: <https://openapi.tuneslap.com> (browse and test all API endpoints)
+- MinIO Storage: <https://media.tuneslap.com>
 
 ## Configuration
 
@@ -132,6 +137,7 @@ services:
 ### Persistent Storage
 
 MongoDB and Redis data are persisted in Docker volumes:
+
 - `mongodb_data`: MongoDB database files
 - `redis_data`: Redis data
 

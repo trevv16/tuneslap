@@ -80,7 +80,7 @@ export const usePreloadBoard = (options: UsePreloadBoardOptions = {}) => {
       }
 
       timeoutRef.current = setTimeout(() => {
-        preloadBoardData(boardId);
+        void preloadBoardData(boardId);
       }, debounceMs);
     },
     [preloadBoardData, debounceMs]

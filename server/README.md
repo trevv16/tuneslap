@@ -1,4 +1,5 @@
 # TuneSlap Server
+
 A template for a GoLang backend using Fiber, MongoDB, a Makefile, and more
 
 ## Getting Started

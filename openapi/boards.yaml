@@ -97,6 +97,7 @@ components:
           properties:
             boards:
               type: array
+              maxItems: 1000
               items:
                 $ref: '#/components/schemas/BoardResponse'
             pagination:

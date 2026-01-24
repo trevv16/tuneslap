@@ -77,6 +77,7 @@ Files are stored using this key pattern:
 ```
 
 Examples:
+
 - `abc123/audio/intro-music.mp3`
 - `abc123/image/logo.png`
 

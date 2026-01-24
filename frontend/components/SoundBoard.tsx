@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Keyboard, Plus } from "lucide-react";
 import SoundKey from "./SoundKey";
 
-type SoundBoardProps = {
+interface SoundBoardProps {
   keys: BoardKey[];
   onAddKey?: () => void;
 }

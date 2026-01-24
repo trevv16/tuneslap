@@ -2,13 +2,12 @@
 
 import { useEffect } from "react"
 
-export default function Error({
-  error,
-  reset,
-}: {
+interface ErrorProps {
   error: Error
   reset: () => void
-}) {
+}
+
+export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error)
@@ -21,7 +20,7 @@ export default function Error({
         className="px-4 py-2 bg-primary-500 text-light-50 rounded hover:bg-primary-600"
         onClick={
           // Attempt to recover by trying to re-render the segment
-          () => reset()
+          () => { reset(); }
         }
       >
         Try again

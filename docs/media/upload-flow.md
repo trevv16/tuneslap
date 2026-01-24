@@ -42,6 +42,7 @@ The frontend requests a signed URL by calling `POST /api/v1/media/upload-url`.
 ```
 
 The backend validates:
+
 - File type is allowed (audio or image)
 - File size is within storage limits
 - User is authenticated
@@ -85,6 +86,7 @@ After a successful upload, the frontend creates the media record:
 ```
 
 The backend:
+
 1. Validates the request
 2. Creates a media record with status `pending`
 3. Queues a background task to process the file
@@ -99,6 +101,7 @@ Files are organized in storage using this pattern:
 ```
 
 For example:
+
 - `abc123/audio/intro-music.mp3`
 - `abc123/image/logo.png`
 

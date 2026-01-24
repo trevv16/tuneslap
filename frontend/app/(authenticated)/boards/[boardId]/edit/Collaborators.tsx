@@ -41,7 +41,7 @@ const roleChangeSchema = z.object({
 
 type RoleChangeFormData = z.infer<typeof roleChangeSchema>
 
-type CollaboratorsProps = {
+interface CollaboratorsProps {
   boardId: string
 }
 
@@ -117,7 +117,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
             : `${collaborators.length} collaborator${collaborators.length === 1 ? '' : 's'}`
           }
         </p>
-        <Button size="sm" onClick={() => setOpen(true)}>
+        <Button size="sm" onClick={() => { setOpen(true); }}>
           <Plus className="mr-1.5 h-4 w-4" />
           Invite
         </Button>
@@ -144,11 +144,11 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => openRoleModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}>
+                  <DropdownMenuItem onClick={() => { openRoleModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' }); }}>
                     Change Role
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    onClick={() => openDeleteModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' })}
+                    onClick={() => { openDeleteModal({ id: person.id || '', name: person.name || '', currentRole: person.role || 'viewer' }); }}
                     className="text-destructive focus:text-destructive"
                   >
                     Remove
@@ -195,7 +195,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
           <DialogFooter className="sm:grid sm:grid-cols-2 sm:gap-3">
             <Button
               variant="outline"
-              onClick={() => setDeleteModalOpen(false)}
+              onClick={() => { setDeleteModalOpen(false); }}
               disabled={deleteCollaboratorMutation.isPending}
             >
               Cancel
@@ -252,7 +252,7 @@ export default function Collaborators({ boardId }: CollaboratorsProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setRoleModalOpen(false)}
+                onClick={() => { setRoleModalOpen(false); }}
                 disabled={updateCollaboratorMutation.isPending}
               >
                 Cancel

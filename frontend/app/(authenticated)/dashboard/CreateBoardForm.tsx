@@ -26,7 +26,7 @@ const createBoardSchema = z.object({
 
 type CreateBoardFormData = z.infer<typeof createBoardSchema>
 
-type CreateBoardFormProps = {
+interface CreateBoardFormProps {
   setOpen: Dispatch<SetStateAction<boolean>>
 }
 
@@ -123,7 +123,7 @@ export default function CreateBoardForm({ setOpen }: CreateBoardFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => setOpen(false)}
+          onClick={() => { setOpen(false); }}
           disabled={createBoardMutation.isPending}
           className="flex-1"
         >

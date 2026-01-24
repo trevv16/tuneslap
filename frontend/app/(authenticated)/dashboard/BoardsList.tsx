@@ -7,7 +7,7 @@ import { usePreloadBoard } from '@/hooks/usePreloadBoard'
 import { Keyboard, LayoutGrid, Users } from 'lucide-react'
 import Link from 'next/link'
 
-type BoardsListProps = {
+interface BoardsListProps {
   boards: Board[]
 }
 

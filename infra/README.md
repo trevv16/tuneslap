@@ -53,20 +53,48 @@ terraform destroy
 ## Resources Created
 
 ### Production
-- Service Account: `tuneslap-api@amunene-dev.iam.gserviceaccount.com`
+
+- Service Account: `tuneslap-api@munene-dev.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-prod`
 - Media Bucket: `tuneslap-media-prod`
 
 ### Staging
+
 - Service Account: `tuneslap-api-staging@munene-dev-staging.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-staging`
-- Storage Bucket: `tuneslap-media-staging`
+- Media Bucket: `tuneslap-media-staging`
 
-## Service Account Permissions
+## Bucket Access Policies
 
-Both environments have:
-- Public read access to the media bucket
-- Service account write access to the media bucket
+### Public Buckets (Intentional)
+
+The following buckets have public read access (`allUsers` with `roles/storage.objectViewer`):
+
+| Bucket | Purpose | Why Public |
+|--------|---------|------------|
+| `tuneslap-media-{env}` | Processed audio/images | Direct playback in browser without signed URLs |
+| `tuneslap-user-uploads-{env}` | User-uploaded media | Direct playback in browser without signed URLs |
+
+**Controls in place:**
+
+- Access logging enabled (logs written to `tuneslap-logs-{env}`)
+- CORS restricted to `tuneslap.com` and subdomains (production) or localhost (staging)
+- Uniform bucket-level access enforced (no per-object ACLs)
+- All objects are user-generated soundboard content only
+
+### Private Buckets
+
+| Bucket | Purpose | Access |
+|--------|---------|--------|
+| `tuneslap-system-{env}` | Internal system data | Service account only |
+| `tuneslap-logs-{env}` | Access logs | Service account only, public access prevention enforced |
+
+### Service Account Permissions
+
+The API service account has:
+
+- `roles/storage.objectCreator` on media, system, and user uploads buckets
+- `roles/storage.objectViewer` on media, system, and user uploads buckets
 
 ## Best Practices
 

@@ -14,12 +14,14 @@ Thank you for your interest in contributing to TuneSlap! This document provides 
 ### Development Setup
 
 1. Fork and clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 ```
 
 2. Set up the backend:
+
 ```bash
 cd server
 go mod download
@@ -28,24 +30,28 @@ cp example.env .env
 ```
 
 3. Set up the frontend:
+
 ```bash
 cd frontend
 yarn install
 ```
 
 4. Start dependencies with Docker Compose:
+
 ```bash
 # From project root
 docker-compose up -d mongodb redis
 ```
 
 5. Run the backend:
+
 ```bash
 cd server
 go run main.go
 ```
 
 6. Run the frontend (in a separate terminal):
+
 ```bash
 cd frontend
 yarn dev
@@ -56,6 +62,7 @@ yarn dev
 ### Making Changes
 
 1. Create a new branch from `main`:
+
 ```bash
 git checkout -b feature/your-feature-name
 # or
@@ -102,6 +109,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) format:
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -134,6 +142,7 @@ We use [Changesets](https://github.com/changesets/changesets) for version manage
 #### Why Changesets?
 
 Changesets let us:
+
 - Track what changed between releases
 - Automatically determine version bumps (patch/minor/major)
 - Generate changelogs
@@ -158,6 +167,7 @@ yarn changeset
 ```
 
 You'll be prompted to:
+
 1. Select which packages changed (use spacebar to select, enter to confirm)
 2. Choose the version bump type:
    - `patch` - Bug fixes, small changes (0.0.X)
@@ -184,6 +194,7 @@ Please enter a summary for this change:
 #### When to Skip Changesets
 
 Not every PR needs a changeset. Skip them for:
+
 - Documentation-only changes
 - CI/tooling changes that don't affect the app
 - Refactors with no user-facing changes

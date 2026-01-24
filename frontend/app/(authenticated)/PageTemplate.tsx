@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-type PageTemplateProps = {
+interface PageTemplateProps {
   children: React.ReactNode
   className?: string
 }

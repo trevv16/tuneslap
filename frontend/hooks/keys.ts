@@ -29,16 +29,16 @@ export function useCreateKey(boardId: string) {
     },
     onSuccess: () => {
       // Invalidate and refetch board data and board keys
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-      queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 }
 
 // Get all keys for a board
 export function useGetBoardKeys(boardId: string) {
-  return useQuery<GetBoardKeysResponse, Error>({
+  return useQuery<GetBoardKeysResponse>({
     queryKey: keyKeys.all(boardId),
     queryFn: async () => {
       const keysApi = new KeysApi(getApiConfig());
@@ -50,7 +50,7 @@ export function useGetBoardKeys(boardId: string) {
 
 // Get a key by ID
 export function useGetKeyById(boardId: string, keyId: string) {
-  return useQuery<GetKeyByIdResponse, Error>({
+  return useQuery<GetKeyByIdResponse>({
     queryKey: keyKeys.detail(boardId, keyId),
     queryFn: async () => {
       const keysApi = new KeysApi(getApiConfig());
@@ -71,9 +71,9 @@ export function useUpdateKey(boardId: string) {
     },
     onSuccess: () => {
       // Invalidate and refetch board data
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-      queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 }
@@ -89,9 +89,9 @@ export function useDeleteKey(boardId: string) {
     },
     onSuccess: () => {
       // Invalidate and refetch board data
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
-      queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: keyKeys.all(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 }

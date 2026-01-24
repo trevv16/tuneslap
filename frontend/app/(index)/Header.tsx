@@ -26,7 +26,7 @@ export default function Header() {
         <div className="flex lg:hidden">
           <button
             type="button"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => { setMobileMenuOpen(true); }}
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-base"
           >
             <span className="sr-only">Open main menu</span>
@@ -56,7 +56,7 @@ export default function Header() {
             </Link>
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => { setMobileMenuOpen(false); }}
               className="-m-2.5 rounded-md p-2.5 text-base"
             >
               <span className="sr-only">Close menu</span>

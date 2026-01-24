@@ -97,7 +97,7 @@ export const preloadImages = async (
   if (validUrls.length === 0) return;
 
   const promises = validUrls.map((url) =>
-    preloadImage(url, options).catch((error) => {
+    preloadImage(url, options).catch((error: unknown) => {
       console.warn(`Failed to preload image: ${url}`, error);
       // Don't fail the entire batch for one failed image
     })
@@ -117,7 +117,7 @@ export const preloadAudios = async (
   if (validUrls.length === 0) return;
 
   const promises = validUrls.map((url) =>
-    preloadAudio(url, options).catch((error) => {
+    preloadAudio(url, options).catch((error: unknown) => {
       console.warn(`Failed to preload audio: ${url}`, error);
       // Don't fail the entire batch for one failed audio
     })

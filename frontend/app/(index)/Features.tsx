@@ -1,12 +1,12 @@
 import Image from "next/image";
 
-type Feature = {
+interface Feature {
   title: string;
   subtitle: string;
   description: string;
   imageSrc: string;
   imageAlt: string;
-};
+}
 
 const features: Feature[] = [
   {
