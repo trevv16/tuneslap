@@ -41,10 +41,10 @@ describe('useGetBoards', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    const MockBoardsApi = BoardsApi as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       getAllBoards: mockGetAllBoards,
-    }) as unknown as InstanceType<typeof BoardsApi>)
+    }))
   })
 
   it('should fetch all boards successfully', async () => {
@@ -99,10 +99,10 @@ describe('useGetBoardById', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.requireMock('@/utils/token').getStoredToken.mockReturnValue('mock-token')
-    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    const MockBoardsApi = BoardsApi as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       getBoardById: mockGetBoardById,
-    }) as unknown as InstanceType<typeof BoardsApi>)
+    }))
   })
 
   it('should fetch board by ID successfully', async () => {
@@ -140,10 +140,10 @@ describe('useCreateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    const MockBoardsApi = BoardsApi as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       createBoard: mockCreateBoard,
-    }) as unknown as InstanceType<typeof BoardsApi>)
+    }))
   })
 
   it('should create board successfully', async () => {
@@ -200,10 +200,10 @@ describe('useUpdateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    const MockBoardsApi = BoardsApi as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       updateBoard: mockUpdateBoard,
-    }) as unknown as InstanceType<typeof BoardsApi>)
+    }))
   })
 
   it('should update board successfully', async () => {
@@ -258,10 +258,10 @@ describe('useDeleteBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.MockedClass<typeof BoardsApi>
+    const MockBoardsApi = BoardsApi as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       deleteBoard: mockDeleteBoard,
-    }) as unknown as InstanceType<typeof BoardsApi>)
+    }))
   })
 
   it('should delete board successfully', async () => {

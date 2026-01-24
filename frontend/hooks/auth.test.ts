@@ -25,10 +25,10 @@ describe('useSignUp', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    const MockAuthApi = AuthApi as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       signup: mockSignup,
-    }) as unknown as InstanceType<typeof AuthApi>)
+    }))
   })
 
   it('should call signup API with request data', async () => {
@@ -83,10 +83,10 @@ describe('useSignIn', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    const MockAuthApi = AuthApi as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       signin: mockSignin,
-    }) as unknown as InstanceType<typeof AuthApi>)
+    }))
   })
 
   it('should call signin API and store token on success', async () => {
@@ -160,10 +160,10 @@ describe('useForgotPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    const MockAuthApi = AuthApi as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       forgot: mockForgot,
-    }) as unknown as InstanceType<typeof AuthApi>)
+    }))
   })
 
   it('should call forgot password API', async () => {
@@ -215,10 +215,10 @@ describe('useResetPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.MockedClass<typeof AuthApi>
+    const MockAuthApi = AuthApi as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       reset: mockReset,
-    }) as unknown as InstanceType<typeof AuthApi>)
+    }))
   })
 
   it('should call reset password API', async () => {
