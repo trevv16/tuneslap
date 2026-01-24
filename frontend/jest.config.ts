@@ -1,19 +1,16 @@
 import type { Config } from 'jest'
-import path from 'path'
-
-const rootDir = path.resolve(__dirname)
 
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: [path.join(rootDir, 'jest.setup.ts')],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': path.join(rootDir, '$1'),
+    '^@/(.*)$': '<rootDir>/$1',
   },
   testPathIgnorePatterns: [
-    path.join(rootDir, 'node_modules'),
-    path.join(rootDir, '.next'),
-    path.join(rootDir, '__tests__/integration/setup'),
+    '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/__tests__/integration/setup/',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {

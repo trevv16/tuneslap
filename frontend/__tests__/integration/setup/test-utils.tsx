@@ -2,18 +2,21 @@
 // Extends existing AllProviders from __mocks__/providers - DO NOT duplicate provider logic
 import { render, RenderOptions, RenderResult } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
+import type { UserResponse } from '@/api/models'
 import React from 'react'
 import { AllProviders } from '@/__mocks__/providers/allProviders'
 import { createTestQueryClient } from '@/__mocks__/providers/queryClient'
 import { Toaster } from 'sonner'
 
+interface AuthState {
+  isLoading?: boolean
+  isAuthenticated?: boolean
+  user?: UserResponse | null
+}
+
 interface IntegrationRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   queryClient?: QueryClient
-  authState?: {
-    isLoading?: boolean
-    isAuthenticated?: boolean
-    user?: unknown
-  }
+  authState?: AuthState
 }
 
 // Extend AllProviders with Toaster for integration tests that need toast assertions
@@ -24,7 +27,7 @@ function IntegrationProviders({
 }: {
   children: React.ReactNode
   queryClient?: QueryClient
-  authState?: IntegrationRenderOptions['authState']
+  authState?: AuthState
 }) {
   return (
     <AllProviders queryClient={queryClient} authState={authState}>

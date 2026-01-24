@@ -162,9 +162,9 @@ export const handlers = [
       success: true,
       data: {
         totalCount: mockMedia.length,
-        imageCount: mockMedia.filter(m => m.type === 'image').length,
-        audioCount: mockMedia.filter(m => m.type === 'audio').length,
-        totalSize: mockMedia.reduce((sum, m) => sum + (m.size || 0), 0),
+        imageCount: mockMedia.filter(m => m.mediaType === 'image').length,
+        audioCount: mockMedia.filter(m => m.mediaType === 'audio').length,
+        totalSize: mockMedia.reduce((sum, m) => sum + (m.fileSize || 0), 0),
       },
     })
   }),
@@ -175,9 +175,9 @@ export const handlers = [
     
     let filteredMedia = mockMedia
     if (mediaType === 'image') {
-      filteredMedia = mockMedia.filter(m => m.type === 'image')
+      filteredMedia = mockMedia.filter(m => m.mediaType === 'image')
     } else if (mediaType === 'audio') {
-      filteredMedia = mockMedia.filter(m => m.type === 'audio')
+      filteredMedia = mockMedia.filter(m => m.mediaType === 'audio')
     }
     
     return HttpResponse.json({
@@ -192,12 +192,12 @@ export const handlers = [
       success: true,
       data: {
         id: 'new-media-id',
-        name: body.fileName,
-        type: body.mediaType,
-        url: body.fileUrl,
-        size: 1024,
-        mimeType: body.mediaType === 'image' ? 'image/png' : 'audio/mpeg',
-        ownerId: mockUser.id,
+        fileName: body.fileName,
+        mediaType: body.mediaType,
+        fileUrl: body.fileUrl,
+        fileSize: 1024,
+        contentType: body.mediaType === 'image' ? 'image/png' : 'audio/mpeg',
+        authorId: mockUser.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },

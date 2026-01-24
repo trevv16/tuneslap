@@ -169,7 +169,7 @@ describe('KeyForm Integration', () => {
 
     // Wait for media to load
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
   })
 

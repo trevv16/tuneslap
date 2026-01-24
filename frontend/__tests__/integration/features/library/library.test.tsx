@@ -36,10 +36,10 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
-    expect(screen.getByText(mockImageMedia.name)).toBeInTheDocument()
+    expect(screen.getByText(mockImageMedia.fileName)).toBeInTheDocument()
   })
 
   it('shows tabs for filtering media types', async () => {
@@ -48,7 +48,7 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     // All, Audio, Images tabs should be visible
@@ -64,7 +64,7 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     // Click audio tab
@@ -73,7 +73,7 @@ describe('LibraryClient Integration', () => {
 
     // Should still show audio
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
   })
 
@@ -84,11 +84,11 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     // Find and click on the media item
-    const mediaItem = screen.getByText(mockAudioMedia.name)
+    const mediaItem = screen.getByText(mockAudioMedia.fileName)
     await user.click(mediaItem)
 
     // Details sidebar should open with media info
@@ -105,11 +105,11 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     // Click to open
-    const mediaItem = screen.getByText(mockAudioMedia.name)
+    const mediaItem = screen.getByText(mockAudioMedia.fileName)
     await user.click(mediaItem)
 
     await waitFor(() => {
@@ -131,7 +131,7 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     expect(screen.getByRole('button', { name: /add file/i })).toBeInTheDocument()
@@ -144,7 +144,7 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     const addButton = screen.getByRole('button', { name: /add file/i })
@@ -179,7 +179,7 @@ describe('LibraryClient Integration', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(mockAudioMedia.name)).toBeInTheDocument()
+      expect(screen.getByText(mockAudioMedia.fileName)).toBeInTheDocument()
     })
 
     // Should have view toggle buttons
