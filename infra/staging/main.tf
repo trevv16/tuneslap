@@ -9,12 +9,29 @@ resource "google_service_account" "tuneslap_api" {
   }
 }
 
-resource "google_storage_bucket" "media_bucket" {
-  name = "tuneslap-media-staging"  # Staging bucket name
-  location = "us-east1"
+# Logs bucket for access logging
+resource "google_storage_bucket" "logs_bucket" {
+  name          = "tuneslap-logs-staging"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_storage_bucket" "media_bucket" {
+  name          = "tuneslap-media-staging"
+  location      = "us-east1"
+  storage_class = "STANDARD"
+
+  uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   cors {
     origin          = ["http://localhost:3001", "https://*.tuneslap.com"]
@@ -43,11 +60,15 @@ resource "google_storage_bucket_iam_member" "user_uploads_public_read" {
 }
 
 resource "google_storage_bucket" "system_bucket" {
-  name = "tuneslap-system-staging"  # Staging bucket name
-  location = "us-east1"
+  name          = "tuneslap-system-staging"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   lifecycle {
     prevent_destroy = true
@@ -55,11 +76,15 @@ resource "google_storage_bucket" "system_bucket" {
 }
 
 resource "google_storage_bucket" "user_uploads_bucket" {
-  name = "tuneslap-user-uploads-staging"  # Staging bucket name
-  location = "us-east1"
+  name          = "tuneslap-user-uploads-staging"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   cors {
     origin          = ["http://localhost:3001", "https://*.tuneslap.com"]

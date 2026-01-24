@@ -1,4 +1,4 @@
-# Create service account for staging
+# Create service account for production
 resource "google_service_account" "tuneslap_api" {
   account_id   = "tuneslap-api-production"
   display_name = "Tuneslap Production API Service Account"
@@ -9,12 +9,29 @@ resource "google_service_account" "tuneslap_api" {
   }
 }
 
-resource "google_storage_bucket" "media_bucket" {
-  name = "tuneslap-media-production"  # Production bucket name
-  location = "us-east1"
+# Logs bucket for access logging
+resource "google_storage_bucket" "logs_bucket" {
+  name          = "tuneslap-logs-production"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_storage_bucket" "media_bucket" {
+  name          = "tuneslap-media-production"
+  location      = "us-east1"
+  storage_class = "STANDARD"
+
+  uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   cors {
     origin          = ["https://tuneslap.com", "https://*.tuneslap.com"]
@@ -43,11 +60,15 @@ resource "google_storage_bucket_iam_member" "user_uploads_public_read" {
 }
 
 resource "google_storage_bucket" "system_bucket" {
-  name = "tuneslap-system-production"  # Production bucket name
-  location = "us-east1"
+  name          = "tuneslap-system-production"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   lifecycle {
     prevent_destroy = true
@@ -55,11 +76,15 @@ resource "google_storage_bucket" "system_bucket" {
 }
 
 resource "google_storage_bucket" "user_uploads_bucket" {
-  name = "tuneslap-user-uploads-production"  # Production bucket name
-  location = "us-east1"
+  name          = "tuneslap-user-uploads-production"
+  location      = "us-east1"
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  logging {
+    log_bucket = google_storage_bucket.logs_bucket.name
+  }
 
   cors {
     origin          = ["https://tuneslap.com", "https://*.tuneslap.com"]
