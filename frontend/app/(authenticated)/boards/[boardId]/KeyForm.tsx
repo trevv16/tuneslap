@@ -38,7 +38,7 @@ const KeySchema = (existingHotKeys: string[], excludeHotKey?: string) =>
 
 type KeyFormData = z.infer<ReturnType<typeof KeySchema>>;
 
-type KeyFormProps = {
+interface KeyFormProps {
   boardId: string;
   existingKeys: Key[];
   mode: 'add' | 'edit';
@@ -64,7 +64,7 @@ export default function KeyForm({
   const existingHotKeys = useMemo(() =>
     existingKeys
       .filter((k) => k.hotKey != null)
-      .map((k) => k.hotKey!.toUpperCase()),
+      .map((k) => k.hotKey?.toUpperCase()),
     [existingKeys]
   );
   const excludeHotKey = mode === 'edit' && initialData?.hotKey ? initialData.hotKey : undefined;

@@ -4,7 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import { useGetBoards } from "@/hooks/boards";
 import BoardsList from "./BoardsList";
 
-type DashboardClientProps = {
+interface DashboardClientProps {
   onOpenCreateModal: () => void;
 };
 

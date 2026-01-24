@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-type Feature = {
+interface Feature {
   title: string;
   subtitle: string;
   description: string;

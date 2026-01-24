@@ -14,7 +14,7 @@ import { AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type DeleteBoardSectionProps = {
+interface DeleteBoardSectionProps {
   boardId: string;
 };
 
@@ -48,7 +48,7 @@ export default function DeleteBoardSection({ boardId }: DeleteBoardSectionProps)
         </div>
         <Button
           variant="destructive"
-          onClick={() => setOpen(true)}
+          onClick={() => { setOpen(true); }}
         >
           Delete Board
         </Button>
@@ -68,7 +68,7 @@ export default function DeleteBoardSection({ boardId }: DeleteBoardSectionProps)
           <DialogFooter className="sm:grid sm:grid-cols-2 sm:gap-3">
             <Button
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => { setOpen(false); }}
               disabled={isDeleting}
             >
               Cancel

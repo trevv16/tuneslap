@@ -12,7 +12,7 @@ import { Check, Plus } from "lucide-react"
 import { Dispatch, SetStateAction } from "react"
 import CreateBoardForm from "./CreateBoardForm"
 
-type HeaderActionsProps = {
+interface HeaderActionsProps {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
 }
@@ -20,7 +20,7 @@ type HeaderActionsProps = {
 export default function HeaderActions({ open, setOpen }: HeaderActionsProps) {
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button onClick={() => { setOpen(true); }}>
         <Plus className="mr-1.5 -ml-0.5 h-5 w-5" />
         Create
       </Button>

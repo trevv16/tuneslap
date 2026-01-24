@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { useGetMe } from "../hooks/users";
 
-type AuthContextType = {
+interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   user: UserResponse | null;
@@ -30,7 +30,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     if (userData?.data) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(userData.data);
-    } else if (error || !token) {
+    } else if (error ?? !token) {
       // Clear user if there's an error or no token
       setUser(null);
     }

@@ -29,7 +29,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import KeyForm from '../KeyForm'
 
-type KeysProps = {
+interface KeysProps {
   boardId: string
 }
 
@@ -144,11 +144,11 @@ export default function Keys({ boardId }: KeysProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => openEditSheet(key)}>
+                    <DropdownMenuItem onClick={() => { openEditSheet(key); }}>
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => openDeleteModal(key)}
+                      onClick={() => { openDeleteModal(key); }}
                       className="text-destructive focus:text-destructive"
                     >
                       Delete
@@ -202,7 +202,7 @@ export default function Keys({ boardId }: KeysProps) {
                 existingKeys={keys}
                 mode="add"
                 onSubmit={handleCreateKey}
-                onCancel={() => setSheetOpen(false)}
+                onCancel={() => { setSheetOpen(false); }}
                 isSubmitting={createKeyMutation.isPending}
               />
             ) : selectedKey && (
@@ -212,7 +212,7 @@ export default function Keys({ boardId }: KeysProps) {
                 mode="edit"
                 initialData={selectedKey}
                 onSubmit={handleUpdateKey}
-                onCancel={() => setSheetOpen(false)}
+                onCancel={() => { setSheetOpen(false); }}
                 isSubmitting={updateKeyMutation.isPending}
               />
             )}
@@ -235,7 +235,7 @@ export default function Keys({ boardId }: KeysProps) {
           <DialogFooter className="sm:grid sm:grid-cols-2 sm:gap-3">
             <Button
               variant="outline"
-              onClick={() => setDeleteModalOpen(false)}
+              onClick={() => { setDeleteModalOpen(false); }}
               disabled={deleteKeyMutation.isPending}
             >
               Cancel

@@ -9,7 +9,7 @@ export const userKeys = {
 };
 
 export const useGetMe = (authToken: string) => {
-  return useQuery<GetMeResponse, Error>({
+  return useQuery<GetMeResponse>({
     queryKey: userKeys.me(),
     queryFn: async () => {
       const usersApi = new UsersApi(getApiConfig());
@@ -32,7 +32,7 @@ export const useUpdateMe = () => {
     },
     onSuccess: () => {
       // Invalidate the user data query to refetch updated user info
-      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      void queryClient.invalidateQueries({ queryKey: userKeys.me() });
     },
   });
 };

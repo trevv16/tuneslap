@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 
-type DemoBannerProps = {
+interface DemoBannerProps {
   message: string;
 }
 

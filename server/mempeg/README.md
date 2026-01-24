@@ -25,10 +25,10 @@ Users upload audio or image media for their soundboard app. The app allows:
 - Normalize loudness
 - Extract metadata (duration, sample rate, etc.)
 - Advanced edits:
-    - Speed adjustment
-    - Pitch shifting
-    - Fade in/out
-    - Loop prep (auto trim silence, align start/end)
+  - Speed adjustment
+  - Pitch shifting
+  - Fade in/out
+  - Loop prep (auto trim silence, align start/end)
 - Generate waveform preview images
 
 ### 🟢 **Image Processing**
@@ -111,12 +111,12 @@ Users upload audio or image media for their soundboard app. The app allows:
 ### 🧩 Frontend/Backend Processing Boundary
 
 - **Frontend** (WASM/Web APIs):
-    - Previews of audio speed, pitch, trim
-    - Render waveform in real-time
-    - Validate file before upload
+  - Previews of audio speed, pitch, trim
+  - Render waveform in real-time
+  - Validate file before upload
 - **Backend** (Go):
-    - Apply permanent edits: normalization, trimming, format conversion
-    - Save final processed version to S3
-    - Store original + processed media references
+  - Apply permanent edits: normalization, trimming, format conversion
+  - Save final processed version to S3
+  - Store original + processed media references
 
 ---

@@ -53,11 +53,13 @@ terraform destroy
 ## Resources Created
 
 ### Production
+
 - Service Account: `tuneslap-api@amunene-dev.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-prod`
 - Media Bucket: `tuneslap-media-prod`
 
 ### Staging
+
 - Service Account: `tuneslap-api-staging@munene-dev-staging.iam.gserviceaccount.com`
 - System Bucket: `tuneslap-system-staging`
 - Storage Bucket: `tuneslap-media-staging`
@@ -65,6 +67,7 @@ terraform destroy
 ## Service Account Permissions
 
 Both environments have:
+
 - Public read access to the media bucket
 - Service account write access to the media bucket
 

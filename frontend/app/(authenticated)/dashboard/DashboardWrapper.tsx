@@ -17,7 +17,7 @@ export default function DashboardWrapper() {
         pageTitle="Dashboard"
         headerActions={<HeaderActions open={isCreateModalOpen} setOpen={setIsCreateModalOpen} />}
       />
-      <DashboardClient onOpenCreateModal={() => setIsCreateModalOpen(true)} />
+      <DashboardClient onOpenCreateModal={() => { setIsCreateModalOpen(true); }} />
     </PageTemplate>
   );
 }

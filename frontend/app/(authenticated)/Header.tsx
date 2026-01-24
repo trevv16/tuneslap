@@ -4,7 +4,7 @@ import { useMediaStats } from "@/hooks/media"
 import { formatBytes } from "@/utils/helpers"
 import { FileAudio, HardDrive, Image as ImageIcon } from "lucide-react"
 
-type HeaderProps = {
+interface HeaderProps {
   pageTitle: string
   headerActions: React.ReactNode
 }

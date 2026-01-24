@@ -21,7 +21,7 @@ export default function Error({
         className="px-4 py-2 bg-primary-500 text-light-50 rounded hover:bg-primary-600"
         onClick={
           // Attempt to recover by trying to re-render the segment
-          () => reset()
+          () => { reset(); }
         }
       >
         Try again

@@ -14,7 +14,7 @@ import DeleteBoardSection from "./DeleteBoardSection"
 import EditBoardForm from "./EditBoardForm"
 import Keys from "./Keys"
 
-type EditBoardClientProps = {
+interface EditBoardClientProps {
   boardId: string
 }
 

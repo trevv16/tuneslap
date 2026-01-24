@@ -46,7 +46,7 @@ export const useSignIn = () => {
       if (data.success && data.data?.token) {
         setStoredToken(data.data.token);
         // Invalidate the user query to trigger a refetch with the new token
-        queryClient.invalidateQueries({ queryKey: userKeys.me() });
+        void queryClient.invalidateQueries({ queryKey: userKeys.me() });
       }
     },
     onError: (error) => {

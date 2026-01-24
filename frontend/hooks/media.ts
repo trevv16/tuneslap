@@ -181,7 +181,7 @@ export function useMediaEdit(
   const form = useForm<MediaEditFormData>({
     resolver: zodResolver(mediaEditSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      description: initialData?.description ?? "",
     },
   });
 
@@ -212,7 +212,7 @@ export function useMediaEdit(
 export function useMediaStats() {
   const token = getStoredToken() || "";
 
-  return useQuery<GetMyMediaStatsResponse, Error>({
+  return useQuery<GetMyMediaStatsResponse>({
     queryKey: mediaKeys.stats(),
     queryFn: async () => {
       const mediaApi = new MediaApi(getApiConfig());
@@ -231,7 +231,7 @@ export function useAllMedia(params?: {
   const token = getStoredToken() || "";
   const queryKey = mediaKeys.all(params);
 
-  return useQuery<MediaListItem[], Error>({
+  return useQuery<MediaListItem[]>({
     queryKey,
     queryFn: async () => {
       console.log('[useAllMedia] Fetching with queryKey:', queryKey, 'mediaType:', params?.mediaType);
@@ -253,7 +253,7 @@ export function useAllMedia(params?: {
 export function useMediaById(mediaId: string) {
   const token = getStoredToken() || "";
 
-  return useQuery<MediaResponse, Error>({
+  return useQuery<MediaResponse>({
     queryKey: mediaKeys.detail(mediaId),
     queryFn: async () => {
       const mediaApi = new MediaApi(getApiConfig());
@@ -274,8 +274,8 @@ export function useCreateMedia() {
     },
     onSuccess: () => {
       // Invalidate and refetch media lists
-      queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
-      queryClient.invalidateQueries({ queryKey: mediaKeys.stats() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.stats() });
     },
   });
 }
@@ -299,7 +299,7 @@ export function useUpdateMedia() {
         );
       }
       // Invalidate and refetch media lists
-      queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
     },
   });
 }
@@ -317,8 +317,8 @@ export function useDeleteMedia() {
       // Remove the deleted media from cache
       queryClient.removeQueries({ queryKey: mediaKeys.detail(mediaId) });
       // Invalidate and refetch media lists
-      queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
-      queryClient.invalidateQueries({ queryKey: mediaKeys.stats() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.stats() });
     },
   });
 }
@@ -344,7 +344,7 @@ export function useProcessMedia() {
     onSuccess: (data, variables) => {
       // Invalidate and refetch media lists
       queryClient.invalidateQueries({ queryKey: mediaKeys.all() });
-      queryClient.invalidateQueries({ queryKey: mediaKeys.detail(variables.mediaId) });
+      void queryClient.invalidateQueries({ queryKey: mediaKeys.detail(variables.mediaId) });
     },
   });
 }

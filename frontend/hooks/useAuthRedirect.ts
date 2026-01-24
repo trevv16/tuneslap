@@ -2,7 +2,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export function useAuthRedirect(redirectTo: string = "/auth/signin") {
+export function useAuthRedirect(redirectTo = "/auth/signin") {
   const { isAuthenticated, isLoading } = useAuthContext();
   const router = useRouter();
 
@@ -15,7 +15,7 @@ export function useAuthRedirect(redirectTo: string = "/auth/signin") {
   }, [isAuthenticated, isLoading, redirectTo, router]);
 }
 
-export function usePublicPageRedirect(redirectTo: string = "/dashboard") {
+export function usePublicPageRedirect(redirectTo = "/dashboard") {
   const { isAuthenticated, isLoading, user } = useAuthContext();
   const router = useRouter();
 

@@ -23,13 +23,13 @@ export function useAudio(audioUrl: string, hotKey?: string, onError?: (error: st
       .then(decoded => {
         bufferRef.current = decoded;
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         onError?.(error.message);
         // toast.error(`Error loading audio: ${hotKey}`);
       });
 
     return () => {
-      ctx.close();
+      void ctx.close();
     };
   }, [audioUrl, hotKey, onError]);
 

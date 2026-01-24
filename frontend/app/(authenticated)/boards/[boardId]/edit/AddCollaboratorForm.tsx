@@ -25,7 +25,7 @@ const addCollaboratorSchema = z.object({
 
 type AddCollaboratorFormData = z.infer<typeof addCollaboratorSchema>
 
-type AddCollaboratorFormProps = {
+interface AddCollaboratorFormProps {
   boardId: string
   setOpen: Dispatch<SetStateAction<boolean>>
 }
@@ -110,7 +110,7 @@ export default function AddCollaboratorForm({ boardId, setOpen }: AddCollaborato
         <Button
           type="button"
           variant="outline"
-          onClick={() => setOpen(false)}
+          onClick={() => { setOpen(false); }}
           disabled={createCollaboratorMutation.isPending}
           className="flex-1"
         >

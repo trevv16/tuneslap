@@ -18,7 +18,7 @@ export const boardKeys = {
 
 export const useGetBoards = () => {
   const authToken = getStoredToken() || "";
-  return useQuery<BoardResponse[], Error>({
+  return useQuery<BoardResponse[]>({
     queryKey: boardKeys.all(),
     queryFn: async () => {
       const boardsApi = new BoardsApi(getApiConfig());
@@ -34,7 +34,7 @@ export const useGetBoards = () => {
 export const useGetBoardById = (boardId: string) => {
   const authToken = getStoredToken() || "";
 
-  return useQuery<BoardResponse, Error>({
+  return useQuery<BoardResponse>({
     queryKey: boardKeys.detail(boardId),
     queryFn: async () => {
       const boardsApi = new BoardsApi(getApiConfig());
@@ -54,7 +54,7 @@ export const useCreateBoard = () => {
       return await boardsApi.createBoard({ createBoardRequest: request });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 };
@@ -70,8 +70,8 @@ export const useUpdateBoard = () => {
     },
     onSuccess: (data, variables) => {
       // Invalidate both the specific board and the boards list
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(variables.boardId) });
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(variables.boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 };
@@ -85,7 +85,7 @@ export const useDeleteBoard = () => {
       await boardsApi.deleteBoard({ boardId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: boardKeys.all() });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.all() });
     },
   });
 };

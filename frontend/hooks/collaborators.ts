@@ -19,7 +19,7 @@ export const collaboratorKeys = {
 };
 
 export const useGetCollaborators = (boardId: string) => {
-  return useQuery<GetAllCollaboratorsResponse, Error>({
+  return useQuery<GetAllCollaboratorsResponse>({
     queryKey: collaboratorKeys.all(boardId),
     queryFn: async () => {
       const boardsApi = new BoardsApi(getApiConfig());
@@ -32,7 +32,7 @@ export const useGetCollaborators = (boardId: string) => {
 };
 
 export const useGetCollaboratorById = (boardId: string, collaboratorId: string) => {
-  return useQuery<GetCollaboratorByIdResponse, Error>({
+  return useQuery<GetCollaboratorByIdResponse>({
     queryKey: collaboratorKeys.detail(boardId, collaboratorId),
     queryFn: async () => {
       const boardsApi = new BoardsApi(getApiConfig());
@@ -58,7 +58,7 @@ export const useCreateCollaborator = (boardId: string) => {
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data since collaborators are part of the board
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
     },
   });
 };
@@ -84,7 +84,7 @@ export const useUpdateCollaborator = (boardId: string) => {
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
     },
   });
 };
@@ -103,7 +103,7 @@ export const useDeleteCollaborator = (boardId: string) => {
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data
-      queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
+      void queryClient.invalidateQueries({ queryKey: boardKeys.detail(boardId) });
     },
   });
 };

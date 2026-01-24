@@ -29,9 +29,9 @@ const updateBoardSchema = z.object({
 
 type UpdateBoardFormData = z.infer<typeof updateBoardSchema>
 
-type EditBoardFormProps = {
+interface EditBoardFormProps {
   boardId: string
-  boardQuery: UseQueryResult<Board, Error>
+  boardQuery: UseQueryResult<Board>
 }
 
 export default function EditBoardForm({ boardQuery, boardId }: EditBoardFormProps) {

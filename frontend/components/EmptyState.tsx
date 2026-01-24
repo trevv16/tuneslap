@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { FolderPlus, Plus } from 'lucide-react'
 
-type EmptyStateProps = {
+interface EmptyStateProps {
   title: string
   description: string
   buttonText: string
