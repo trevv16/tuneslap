@@ -33,6 +33,7 @@ export const mockKey: KeyResponse = {
   name: 'Test Key',
   hotKey: 'A',
   audioUrl: 'https://example.com/audio/test.mp3',
+  audioMediaId: 'media-1',
   imageUrl: 'https://example.com/images/test.png',
   boardId: 'board-1',
   createdAt: new Date('2024-01-01'),
@@ -46,6 +47,7 @@ export const mockKeys: KeyResponse[] = [
     name: 'Second Key',
     hotKey: 'B',
     audioUrl: 'https://example.com/audio/test2.mp3',
+    audioMediaId: 'media-1',
     imageUrl: 'https://example.com/images/test2.png',
     boardId: 'board-1',
     createdAt: new Date('2024-01-02'),
@@ -56,11 +58,13 @@ export const mockKeys: KeyResponse[] = [
     name: 'Third Key',
     hotKey: 'C',
     audioUrl: 'https://example.com/audio/test3.mp3',
+    audioMediaId: 'media-1',
     imageUrl: undefined,
     boardId: 'board-1',
     createdAt: new Date('2024-01-03'),
     updatedAt: new Date('2024-01-03'),
   },
+]
 ]
 
 // Collaborator fixtures
