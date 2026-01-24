@@ -6,7 +6,7 @@ interface Feature {
   description: string;
   imageSrc: string;
   imageAlt: string;
-};
+}
 
 const features: Feature[] = [
   {

@@ -46,7 +46,7 @@ interface KeyFormProps {
   onSubmit: (data: KeyFormData & { boardId: string }) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
-};
+}
 
 export default function KeyForm({
   boardId,

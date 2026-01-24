@@ -16,7 +16,7 @@ import { useState } from "react";
 
 interface DeleteBoardSectionProps {
   boardId: string;
-};
+}
 
 export default function DeleteBoardSection({ boardId }: DeleteBoardSectionProps) {
   const router = useRouter();

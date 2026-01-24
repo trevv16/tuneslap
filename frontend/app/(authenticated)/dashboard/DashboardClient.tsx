@@ -6,7 +6,7 @@ import BoardsList from "./BoardsList";
 
 interface DashboardClientProps {
   onOpenCreateModal: () => void;
-};
+}
 
 export default function DashboardClient({ onOpenCreateModal }: DashboardClientProps) {
   const { data: boards } = useGetBoards();

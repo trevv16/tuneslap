@@ -24,6 +24,6 @@ export function getApiConfig(): Configuration {
  * falls back to NEXT_PUBLIC_API_URL for external access
  */
 export function getServerApiConfig(): Configuration {
-  const basePath = (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL) || PRODUCTION_API_URL;
+  const basePath = (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL) ?? PRODUCTION_API_URL;
   return new Configuration({ basePath });
 }
