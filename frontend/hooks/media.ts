@@ -55,20 +55,20 @@ export type MediaCreateFormData = z.infer<typeof mediaCreateSchema>;
 
 // Helper function to convert MIME type string to CreateMediaRequestContentTypeEnum
 function convertMimeTypeToContentTypeEnum(mimeType: string): CreateMediaRequestContentTypeEnum | undefined {
-  const mimeToEnum: Record<string, CreateMediaRequestContentTypeEnum> = {
-    'audio/mp3': CreateMediaRequestContentTypeEnum.AudioMp3,
-    'audio/mpeg': CreateMediaRequestContentTypeEnum.AudioMp3,
-    'audio/wav': CreateMediaRequestContentTypeEnum.AudioWav,
-    'audio/webm': CreateMediaRequestContentTypeEnum.AudioWebm,
-    'audio/ogg': CreateMediaRequestContentTypeEnum.AudioOgg,
-    'audio/aac': CreateMediaRequestContentTypeEnum.AudioAac,
-    'image/jpeg': CreateMediaRequestContentTypeEnum.ImageJpeg,
-    'image/png': CreateMediaRequestContentTypeEnum.ImagePng,
-    'image/gif': CreateMediaRequestContentTypeEnum.ImageGif,
-    'image/webp': CreateMediaRequestContentTypeEnum.ImageWebp,
-    'image/svg+xml': CreateMediaRequestContentTypeEnum.ImageSvgxml,
-  };
-  return mimeToEnum[mimeType];
+  const mimeToEnum = new Map<string, CreateMediaRequestContentTypeEnum>([
+    ['audio/mp3', CreateMediaRequestContentTypeEnum.AudioMp3],
+    ['audio/mpeg', CreateMediaRequestContentTypeEnum.AudioMp3],
+    ['audio/wav', CreateMediaRequestContentTypeEnum.AudioWav],
+    ['audio/webm', CreateMediaRequestContentTypeEnum.AudioWebm],
+    ['audio/ogg', CreateMediaRequestContentTypeEnum.AudioOgg],
+    ['audio/aac', CreateMediaRequestContentTypeEnum.AudioAac],
+    ['image/jpeg', CreateMediaRequestContentTypeEnum.ImageJpeg],
+    ['image/png', CreateMediaRequestContentTypeEnum.ImagePng],
+    ['image/gif', CreateMediaRequestContentTypeEnum.ImageGif],
+    ['image/webp', CreateMediaRequestContentTypeEnum.ImageWebp],
+    ['image/svg+xml', CreateMediaRequestContentTypeEnum.ImageSvgxml],
+  ]);
+  return mimeToEnum.get(mimeType);
 }
 
 // Helper function to convert media type string to enum

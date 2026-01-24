@@ -79,10 +79,11 @@ export const useUpdateBoard = () => {
 export const useDeleteBoard = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
+  return useMutation<undefined, Error, string>({
     mutationFn: async (boardId: string) => {
       const boardsApi = new BoardsApi(getApiConfig());
       await boardsApi.deleteBoard({ boardId });
+      return undefined;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: boardKeys.all() });

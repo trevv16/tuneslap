@@ -354,6 +354,7 @@ components:
           properties:
             media:
               type: array
+              maxItems: 1000
               items:
                 title: MediaListItem
                 $ref: '#/components/schemas/MediaResponse'

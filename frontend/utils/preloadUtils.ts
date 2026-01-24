@@ -5,7 +5,7 @@
 interface PreloadOptions {
   timeout?: number;
   onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (_error: Error) => void;
 }
 
 /**

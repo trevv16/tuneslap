@@ -20,9 +20,9 @@ import Header from "../../Header"
 import KeyForm from "./KeyForm"
 
 export default function BoardDetailClient() {
-  const { boardId } = useParams()
-  const { data: board } = useGetBoardById(boardId as string)
-  const createKeyMutation = useCreateKey(boardId as string)
+  const { boardId } = useParams() as { boardId: string }
+  const { data: board } = useGetBoardById(boardId)
+  const createKeyMutation = useCreateKey(boardId)
 
   const [addKeyOpen, setAddKeyOpen] = useState(false)
 
@@ -44,7 +44,7 @@ export default function BoardDetailClient() {
         headerActions={
           <div className="flex items-center gap-3">
             <Button variant="outline" asChild>
-              <Link href={`/boards/${boardId}/edit`}>
+              <Link href={`/boards/${String(boardId)}/edit`}>
                 <Pencil className="mr-1.5 -ml-0.5 h-5 w-5" />
                 Edit
               </Link>
@@ -69,7 +69,7 @@ export default function BoardDetailClient() {
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 pb-4">
             <KeyForm
-              boardId={boardId as string}
+              boardId={boardId}
               existingKeys={board?.keys || []}
               mode="add"
               onSubmit={handleAddKey}

@@ -33,6 +33,8 @@ resource "google_storage_bucket" "media_bucket" {
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+  # Media bucket needs public access for serving processed audio/images to users
+  # Files are served via direct URLs for low-latency playback
 
   versioning {
     enabled = true
@@ -54,16 +56,11 @@ resource "google_storage_bucket" "media_bucket" {
   }
 }
 
-# Allow public read access to the media bucket
+# Media bucket requires public read access for serving processed audio/images
+# This is intentional - media files need to be publicly accessible for playback
+# tfsec:ignore:google-storage-no-public-access
 resource "google_storage_bucket_iam_member" "public_read" {
   bucket = google_storage_bucket.media_bucket.name
-  role   = "roles/storage.objectViewer"
-  member = "allUsers"
-}
-
-# Allow public read access to the user uploads bucket
-resource "google_storage_bucket_iam_member" "user_uploads_public_read" {
-  bucket = google_storage_bucket.user_uploads_bucket.name
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
@@ -74,6 +71,7 @@ resource "google_storage_bucket" "system_bucket" {
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
 
   versioning {
     enabled = true
@@ -94,6 +92,7 @@ resource "google_storage_bucket" "user_uploads_bucket" {
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
 
   versioning {
     enabled = true

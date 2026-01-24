@@ -92,9 +92,14 @@ export function useQueryParams() {
    * Get all params as an object
    */
   const getAllParams = useCallback((): Record<string, string> => {
-    const params: Record<string, string> = {}
+    const params: Record<string, string> = Object.create(null)
     searchParams.forEach((value, key) => {
-      params[key] = value
+      Object.defineProperty(params, key, {
+        value,
+        writable: true,
+        enumerable: true,
+        configurable: true
+      })
     })
     return params
   }, [searchParams])

@@ -54,7 +54,7 @@ export const useCreateCollaborator = (boardId: string) => {
     },
     onSuccess: () => {
       // Invalidate collaborators for the specific board
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data since collaborators are part of the board
@@ -80,7 +80,7 @@ export const useUpdateCollaborator = (boardId: string) => {
     },
     onSuccess: () => {
       // Invalidate collaborators for the specific board
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data
@@ -99,7 +99,7 @@ export const useDeleteCollaborator = (boardId: string) => {
     },
     onSuccess: () => {
       // Invalidate collaborators for the specific board
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: collaboratorKeys.all(boardId),
       });
       // Also invalidate the board data

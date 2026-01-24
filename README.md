@@ -58,7 +58,8 @@ cp server/example.env server/.env
 docker-compose up -d
 ```
 
-That's it! 
+That's it!
+
 * **App**: [http://localhost:3001](http://localhost:3001)
 * **API**: [http://localhost:8082](http://localhost:8082)
 * **API Explorer**: [http://localhost:8081](http://localhost:8081)

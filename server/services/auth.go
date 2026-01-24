@@ -8,7 +8,7 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -31,10 +31,8 @@ func ParseJWT(tokenStr string) (*jwt.Token, error) {
 	})
 
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				return nil, ErrTokenExpired
-			}
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, ErrTokenExpired
 		}
 		return nil, err
 	}
