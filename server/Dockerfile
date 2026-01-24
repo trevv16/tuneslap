@@ -2,16 +2,16 @@
 FROM golang:1.25-bookworm AS builder
 
 # Install build dependencies (required for bimg/libvips) and code generation tools
-# Install Node.js 20 from NodeSource for openapi-generator compatibility
+# Install Node.js 24 from NodeSource for openapi-generator
 # Package versions pinned for reproducibility (Debian bookworm)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libvips-dev=8.14.1-3+deb12u* \
+    libvips-dev=8.14.1-3 \
     gcc=4:12.2.0-3 \
     pkg-config=1.8.1-1 \
     default-jre-headless=2:1.17-74 \
-    curl=7.88.1-10+deb12u* \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
+    curl=7.88.1-10+deb12u8 \
+    && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Work from project root structure so generate-types.sh paths work
@@ -47,9 +47,9 @@ FROM debian:bookworm-slim
 # Install runtime dependencies
 # Package versions pinned for reproducibility (Debian bookworm-slim)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libvips42=8.14.1-3+deb12u* \
-    ffmpeg=7:5.1.7-0+deb12u* \
-    ca-certificates=20230311+deb12u* \
+    libvips42=8.14.1-3 \
+    ffmpeg=7:5.1.6-0+deb12u1 \
+    ca-certificates=20230311 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
