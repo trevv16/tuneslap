@@ -1,5 +1,5 @@
 # Start from golang 1.24 base image
-FROM golang:1.24-bookworm AS builder
+FROM golang:1.25-bookworm AS builder
 
 # Install build dependencies (required for bimg/libvips) and code generation tools
 # Install Node.js 20 from NodeSource for openapi-generator compatibility
