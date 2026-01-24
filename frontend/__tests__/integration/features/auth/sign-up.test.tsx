@@ -7,7 +7,7 @@ import {
   server,
   errorHandlers,
 } from '../../setup/test-utils'
-import SignupClient from '@/app/auth/signup/SignUpClient'
+import SignupClient from '@/app/auth/signup/SignupClient'
 
 // Mock next/navigation
 const mockPush = jest.fn()
