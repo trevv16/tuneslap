@@ -306,7 +306,7 @@ git checkout -b feat/add-user-settings
 # "I've made the following changes. Please review..."
 
 # 5. Run verification (after user approves)
-yarn verify:frontend  # or yarn verify:server, or yarn verify
+yarn verify  # or yarn verify:server, or yarn verify:frontend
 
 # 6. After verification passes, commit
 git add .
