@@ -1,0 +1,241 @@
+---
+alwaysApply: true
+description: Workflow for making code changes including branching, feedback, commits, and PRs
+---
+# Change Request Workflow
+
+## Purpose
+This rule defines how to handle requests to make code changes. It ensures changes are made on proper branches, reviewed before committing, and submitted as pull requests following project standards.
+
+## Table of Contents
+- [Rule Overview](#rule-overview)
+- [Workflow Steps](#workflow-steps)
+- [Pull Request Requirements](#pull-request-requirements)
+- [Examples](#examples)
+
+## Rule Overview
+
+When the user asks you to make a change to the codebase, follow this workflow exactly. Do not skip steps or change the order.
+
+### When to Apply
+- User asks you to implement a feature
+- User asks you to fix a bug
+- User asks you to refactor code
+- User asks you to make any modification to the codebase
+
+### When NOT to Apply
+- User is asking a question about the code (no changes needed)
+- User asks you to explain something
+- User explicitly says they want changes on the current branch
+
+## Workflow Steps
+
+### Step 1: Prepare the Branch
+Before making any changes:
+
+1. **Switch to main branch**
+   ```bash
+   git checkout main
+   ```
+
+2. **Pull the latest changes**
+   ```bash
+   git pull origin main
+   ```
+
+3. **Create a new branch**
+   - Use a descriptive branch name
+   - Follow the pattern: `type/short-description`
+   - Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`
+   ```bash
+   git checkout -b feat/add-user-settings
+   ```
+
+### Step 2: Make the Changes
+- Implement the requested changes
+- Do NOT stage any files
+- Do NOT commit anything
+- Do NOT push anything
+
+### Step 3: Request Feedback
+After completing the changes:
+- Summarize what was changed
+- List all files that were modified, created, or deleted
+- Ask the user to review and confirm the changes are correct
+- Wait for explicit approval before proceeding
+
+**You must ask:**
+> "I've made the following changes. Please review and let me know if everything looks good, or if you'd like any adjustments."
+
+### Step 4: Stage and Commit (After Approval Only)
+Once the user confirms the changes are good:
+
+1. **Stage all changes**
+   ```bash
+   git add .
+   ```
+
+2. **Commit following project conventions**
+   - Follow the [Commit Conventions Rule](commit-conventions.mdc)
+   - Use the proper commit message format
+   - Use a HEREDOC for the commit message
+
+### Step 5: Push and Create Pull Request
+After committing:
+
+1. **Push the branch**
+   ```bash
+   git push -u origin HEAD
+   ```
+
+2. **Create the PR using GitHub CLI**
+   - Use `gh pr create`
+   - Follow the pull request template exactly
+   - Fill in all sections of the template
+
+## Pull Request Requirements
+
+### PR Template Sections
+Every PR must include these completed sections:
+
+1. **Summary**: Brief description of what the PR does and why
+
+2. **Type of Change**: Check the appropriate type(s)
+   - Bug fix
+   - New feature
+   - Breaking change
+   - Refactor
+   - Documentation update
+   - CI/Build configuration
+
+3. **Changes Made**: List specific changes in bullet points
+
+4. **Testing**: Describe how you tested the changes
+   - Check "Tested locally" if applicable
+   - Check "Added/updated tests" if applicable
+
+5. **Checklist**: Verify all items
+   - Code follows project standards
+   - Lint and build pass for affected areas
+   - Documentation updated if needed
+   - OpenAPI spec updated if needed
+   - No new warnings or errors introduced
+
+6. **Changeset**: Either add one or note why it's not needed
+   - Run `yarn changeset` for version bumps
+   - Check "doesn't need changeset" only for docs/CI changes
+
+7. **Related Issues**: Link any related issues
+
+### PR Creation Command Format
+```bash
+gh pr create --title "type: short description" --body "$(cat <<'EOF'
+## Summary
+
+[Description of what this PR does]
+
+## Type of Change
+
+- [x] [Appropriate type checked]
+
+## Changes Made
+
+- [Change 1]
+- [Change 2]
+
+## Testing
+
+- [x] Tested locally
+- [ ] Added/updated tests
+
+## Checklist
+
+- [x] My code follows the project's code standards
+- [x] Frontend: `yarn lint` and `yarn build` pass
+- [x] Backend: `make lint`, `make test`, and `make build` pass
+- [ ] I have updated the documentation
+- [ ] I have updated OpenAPI spec if needed
+- [x] My changes don't introduce new warnings or errors
+
+## Changeset
+
+- [x] I have added a changeset (`yarn changeset`)
+- [ ] This PR doesn't need a changeset (docs/CI only)
+
+## Related Issues
+
+[Links to issues if any]
+
+EOF
+)"
+```
+
+## Examples
+
+### ❌ Don't Do This
+
+**Making changes without a branch:**
+```bash
+# Wrong: Making changes directly on main
+git checkout main
+# ... make changes ...
+git add .
+git commit -m "feat: add feature"
+```
+**Why this is wrong:**
+- Changes should never be committed directly to main
+- Prevents proper code review
+- Makes it hard to roll back changes
+
+**Committing before getting feedback:**
+```bash
+# Wrong: Committing without user approval
+git checkout -b feat/new-feature
+# ... make changes ...
+git add .
+git commit -m "feat: add new feature"  # No feedback requested!
+```
+**Why this is wrong:**
+- User hasn't reviewed the changes
+- May need adjustments that would require amending or additional commits
+- Wastes time if changes aren't what the user wanted
+
+### ✅ Do This Instead
+
+**Proper workflow:**
+```bash
+# 1. Start from latest main
+git checkout main
+git pull origin main
+
+# 2. Create feature branch
+git checkout -b feat/add-user-settings
+
+# 3. Make changes (no commits yet)
+# ... implement the feature ...
+
+# 4. Ask user for feedback
+# "I've made the following changes. Please review..."
+
+# 5. After user approval, commit
+git add .
+git commit -m "$(cat <<'EOF'
+feat: add user settings page
+
+Add a new settings page where users can update their preferences.
+EOF
+)"
+
+# 6. Push and create PR
+git push -u origin HEAD
+gh pr create --title "feat: add user settings page" --body "..."
+```
+**Why this is better:**
+- Changes are isolated on a feature branch
+- User can review before anything is committed
+- PR follows project standards
+- Easy to track and review changes
+
+## Related Rules
+- [Commit Conventions](commit-conventions.mdc) - Commit message format
+- [Project Structure](project-structure.mdc) - File organization guidelines

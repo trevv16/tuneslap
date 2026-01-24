@@ -1,0 +1,307 @@
+---
+globs: **/*.tsx,**/*.ts,**/*.css
+description: shadcn/ui component usage and theme implementation standards
+---
+
+# UI Component and Theme Standards
+
+## Tech Stack Requirements
+
+### Core Technologies
+- **Next.js 16** with React 19
+- **shadcn/ui** (New York style) - Component library
+- **Tailwind CSS v4** - Styling
+- **Radix UI** - Accessible primitives
+- **next-themes** - Theme management
+- **Lucide React** - Icon library
+- **class-variance-authority** - Component variants
+- **tailwind-merge** - Class merging utility
+
+### Component Configuration
+- Style: `new-york`
+- Base color: `neutral`
+- CSS variables: enabled
+- Icon library: `lucide-react`
+
+## shadcn/ui Component Usage
+
+### Import Patterns
+
+Always import shadcn/ui components from `@/components/ui`:
+
+```typescript
+// ✅ Correct
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+
+// ❌ Wrong - Don't import from node_modules or other paths
+import { Button } from "@radix-ui/react-button"
+```
+
+### Component Structure
+
+Follow the shadcn/ui component patterns:
+
+```typescript
+// ✅ Correct - Use compound components
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    Content here
+  </CardContent>
+</Card>
+
+// ❌ Wrong - Don't create custom wrappers
+<div className="card">
+  <div className="card-header">...</div>
+</div>
+```
+
+### Available Components
+
+Use these shadcn/ui components from `@/components/ui`:
+- `Button` - All button interactions
+- `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` - Content containers
+- `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` - Modals
+- `Input` - Text inputs
+- `Textarea` - Multi-line text inputs
+- `Label` - Form labels
+- `Badge` - Status indicators
+- `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent` - Tab navigation
+- `Select` - Dropdown selects
+- `Checkbox` - Checkboxes
+- `Switch` - Toggle switches
+- `Table` - Data tables
+- `Avatar` - User avatars
+- `Progress` - Progress bars
+- `Skeleton` - Loading states
+- `ScrollArea` - Scrollable containers
+- `Sheet` - Slide-out panels
+- `DropdownMenu` - Context menus
+- `Slider` - Range inputs
+- `Chart` - Data visualization
+
+### Component Variants
+
+Use built-in variants instead of custom classes:
+
+```typescript
+// ✅ Correct - Use variant prop
+<Button variant="outline">Cancel</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="ghost" size="sm">Action</Button>
+
+// ❌ Wrong - Don't add custom variant classes
+<Button className="outline-button">Cancel</Button>
+```
+
+## Theme Implementation
+
+### CSS Variables
+
+Always use CSS variables for colors. Never use hardcoded color values:
+
+```typescript
+// ✅ Correct - Use theme variables
+<div className="bg-background text-foreground">
+<div className="bg-card text-card-foreground border border-border">
+<Button className="bg-primary text-primary-foreground">
+
+// ❌ Wrong - Don't use hardcoded colors
+<div className="bg-white text-black">
+<div className="bg-gray-100">
+```
+
+### Available Theme Variables
+
+Use these CSS variables defined in `app/globals.css`:
+
+**Background & Foreground:**
+- `bg-background` / `text-foreground` - Main background and text
+- `bg-card` / `text-card-foreground` - Card backgrounds
+- `bg-popover` / `text-popover-foreground` - Popover backgrounds
+
+**Semantic Colors:**
+- `bg-primary` / `text-primary-foreground` - Primary actions
+- `bg-secondary` / `text-secondary-foreground` - Secondary elements
+- `bg-muted` / `text-muted-foreground` - Muted/subtle elements
+- `bg-accent` / `text-accent-foreground` - Accent elements
+- `bg-destructive` / `text-destructive-foreground` - Destructive actions
+
+**Borders & Inputs:**
+- `border-border` - Border color
+- `bg-input` - Input background
+- `ring-ring` - Focus ring color
+
+**Charts:**
+- `bg-chart-1` through `bg-chart-5` - Chart colors
+
+**Sidebar:**
+- `bg-sidebar` / `text-sidebar-foreground` - Sidebar colors
+- `bg-sidebar-primary` / `text-sidebar-primary-foreground`
+- `bg-sidebar-accent` / `text-sidebar-accent-foreground`
+- `border-sidebar-border`
+
+### Color System
+
+The theme uses **oklch** color space for better color consistency:
+- Colors are defined in `app/globals.css` using `oklch()` function
+- Dark mode colors are defined in `.dark` selector
+- Primary color in dark mode is TrevOS green: `#2bc016`
+
+### Dark Mode Support
+
+Always ensure components work in both light and dark modes:
+
+```typescript
+// ✅ Correct - Theme variables automatically adapt
+<div className="bg-background text-foreground">
+<div className="border border-border">
+
+// ❌ Wrong - Don't use mode-specific classes
+<div className="bg-white dark:bg-gray-900">
+```
+
+### Theme Provider
+
+The `ThemeProvider` from `next-themes` is available but not required in the root layout currently. The theme is applied via the `.dark` class on the HTML element.
+
+## Styling Guidelines
+
+### Use `cn()` Utility
+
+Always use the `cn()` utility from `@/lib/utils` for conditional classes:
+
+```typescript
+import { cn } from "@/lib/utils"
+
+// ✅ Correct
+<div className={cn("base-classes", condition && "conditional-class", className)}>
+
+// ❌ Wrong - Don't use template literals or manual concatenation
+<div className={`base ${condition ? "conditional" : ""}`}>
+```
+
+### Component Data Attributes
+
+shadcn/ui components use `data-slot` attributes. Don't remove or modify these:
+
+```typescript
+// ✅ Correct - Preserve data-slot attributes
+<Card data-slot="card">
+  <CardHeader data-slot="card-header">
+```
+
+### Spacing and Layout
+
+Use Tailwind spacing utilities consistently:
+- `space-y-{n}` for vertical spacing
+- `gap-{n}` for flex/grid gaps
+- `p-{n}` / `px-{n}` / `py-{n}` for padding
+- `m-{n}` / `mx-{n}` / `my-{n}` for margins
+
+### Responsive Design
+
+Use Tailwind responsive prefixes:
+- `sm:` - 640px and up
+- `md:` - 768px and up
+- `lg:` - 1024px and up
+- `xl:` - 1280px and up
+
+## Icons
+
+### Use Lucide React
+
+Always use icons from `lucide-react`:
+
+```typescript
+// ✅ Correct
+import { Plus, Search, Edit, Trash2 } from "lucide-react"
+
+<Button>
+  <Plus className="h-4 w-4 mr-2" />
+  Add Item
+</Button>
+
+// ❌ Wrong - Don't use other icon libraries
+import { FaPlus } from "react-icons/fa"
+```
+
+### Icon Sizing
+
+Use consistent icon sizes:
+- `h-4 w-4` - Small icons (default in buttons, badges)
+- `h-5 w-5` - Medium icons
+- `h-6 w-6` - Large icons
+
+## Form Components
+
+### Form Patterns
+
+Use shadcn/ui form components with proper labels:
+
+```typescript
+// ✅ Correct
+<div className="space-y-2">
+  <Label htmlFor="name">Name *</Label>
+  <Input
+    id="name"
+    required
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+  />
+</div>
+
+// ❌ Wrong - Missing labels or improper structure
+<Input value={name} onChange={(e) => setName(e.target.value)} />
+```
+
+## Component Composition
+
+### Compound Components
+
+Use shadcn/ui's compound component pattern:
+
+```typescript
+// ✅ Correct
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Title</DialogTitle>
+      <DialogDescription>Description</DialogDescription>
+    </DialogHeader>
+    <div>Content</div>
+    <DialogFooter>
+      <Button>Action</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+## Rules Summary
+
+1. **Always use shadcn/ui components** from `@/components/ui` - Don't create custom replacements
+2. **Use theme CSS variables** - Never hardcode colors
+3. **Support dark mode** - All components must work in both themes
+4. **Use `cn()` utility** - For conditional class merging
+5. **Use Lucide React icons** - Consistent icon library
+6. **Follow component patterns** - Use compound components correctly
+7. **Use semantic color variables** - `primary`, `secondary`, `muted`, `accent`, `destructive`
+8. **Preserve data-slot attributes** - Don't remove component metadata
+9. **Use Tailwind utilities** - For spacing, layout, and responsive design
+10. **Import from correct paths** - Always use `@/components/ui` aliases
+
+## Common Mistakes to Avoid
+
+- ❌ Don't import components from `node_modules` directly
+- ❌ Don't use hardcoded colors like `bg-white`, `text-black`
+- ❌ Don't create custom component wrappers when shadcn/ui components exist
+- ❌ Don't remove or modify `data-slot` attributes
+- ❌ Don't use other icon libraries besides Lucide React
+- ❌ Don't use mode-specific classes like `dark:bg-gray-900`
+- ❌ Don't skip labels on form inputs
+- ❌ Don't use template literals for conditional classes

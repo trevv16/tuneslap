@@ -1,0 +1,411 @@
+---
+alwaysApply: false
+globs: .cursor/rules/**
+---
+# Cursor Rule Template
+
+## Purpose
+This template provides a standardized structure for creating cursor rules that:
+- Clearly communicate the rule's purpose and scope
+- Provide easy navigation through rule sections
+- Include practical examples for better understanding
+- Maintain consistency across all project rules
+- Enable quick reference and implementation
+
+## Table of Contents
+- [Rule Overview](#rule-overview) - What the rule covers and when it applies
+- [Scope and Boundaries](#scope-and-boundaries) - What's included and excluded
+- [Implementation Guidelines](#implementation-guidelines) - How to follow the rule
+- [Quality Standards](#quality-standards) - What makes a good implementation
+- [Maintenance Requirements](#maintenance-requirements) - How to keep the rule current
+- [Examples](#examples) - Practical do's and don'ts
+
+## MDC File Format Requirements
+
+### File Extension
+- **Always use `.mdc` extension** for cursor rules
+- Never use `.md` extension for cursor rules
+
+### Frontmatter Configuration
+The frontmatter section (between `---` markers) must include:
+
+#### For Always-Applied Rules
+```yaml
+---
+alwaysApply: true
+description: Brief description of what this rule covers
+---
+```
+
+#### For File-Specific Rules
+```yaml
+---
+globs: *.ts,*.tsx,**/*.stories.tsx
+description: Brief description of what this rule covers
+---
+```
+
+#### For Directory-Specific Rules
+```yaml
+---
+globs: **/supabase/**
+description: Brief description of what this rule covers
+---
+```
+
+### Glob Patterns
+Use glob patterns to specify where rules apply. **IMPORTANT**: Globs should be formatted as a comma-separated list without brackets or quotes.
+
+**Correct Format:**
+```yaml
+---
+globs: src/app/**/, **/*.stories.tsx
+alwaysApply: false
+---
+```
+
+**Incorrect Format:**
+```yaml
+---
+globs: ["src/app/**/"]  # ❌ Don't use brackets
+globs: "src/app/**/"    # ❌ Don't use quotes
+alwaysApply: false
+---
+```
+
+**Common Glob Patterns:**
+- `**/*.ts,**/*.tsx` - All TypeScript files
+- `src/components/**/*.tsx` - All TSX files in components directory
+- `**/*.test.ts,**/*.test.tsx` - All test files
+- `src/lib/api/**/*.ts` - All API files
+- `**/*.stories.tsx` - All Storybook story files
+- `src/app/**/` - All files in app directory
+- `**/supabase/**` - All files in supabase directories
+
+### Description Field
+- Keep descriptions concise (1-2 sentences)
+- Clearly state what the rule covers
+- Use present tense, active voice
+
+### Rule Types and Examples
+
+#### Always-Applied Rules
+Use `alwaysApply: true` for rules that should apply to all files:
+```yaml
+---
+alwaysApply: true
+description: Template for creating standardized cursor rules
+---
+```
+
+#### File Type Rules
+Use globs for specific file types:
+```yaml
+---
+globs: **/*.stories.tsx
+description: TypeScript coding standards and patterns
+---
+```
+
+#### Directory-Specific Rules
+Use globs for specific directories:
+```yaml
+---
+globs: **/supabase/**
+description: React component patterns and UI standards
+---
+```
+
+#### Feature-Specific Rules
+Use globs for specific features or patterns:
+```yaml
+---
+globs: **/*.stories.tsx,src/components/**/*.tsx
+description: Standards for creating and maintaining Storybook stories
+---
+```
+
+#### Test File Rules
+Use globs for test files:
+```yaml
+---
+globs: **/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+description: Testing standards and patterns
+---
+```
+
+## Rule Overview
+[Brief description of what this rule covers and when it should be applied. Include the trigger conditions or contexts where this rule becomes relevant.]
+
+### Key Principles
+- [Principle 1: Core concept or approach]
+- [Principle 2: Another important aspect]
+- [Principle 3: Additional consideration]
+
+### When to Apply
+- [Specific condition 1]
+- [Specific condition 2]
+- [Specific condition 3]
+
+## Scope and Boundaries
+### What's Included
+- [Specific area 1 that the rule covers]
+- [Specific area 2 that the rule covers]
+- [Specific area 3 that the rule covers]
+
+### What's Excluded
+- [Area 1 that is NOT covered by this rule]
+- [Area 2 that is NOT covered by this rule]
+- [Area 3 that is NOT covered by this rule]
+
+### Dependencies
+- [Rule or standard 1 that this rule depends on]
+- [Rule or standard 2 that this rule depends on]
+
+## Implementation Guidelines
+### Required Structure
+1. [Step 1: What must be done first]
+2. [Step 2: What comes next]
+3. [Step 3: Final implementation step]
+
+### Best Practices
+- [Practice 1: Recommended approach]
+- [Practice 2: Another recommended approach]
+- [Practice 3: Additional best practice]
+
+### Common Patterns
+- [Pattern 1: Common implementation pattern]
+- [Pattern 2: Another common pattern]
+- [Pattern 3: Alternative pattern]
+
+## Quality Standards
+### Code Quality
+- [Standard 1: Code quality requirement]
+- [Standard 2: Another quality requirement]
+- [Standard 3: Additional quality standard]
+
+### Documentation Requirements
+- [Documentation requirement 1]
+- [Documentation requirement 2]
+- [Documentation requirement 3]
+
+### Testing Standards
+- [Testing requirement 1]
+- [Testing requirement 2]
+- [Testing requirement 3]
+
+## Maintenance Requirements
+### Regular Updates
+- [Update frequency and triggers]
+- [What needs to be reviewed]
+- [How to keep the rule current]
+
+### Review Process
+- [When to review the rule]
+- [Who should review it]
+- [How to update the rule]
+
+### Deprecation Process
+- [When to deprecate parts of the rule]
+- [How to handle breaking changes]
+- [Migration strategies]
+
+## Examples
+
+### ❌ Don't Do This
+**Example 1: [Bad Practice Title]**
+```typescript
+// Bad example code
+function badExample() {
+  // Poor implementation
+  // Missing error handling
+  // No type safety
+  return "bad result";
+}
+```
+**Why this is wrong:**
+- [Reason 1: Specific problem with this approach]
+- [Reason 2: Another issue with this approach]
+- [Reason 3: Additional problem]
+
+**Example 2: [Another Bad Practice Title]**
+```typescript
+// Another bad example
+const badComponent = () => {
+  // Poor component structure
+  // Missing props validation
+  // No accessibility considerations
+  return <div>Bad component</div>;
+};
+```
+**Why this is wrong:**
+- [Reason 1: Specific problem]
+- [Reason 2: Another issue]
+- [Reason 3: Additional problem]
+
+### ✅ Do This Instead
+**Example 1: [Good Practice Title]**
+```typescript
+// Good example code
+interface GoodExampleProps {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly error?: string;
+}
+
+function goodExample({ value, onChange, error }: GoodExampleProps) {
+  // Proper implementation
+  // Error handling included
+  // Type safety ensured
+  try {
+    // Implementation logic
+    return "good result";
+  } catch (error) {
+    console.error("Error in goodExample:", error);
+    throw error;
+  }
+}
+```
+**Why this is better:**
+- [Benefit 1: Specific advantage of this approach]
+- [Benefit 2: Another advantage]
+- [Benefit 3: Additional benefit]
+
+**Example 2: [Another Good Practice Title]**
+```typescript
+// Another good example
+interface GoodComponentProps {
+  readonly title: string;
+  readonly children: React.ReactNode;
+  readonly onClose?: () => void;
+}
+
+const GoodComponent = ({ title, children, onClose }: GoodComponentProps) => {
+  // Proper component structure
+  // Props validation included
+  // Accessibility considerations
+  return (
+    <div role="dialog" aria-labelledby="title">
+      <h2 id="title">{title}</h2>
+      {children}
+      {onClose && (
+        <button onClick={onClose} aria-label="Close dialog">
+          Close
+        </button>
+      )}
+    </div>
+  );
+};
+```
+**Why this is better:**
+- [Benefit 1: Specific advantage]
+- [Benefit 2: Another advantage]
+- [Benefit 3: Additional benefit]
+
+## File Structure and Snippets
+
+### Show Relevant Snippets, Not File Structures
+Instead of defining complete file structures in your rule, focus on showing relevant code snippets that demonstrate the rule's concepts. This approach:
+
+- **Keeps rules focused**: Shows only the code that's relevant to the rule
+- **Reduces maintenance**: File structures change, but code patterns remain stable
+- **Improves readability**: Easier to understand what the rule is about
+- **Enables flexibility**: Developers can adapt patterns to their specific file organization
+
+### Link to Project Structure Rule
+When file organization is important to your rule, reference the project structure rule rather than duplicating it:
+
+```markdown
+## File Organization
+For detailed information about project structure and file organization, see:
+- [Project Structure Rule](project-structure.mdc) - Complete file organization guidelines
+- [Page Patterns Rule](page-patterns.mdc) - Specific patterns for page organization
+```
+
+### Example: Good vs Bad Approach
+
+#### ❌ Don't Define Complete File Structures
+```markdown
+## File Structure
+```
+src/
+├── components/
+│   ├── Button/
+│   │   ├── index.tsx
+│   │   ├── Button.test.tsx
+│   │   └── Button.stories.tsx
+├── hooks/
+│   └── useButton.ts
+└── types/
+    └── button.ts
+```
+```
+
+#### ✅ Show Relevant Snippets Instead
+```markdown
+## Component Structure
+Components should follow this pattern:
+
+```typescript
+// Button/index.tsx
+interface ButtonProps {
+  readonly variant: 'primary' | 'secondary';
+  readonly onClick: () => void;
+}
+
+export const Button = ({ variant, onClick }: ButtonProps) => {
+  return (
+    <button className={`btn btn-${variant}`} onClick={onClick}>
+      {children}
+    </button>
+  );
+};
+```
+
+For complete file organization guidelines, see [Project Structure Rule](project-structure.mdc).
+```
+
+## Usage Notes
+- [Additional context or considerations]
+- [Edge cases to be aware of]
+- [Integration with other rules or systems]
+
+## Related Rules
+- [Link to related rule 1]
+- [Link to related rule 2]
+- [Link to related rule 3]
+
+## Creating New Rules
+
+### Step-by-Step Process
+1. **Identify the Need**: Determine what type of rule is needed
+2. **Choose the Scope**: Decide if it should be always-applied or file-specific
+3. **Select Glob Patterns**: Choose appropriate glob patterns for file-specific rules
+4. **Write the Description**: Create a concise, clear description
+5. **Follow the Template**: Use this template structure for consistency
+6. **Add Examples**: Include practical do's and don'ts
+7. **Test the Rule**: Ensure it applies to the correct files
+8. **Review and Iterate**: Get feedback and refine as needed
+
+### Naming Convention
+- Use kebab-case for file names
+- Be descriptive but concise
+- Include the main concept in the name
+- Examples: `storybook-standards.mdc`, `testing-standards.mdc`, `component-patterns.mdc`
+
+### File Location
+- All rules go in `.cursor/rules/` directory
+- Use `.mdc` extension (never `.md`)
+- Keep file names descriptive and consistent
+
+### Validation Checklist
+- [ ] File uses `.mdc` extension
+- [ ] Frontmatter is properly formatted
+- [ ] Glob patterns are correct and specific
+- [ ] Description is concise and clear
+- [ ] Template structure is followed
+- [ ] Examples are included
+- [ ] Rule applies to intended files only
+
+---
+

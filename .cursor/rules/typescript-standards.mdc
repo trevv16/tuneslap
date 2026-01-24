@@ -1,0 +1,70 @@
+---
+globs: **/*.ts,**/*.tsx
+description: TypeScript coding standards, type safety, and patterns for all TypeScript files
+---
+
+# TypeScript Standards
+
+## Type Safety
+- Use strict TypeScript with proper typing
+- Define interfaces for all data structures
+- Use type guards and assertions appropriately
+- **Prefer `unknown` over `any`** - Use `unknown` for truly unknown types, then narrow with type guards
+- **Minimal `any` usage** - Only use `any` in component or test files when absolutely necessary
+- Avoid `any` type in business logic - use proper typing instead
+- **Prefer undefined values over optional fields** - Make the value `undefined` rather than making the field optional
+
+### Undefined Values vs Optional Fields
+When a field might not have a value, prefer making the value `undefined` rather than making the field optional:
+
+```typescript
+// ✅ Correct - Value can be undefined
+interface User {
+  readonly id: string
+  readonly name: string
+  readonly email: string
+  readonly phone: string | undefined  // Value can be undefined
+}
+
+// ❌ Wrong - Optional field
+interface User {
+  readonly id: string
+  readonly name: string
+  readonly email: string
+  readonly phone?: string  // Field is optional
+}
+```
+
+**Why this is better:**
+- **Explicit intent**: Makes it clear the field exists but might be undefined
+- **Consistent object shape**: The property always exists on the object
+- **Better for serialization**: JSON serialization/deserialization is more predictable
+- **No `in` operator needed**: You don't need to check `'phone' in user`
+- **Clearer API**: Makes it explicit that the field exists but might be undefined
+
+## Component Patterns
+- Use functional components with TypeScript
+- Define proper prop interfaces
+- Use React.FC or explicit return types
+- Implement proper error boundaries
+
+## API Patterns
+- Define response types for all API calls
+- Use proper error handling with typed errors
+- Implement proper loading states
+- **React Query Standards**: Follow [React Query Standards](./react-query-standards.mdc) for data fetching with proper TypeScript typing
+- Use query options objects with proper generic types
+
+## Database Types
+- Reference [dub-manager/src/types/database.ts](mdc:dub-manager/src/types/database.ts) for Supabase types
+- Use generated types from Supabase
+- Implement proper RLS policy types
+- Use proper foreign key relationships
+
+## Code Organization
+- Follow existing patterns in [dub-manager/src/](mdc:dub-manager/src/)
+- **Avoid barrel files** - Import directly from source files instead of using index.ts barrel exports
+- **Do not re-export for convenience** - Only export what is necessary, avoid re-exporting types, utilities, or components for convenience
+- **Minimal exports** - Export only the main component/function, not supporting types or utilities
+- Implement proper separation of concerns
+- Use custom hooks for complex logic
