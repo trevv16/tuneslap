@@ -16,6 +16,11 @@ resource "google_storage_bucket" "logs_bucket" {
   storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+
+  versioning {
+    enabled = true
+  }
 
   lifecycle {
     prevent_destroy = true
