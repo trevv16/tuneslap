@@ -10,6 +10,7 @@ const config: Config = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
+    '<rootDir>/__tests__/integration/setup/',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -20,9 +21,20 @@ const config: Config = {
         moduleResolution: 'node',
       },
     }],
+    // Transform ESM dependencies from node_modules
+    '^.+\\.js$': ['ts-jest', {
+      tsconfig: {
+        allowJs: true,
+        esModuleInterop: true,
+        module: 'commonjs',
+      },
+    }],
   },
+  // Transform all files except for .mjs and ES modules in node_modules
+  // MSW v2 and its dependencies use ESM, so they need to be transformed
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$))',
+    'node_modules/\\.pnpm',
+    'node_modules/(?!(@?msw|@mswjs|until-async|@bundled-es-modules|@open-draft|outvariant|strict-event-emitter|path-to-regexp|headers-polyfill|cookie|statuses|graphql|is-node-process|type-fest)/)',
   ],
   collectCoverageFrom: [
     'utils/**/*.{ts,tsx}',
