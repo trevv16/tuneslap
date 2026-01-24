@@ -9,11 +9,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-security:
-  - bearerAuth: []
-
-
   parameters:
     boardId:
       name: boardId
@@ -447,6 +442,10 @@ security:
           minLength: 1
           maxLength: 255
           example: Key deleted successfully
+
+security:
+  - bearerAuth: []
+
 paths:
   /boards:
     get:

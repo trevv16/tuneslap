@@ -9,11 +9,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-security:
-  - bearerAuth: []
-
-
   schemas:
     UserResponse:
       title: UserResponse
@@ -61,6 +56,9 @@ security:
           example: Profile updated successfully
         data:
           $ref: '#/components/schemas/UserResponse'
+
+security:
+  - bearerAuth: []
 
 paths:
   /users/me:

@@ -9,11 +9,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-security:
-  - bearerAuth: []
-
-
   parameters:
     mediaId:
       name: mediaId
@@ -485,6 +480,9 @@ security:
           example: Media processing started
         data:
           $ref: '#/components/schemas/MediaResponse'
+
+security:
+  - bearerAuth: []
 
 paths:
   /media/stats:
