@@ -73,17 +73,17 @@ TuneSlap is built with a modern, performance-focused stack.
 
 ### Frontend
 
-* **Next.js 16** & **React 19** - The latest in modern web development.
-* **TypeScript** - For type-safe, maintainable code.
-* **TanStack Query** - Efficient data fetching and state management.
-* **Web Audio API** - Native browser audio processing.
+- **Next.js 16** & **React 19** - The latest in modern web development.
+- **TypeScript** - For type-safe, maintainable code.
+- **TanStack Query** - Efficient data fetching and state management.
+- **Web Audio API** - Native browser audio processing.
 
 ### Backend
 
-* **Go (Fiber)** - High-performance API server.
-* **MongoDB** - Flexible document storage.
-* **Redis + Asynq** - Fast caching and background job queues.
-* **FFmpeg** - Industrial-strength media processing.
+- **Go (Fiber)** - High-performance API server.
+- **MongoDB** - Flexible document storage.
+- **Redis + Asynq** - Fast caching and background job queues.
+- **FFmpeg** - Industrial-strength media processing.
 
 ### API & Documentation
 
