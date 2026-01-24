@@ -70,7 +70,7 @@ export default function UserProfileSection() {
   }
 
   return (
-    <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+    <div data-testid="profile-section" className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
       <div>
         <h2 className="text-base font-semibold text-foreground">Personal Information</h2>
         <p className="mt-1 text-sm text-muted-foreground">Update your account.</p>

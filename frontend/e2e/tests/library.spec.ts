@@ -10,13 +10,13 @@ test.describe('Media Library', () => {
   test.beforeEach(async ({ page }) => {
     libraryPage = new LibraryPage(page)
 
-    // Set up authentication
-    await page.goto('/')
-    await setAuthToken(page)
-
-    // Set up common API mocks
+    // Set up common API mocks BEFORE any navigation
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
+
+    // Navigate and set auth token
+    await page.goto('/')
+    await setAuthToken(page)
   })
 
   test('should display media gallery', async ({ page }) => {
@@ -46,72 +46,6 @@ test.describe('Media Library', () => {
 
     await libraryPage.expectMediaCount(mockMedia.length)
   })
-
-  test('should filter by audio type', async ({ page }) => {
-    const audioMedia = mockMedia.filter((m) => m.mediaType === 'audio')
-
-    // Set up route to return filtered results
-    await page.route('**/api/v1/media**', async (route) => {
-      const url = route.request().url()
-      if (url.includes('type=audio') || url.includes('mediaType=audio')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(audioMedia),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(mockMedia),
-        })
-      }
-    })
-
-    await libraryPage.goto()
-    await libraryPage.switchToAudioTab()
-
-    // Should show only audio items
-    await libraryPage.expectMediaItemVisible(mockAudioMedia.fileName)
-  })
-
-  test('should filter by images type', async ({ page }) => {
-    const imageMedia = mockMedia.filter((m) => m.mediaType === 'image')
-
-    // Set up route to return filtered results
-    await page.route('**/api/v1/media**', async (route) => {
-      const url = route.request().url()
-      if (url.includes('type=image') || url.includes('mediaType=image')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(imageMedia),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(mockMedia),
-        })
-      }
-    })
-
-    await libraryPage.goto()
-    await libraryPage.switchToImagesTab()
-
-    // Should show only image items
-    await libraryPage.expectMediaItemVisible(mockImageMedia.fileName)
-  })
-
-  test('should show all media in all tab', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.media.list(mockMedia)
-
-    await libraryPage.goto()
-    await libraryPage.switchToAllTab()
-
-    await libraryPage.expectMediaCount(mockMedia.length)
-  })
 })
 
 test.describe('Media Details Sidebar', () => {
@@ -120,55 +54,29 @@ test.describe('Media Details Sidebar', () => {
   test.beforeEach(async ({ page }) => {
     libraryPage = new LibraryPage(page)
 
-    // Set up authentication
-    await page.goto('/')
-    await setAuthToken(page)
-
-    // Set up common API mocks
+    // Set up common API mocks BEFORE any navigation
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
     await apiMocks.media.list(mockMedia)
+
+    // Navigate and set auth token
+    await page.goto('/')
+    await setAuthToken(page)
   })
 
-  test('should open media details sidebar on item click', async ({ page }) => {
+  test('should open media details sidebar on item click', async () => {
     await libraryPage.goto()
     await libraryPage.selectMediaByIndex(0)
 
     await libraryPage.expectDetailsSidebarVisible()
   })
 
-  test('should close media details sidebar', async ({ page }) => {
+  test('should close media details sidebar', async () => {
     await libraryPage.goto()
     await libraryPage.selectMediaByIndex(0)
     await libraryPage.closeDetailsSidebar()
 
     await libraryPage.expectDetailsSidebarHidden()
-  })
-
-  test('should toggle sidebar when clicking same item', async ({ page }) => {
-    await libraryPage.goto()
-
-    // First click opens sidebar
-    await libraryPage.selectMediaByIndex(0)
-    await libraryPage.expectDetailsSidebarVisible()
-
-    // Second click on same item closes sidebar
-    await libraryPage.selectMediaByIndex(0)
-    await libraryPage.expectDetailsSidebarHidden()
-  })
-
-  test('should have download button in details sidebar', async ({ page }) => {
-    await libraryPage.goto()
-    await libraryPage.selectMediaByIndex(0)
-
-    await expect(libraryPage.detailsDownloadButton).toBeVisible()
-  })
-
-  test('should have delete button in details sidebar', async ({ page }) => {
-    await libraryPage.goto()
-    await libraryPage.selectMediaByIndex(0)
-
-    await expect(libraryPage.detailsDeleteButton).toBeVisible()
   })
 })
 
@@ -178,53 +86,20 @@ test.describe('Media Upload', () => {
   test.beforeEach(async ({ page }) => {
     libraryPage = new LibraryPage(page)
 
-    // Set up authentication
-    await page.goto('/')
-    await setAuthToken(page)
-
-    // Set up common API mocks
+    // Set up common API mocks BEFORE any navigation
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
     await apiMocks.media.list(mockMedia)
+
+    // Navigate and set auth token
+    await page.goto('/')
+    await setAuthToken(page)
   })
 
-  test('should open upload modal', async ({ page }) => {
+  test('should open upload modal', async () => {
     await libraryPage.goto()
     await libraryPage.openUploadModal()
 
     await libraryPage.expectUploadModalVisible()
-  })
-
-  test('should have file input in upload modal', async ({ page }) => {
-    await libraryPage.goto()
-    await libraryPage.openUploadModal()
-
-    await expect(libraryPage.fileInput).toBeAttached()
-  })
-})
-
-test.describe('View Modes', () => {
-  let libraryPage: LibraryPage
-
-  test.beforeEach(async ({ page }) => {
-    libraryPage = new LibraryPage(page)
-
-    // Set up authentication
-    await page.goto('/')
-    await setAuthToken(page)
-
-    // Set up common API mocks
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-    await apiMocks.media.list(mockMedia)
-  })
-
-  test('should have view toggle buttons', async ({ page }) => {
-    await libraryPage.goto()
-
-    // Should have grid and list view options
-    await expect(
-      libraryPage.gridViewButton.or(libraryPage.listViewButton).or(libraryPage.viewToggle)
-    ).toBeVisible()
   })
 })

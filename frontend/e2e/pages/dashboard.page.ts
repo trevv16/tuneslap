@@ -35,13 +35,13 @@ export class DashboardPage {
     this.newBoardButton = page.getByRole('button', { name: /new board/i })
 
     // Boards list
-    this.boardsList = page.locator('[data-testid="boards-list"]').or(page.locator('main'))
+    this.boardsList = page.getByTestId('boards-list')
     this.boardCards = page.locator('a[href^="/boards/"]')
 
     // Empty state
-    this.emptyState = page.getByText('Create Your First Soundboard')
+    this.emptyState = page.getByTestId('empty-state')
     this.emptyStateTitle = page.getByRole('heading', { name: /create your first/i })
-    this.emptyStateButton = page.getByRole('button', { name: 'New Board' })
+    this.emptyStateButton = this.emptyState.getByRole('button', { name: /new board/i })
 
     // Create board modal
     this.createModal = page.getByRole('dialog')
