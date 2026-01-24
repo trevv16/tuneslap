@@ -17,15 +17,15 @@ git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 ```
 
-2. Create environment file:
+1. Create environment file:
 
 ```bash
 cp server/example.env server/.env
 ```
 
-3. Configure environment variables in `server/.env` (see Configuration section below)
+1. Configure environment variables in `server/.env` (see Configuration section below)
 
-4. Start services:
+1. Start services:
 
 ```bash
 docker-compose up -d

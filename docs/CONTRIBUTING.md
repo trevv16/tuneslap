@@ -20,7 +20,7 @@ git clone https://github.com/yourusername/tuneslap.git
 cd tuneslap
 ```
 
-2. Set up the backend:
+1. Set up the backend:
 
 ```bash
 cd server
@@ -29,28 +29,28 @@ cp example.env .env
 # Edit .env with your configuration
 ```
 
-3. Set up the frontend:
+1. Set up the frontend:
 
 ```bash
 cd frontend
 yarn install
 ```
 
-4. Start dependencies with Docker Compose:
+1. Start dependencies with Docker Compose:
 
 ```bash
 # From project root
 docker-compose up -d mongodb redis
 ```
 
-5. Run the backend:
+1. Run the backend:
 
 ```bash
 cd server
 go run main.go
 ```
 
-6. Run the frontend (in a separate terminal):
+1. Run the frontend (in a separate terminal):
 
 ```bash
 cd frontend
@@ -69,13 +69,13 @@ git checkout -b feature/your-feature-name
 git checkout -b fix/your-bug-fix
 ```
 
-2. Make your changes following the code standards below
+1. Make your changes following the code standards below
 
-3. Test your changes locally
+1. Test your changes locally
 
-4. Commit your changes (see Commit Guidelines)
+1. Commit your changes (see Commit Guidelines)
 
-5. Push to your fork and create a Pull Request
+1. Push to your fork and create a Pull Request
 
 ### Code Standards
 
