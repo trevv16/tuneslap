@@ -97,10 +97,15 @@ jobs:
           cd ..
           ./scripts/generate-types.sh --backend-only
       
-      # Run fast checks first for quick feedback
-      - name: Run Go vet
-        run: go vet ./...
+      # https://github.com/h2non/bimg?tab=readme-ov-file#installation
+      # https://github.com/libvips/libvips/wiki/Build-for-Ubuntu
+      - name: Install bimg dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libvips-dev
+          version: 1.0
       
+      # Run fast checks first for quick feedback
       - name: Run Go fmt check
         run: |
           if [ "$(gofmt -s -l . | grep -v "^generated/" | wc -l)" -gt 0 ]; then
@@ -109,13 +114,8 @@ jobs:
             exit 1
           fi
       
-      # https://github.com/h2non/bimg?tab=readme-ov-file#installation
-      # https://github.com/libvips/libvips/wiki/Build-for-Ubuntu
-      - name: Install bimg dependencies
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: libvips-dev
-          version: 1.0
+      - name: Run Go vet
+        run: go vet ./...
       
       - name: Run Go tests with coverage
         run: |
