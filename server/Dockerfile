@@ -20,9 +20,11 @@ WORKDIR /workspace
 COPY server/go.mod server/go.sum ./server/
 
 # Download all dependencies
-RUN cd server && go mod download
+WORKDIR /workspace/server
+RUN go mod download
 
 # Copy OpenAPI specs and scripts for code generation
+WORKDIR /workspace
 COPY openapi ./openapi
 COPY scripts ./scripts
 
@@ -35,7 +37,8 @@ RUN npm install -g @openapitools/openapi-generator-cli swagger-cli && \
 
 # Build the application from server directory
 # CGO_ENABLED=1 is required for bimg
-RUN cd server && CGO_ENABLED=1 GOOS=linux go build -o main .
+WORKDIR /workspace/server
+RUN CGO_ENABLED=1 GOOS=linux go build -o main .
 
 # Final stage
 FROM debian:bookworm-slim
