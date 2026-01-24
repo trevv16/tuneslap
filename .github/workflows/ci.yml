@@ -105,6 +105,11 @@ jobs:
           packages: libvips-dev libhdf5-dev
           version: 2.0
       
+      # Ubuntu names the pkg-config file hdf5-serial.pc but matio expects hdf5.pc
+      - name: Fix HDF5 pkg-config
+        working-directory: /usr/lib/x86_64-linux-gnu/pkgconfig
+        run: sudo ln -sf hdf5-serial.pc hdf5.pc
+      
       # Run fast checks first for quick feedback
       - name: Run Go fmt check
         run: |
@@ -116,15 +121,11 @@ jobs:
       
       - name: Run Go vet
         run: go vet ./...
-        env:
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
       
       - name: Run Go tests with coverage
         run: |
           go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
           go tool cover -func=coverage.out
-        env:
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -137,5 +138,3 @@ jobs:
       
       - name: Build Go application
         run: go build -o tuneslap .
-        env:
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/hdf5/serial/pkgconfig
