@@ -77,14 +77,14 @@ describe('generateUploadUrl', () => {
     expect(result.error).toBe('Failed to generate upload URL')
   })
 
-  it('should propagate network errors', async () => {
-    // Note: The current implementation doesn't wrap fetch in try-catch,
-    // so network errors will throw rather than return an error response.
-    // This test verifies the current behavior.
+  it('should handle network errors gracefully', async () => {
     const fetchMock = global.fetch as jest.Mock
     fetchMock.mockImplementationOnce(() => Promise.reject(new Error('Network request failed')))
 
-    await expect(generateUploadUrl(mockToken, mockRequest)).rejects.toThrow('Network request failed')
+    const result = await generateUploadUrl(mockToken, mockRequest)
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('Network request failed')
   })
 
   it('should handle JSON parse errors', async () => {

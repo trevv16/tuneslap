@@ -2,7 +2,7 @@ const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 const BASE_URL =
   rawBaseUrl && rawBaseUrl.trim() !== ''
     ? rawBaseUrl
-    : 'http://localhost:8082/api/v1';
+    : 'https://api.tuneslap.com/api/v1';
 
 export interface GenerateUploadUrlRequest {
   fileName: string;
@@ -25,16 +25,16 @@ export async function generateUploadUrl(
   token: string,
   data: GenerateUploadUrlRequest
 ): Promise<GenerateUploadUrlResponse> {
-  const response = await fetch(`${BASE_URL}/media/upload-url`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
-
   try {
+    const response = await fetch(`${BASE_URL}/media/upload-url`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
     const result = await response.json();
 
     if (response.ok) {
@@ -52,7 +52,7 @@ export async function generateUploadUrl(
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : 'Failed to parse response',
+        error instanceof Error ? error.message : 'Failed to generate upload URL',
     };
   }
 }

@@ -23,8 +23,8 @@ function MockImage({
   onError,
   fill: _fill,
   priority: _priority,
-  ...props
 }: ImageProps) {
+  // Note: fill and priority are Next.js-specific props that don't apply to native img
   return React.createElement('img', {
     src,
     alt,
@@ -34,9 +34,7 @@ function MockImage({
     onLoad,
     onError,
     'data-testid': 'next-image',
-    ...props,
   })
-}
 }
 
 export default MockImage
