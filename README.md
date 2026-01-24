@@ -7,7 +7,7 @@
     <a href="https://app.codacy.com/gh/trevv16/tuneslap/dashboard"><img src="https://app.codacy.com/project/badge/Grade/337b2d6d49a34d31b0a0bf59187ecef5" alt="Codacy Grade"></a>
     <a href="https://app.codacy.com/gh/trevv16/tuneslap/dashboard"><img src="https://app.codacy.com/project/badge/Coverage/337b2d6d49a34d31b0a0bf59187ecef5" alt="Codacy Coverage"></a>
     <a href="https://go.dev/"><img src="https://img.shields.io/badge/Go-1.25.6-00ADD8?logo=go&logoColor=white" alt="Go"></a>
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-15.5-black?logo=next.js" alt="Next.js"></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   </p>
 
