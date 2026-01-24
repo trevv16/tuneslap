@@ -129,18 +129,66 @@ docs(readme): update installation instructions
 
 ### Using Changesets
 
-For version management, we use Changesets:
+We use [Changesets](https://github.com/changesets/changesets) for version management and release automation. **Changesets are required for releases to happen.**
 
-1. Create a changeset:
+#### Why Changesets?
+
+Changesets let us:
+- Track what changed between releases
+- Automatically determine version bumps (patch/minor/major)
+- Generate changelogs
+- Trigger automated builds and deployments
+
+#### How the Release Flow Works
+
+1. **You create a PR** with your code changes
+2. **You add a changeset** describing what changed
+3. **PR gets merged** to main
+4. **GitHub Action creates a "Version Packages" PR** that bumps versions and updates the changelog
+5. **When the Version Packages PR is merged**, Docker images are built and pushed, and deployment is triggered
+
+**Without a changeset, steps 4-5 won't happen** and your changes won't be released.
+
+#### Creating a Changeset
+
+Before submitting your PR, run:
+
 ```bash
 yarn changeset
 ```
 
-2. Select the type of change (patch, minor, major)
-3. Describe your changes
-4. Commit the changeset file
+You'll be prompted to:
+1. Select which packages changed (use spacebar to select, enter to confirm)
+2. Choose the version bump type:
+   - `patch` - Bug fixes, small changes (0.0.X)
+   - `minor` - New features, non-breaking changes (0.X.0)
+   - `major` - Breaking changes (X.0.0)
+3. Write a summary of your changes
 
-The changeset will be included in the next release.
+This creates a markdown file in `.changeset/` with a random name. **Commit this file with your PR.**
+
+#### Example
+
+```bash
+$ yarn changeset
+
+What kind of change is this? (patch/minor/major)
+> patch
+
+Please enter a summary for this change:
+> Fix audio player not pausing when switching tracks
+
+# Creates .changeset/friendly-lions-dance.md
+```
+
+#### When to Skip Changesets
+
+Not every PR needs a changeset. Skip them for:
+- Documentation-only changes
+- CI/tooling changes that don't affect the app
+- Refactors with no user-facing changes
+
+Add `[skip changeset]` to your PR title if intentionally skipping.
 
 ## Project Structure
 
