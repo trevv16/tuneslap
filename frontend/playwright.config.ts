@@ -92,8 +92,9 @@ export default defineConfig({
   ],
 
   // Run local dev server before starting the tests
+  // In CI, use 'yarn start' since the app is already built
   webServer: {
-    command: 'yarn dev',
+    command: process.env.CI ? 'yarn start -p 3001' : 'yarn dev',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
