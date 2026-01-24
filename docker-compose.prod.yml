@@ -1,0 +1,139 @@
+# Production Docker Compose - Uses pre-built images from Docker Hub
+# For local development with source builds, use docker-compose.yml instead
+
+services:
+  server:
+    image: tuneslap/server:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - GO_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017
+      - REDIS_URL=redis:6379
+      - PORT=8082
+      - DATABASE=${DATABASE:-tuneslap}
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - DEMO_MODE=${DEMO_MODE:-true}
+      - STORAGE_PROVIDER=${STORAGE_PROVIDER:-s3}
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT:-https://media.tuneslap.com}
+      - S3_REGION=${S3_REGION:-us-east-1}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+      - MEDIA_BUCKET=${MEDIA_BUCKET:-tuneslap-media}
+      - USER_UPLOADS_BUCKET=${USER_UPLOADS_BUCKET:-tuneslap-uploads}
+    volumes:
+      - server_keys:/app/keys
+    depends_on:
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+      createbuckets:
+        condition: service_completed_successfully
+    restart: on-failure
+    networks:
+      - tuneslap-network
+
+  frontend:
+    image: tuneslap/frontend:latest
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.tuneslap.com/api/v1}
+      - INTERNAL_API_URL=${INTERNAL_API_URL:-http://server:8082/api/v1}
+    depends_on:
+      - server
+    restart: on-failure
+    networks:
+      - tuneslap-network
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - tuneslap-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - tuneslap-network
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${S3_ACCESS_KEY:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${S3_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+    networks:
+      - tuneslap-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set myminio http://minio:9000 $${S3_ACCESS_KEY:-minioadmin} $${S3_SECRET_KEY:-minioadmin};
+      MEDIA_BUCKET=\"$${MEDIA_BUCKET:-tuneslap-media}\";
+      USER_UPLOADS_BUCKET=\"$${USER_UPLOADS_BUCKET:-tuneslap-uploads}\";
+      mc mb myminio/tuneslap-user-uploads-staging --ignore-existing || true;
+      mc anonymous set public myminio/tuneslap-user-uploads-staging || true;
+      mc mb myminio/$$MEDIA_BUCKET --ignore-existing;
+      mc mb myminio/$$USER_UPLOADS_BUCKET --ignore-existing;
+      mc anonymous set public myminio/$$MEDIA_BUCKET;
+      mc anonymous set public myminio/$$USER_UPLOADS_BUCKET;
+      echo \"Buckets created: $$MEDIA_BUCKET, $$USER_UPLOADS_BUCKET, tuneslap-user-uploads-staging\";
+      "
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+      - MEDIA_BUCKET=${MEDIA_BUCKET:-tuneslap-media}
+      - USER_UPLOADS_BUCKET=${USER_UPLOADS_BUCKET:-tuneslap-uploads}
+    networks:
+      - tuneslap-network
+    restart: no
+
+volumes:
+  server_keys:
+  mongodb_data:
+  redis_data:
+  minio_data:
+
+networks:
+  tuneslap-network:
+    driver: bridge
