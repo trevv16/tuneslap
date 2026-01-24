@@ -8,13 +8,18 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 var ErrTokenExpired = errors.New("Token expired")
+
+// getJWTSecret reads the JWT secret from environment variable dynamically.
+// This allows tests to set the secret after package initialization.
+func getJWTSecret() []byte {
+	return []byte(os.Getenv("JWT_SECRET"))
+}
 
 func GenerateJWT(userID string) (string, error) {
 	claims := jwt.MapClaims{
@@ -22,19 +27,17 @@ func GenerateJWT(userID string) (string, error) {
 		"exp":    time.Now().Add(time.Hour * 72).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString(getJWTSecret())
 }
 
 func ParseJWT(tokenStr string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return getJWTSecret(), nil
 	})
 
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				return nil, ErrTokenExpired
-			}
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, ErrTokenExpired
 		}
 		return nil, err
 	}

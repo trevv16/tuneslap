@@ -57,10 +57,11 @@ cp server/example.env server/.env
 docker-compose up -d
 ```
 
-That's it! 
-* **App**: [http://localhost:3001](http://localhost:3001)
-* **API**: [http://localhost:8082](http://localhost:8082)
-* **API Explorer**: [http://localhost:8081](http://localhost:8081)
+That's it!
+
+- **App**: [http://localhost:3001](http://localhost:3001)
+- **API**: [http://localhost:8082](http://localhost:8082)
+- **API Explorer**: [http://localhost:8081](http://localhost:8081)
 
 > **Tip:** Try out the live API at [openapi.tuneslap.com](https://openapi.tuneslap.com) to explore all available endpoints.
 
@@ -72,17 +73,17 @@ TuneSlap is built with a modern, performance-focused stack.
 
 ### Frontend
 
-* **Next.js 16** & **React 19** - The latest in modern web development.
-* **TypeScript** - For type-safe, maintainable code.
-* **TanStack Query** - Efficient data fetching and state management.
-* **Web Audio API** - Native browser audio processing.
+- **Next.js 16** & **React 19** - The latest in modern web development.
+- **TypeScript** - For type-safe, maintainable code.
+- **TanStack Query** - Efficient data fetching and state management.
+- **Web Audio API** - Native browser audio processing.
 
 ### Backend
 
-* **Go (Fiber)** - High-performance API server.
-* **MongoDB** - Flexible document storage.
-* **Redis + Asynq** - Fast caching and background job queues.
-* **FFmpeg** - Industrial-strength media processing.
+- **Go (Fiber)** - High-performance API server.
+- **MongoDB** - Flexible document storage.
+- **Redis + Asynq** - Fast caching and background job queues.
+- **FFmpeg** - Industrial-strength media processing.
 
 ### API & Documentation
 

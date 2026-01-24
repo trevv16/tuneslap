@@ -5,10 +5,17 @@ info:
 
 # Common components file - security is defined in the main openapi.yaml
 # This file only contains shared schemas and parameters
-security: []
+security:
+  - {}
 
 paths: {}
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     page:
       name: page

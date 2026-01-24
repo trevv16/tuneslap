@@ -53,22 +53,40 @@ const mediaCreateSchema = z.object({
 
 export type MediaCreateFormData = z.infer<typeof mediaCreateSchema>;
 
+// MIME type to content type enum mapping (hoisted for performance)
+const MIME_TO_CONTENT_TYPE_ENUM = new Map<string, CreateMediaRequestContentTypeEnum>([
+  ['audio/mp3', CreateMediaRequestContentTypeEnum.AudioMp3],
+  ['audio/mpeg', CreateMediaRequestContentTypeEnum.AudioMp3],
+  ['audio/wav', CreateMediaRequestContentTypeEnum.AudioWav],
+  ['audio/webm', CreateMediaRequestContentTypeEnum.AudioWebm],
+  ['audio/ogg', CreateMediaRequestContentTypeEnum.AudioOgg],
+  ['audio/aac', CreateMediaRequestContentTypeEnum.AudioAac],
+  ['image/jpeg', CreateMediaRequestContentTypeEnum.ImageJpeg],
+  ['image/png', CreateMediaRequestContentTypeEnum.ImagePng],
+  ['image/gif', CreateMediaRequestContentTypeEnum.ImageGif],
+  ['image/webp', CreateMediaRequestContentTypeEnum.ImageWebp],
+  ['image/svg+xml', CreateMediaRequestContentTypeEnum.ImageSvgxml],
+]);
+
+// MIME type to file extension mapping (hoisted for performance)
+const MIME_TO_EXTENSION = new Map<string, string>([
+  ['audio/mp3', '.mp3'],
+  ['audio/mpeg', '.mp3'],
+  ['audio/wav', '.wav'],
+  ['audio/webm', '.webm'],
+  ['audio/ogg', '.ogg'],
+  ['audio/aac', '.aac'],
+  ['image/jpeg', '.jpg'],
+  ['image/jpg', '.jpg'],
+  ['image/png', '.png'],
+  ['image/gif', '.gif'],
+  ['image/webp', '.webp'],
+  ['image/svg+xml', '.svg'],
+]);
+
 // Helper function to convert MIME type string to CreateMediaRequestContentTypeEnum
 function convertMimeTypeToContentTypeEnum(mimeType: string): CreateMediaRequestContentTypeEnum | undefined {
-  const mimeToEnum: Record<string, CreateMediaRequestContentTypeEnum> = {
-    'audio/mp3': CreateMediaRequestContentTypeEnum.AudioMp3,
-    'audio/mpeg': CreateMediaRequestContentTypeEnum.AudioMp3,
-    'audio/wav': CreateMediaRequestContentTypeEnum.AudioWav,
-    'audio/webm': CreateMediaRequestContentTypeEnum.AudioWebm,
-    'audio/ogg': CreateMediaRequestContentTypeEnum.AudioOgg,
-    'audio/aac': CreateMediaRequestContentTypeEnum.AudioAac,
-    'image/jpeg': CreateMediaRequestContentTypeEnum.ImageJpeg,
-    'image/png': CreateMediaRequestContentTypeEnum.ImagePng,
-    'image/gif': CreateMediaRequestContentTypeEnum.ImageGif,
-    'image/webp': CreateMediaRequestContentTypeEnum.ImageWebp,
-    'image/svg+xml': CreateMediaRequestContentTypeEnum.ImageSvgxml,
-  };
-  return mimeToEnum[mimeType];
+  return MIME_TO_CONTENT_TYPE_ENUM.get(mimeType);
 }
 
 // Helper function to convert media type string to enum
@@ -97,22 +115,7 @@ export function useMediaCreate() {
 
   // Get file extension from file type
   const getFileExtension = (file: File): string => {
-    const mimeToExtension: Record<string, string> = {
-      "audio/mp3": ".mp3",
-      "audio/mpeg": ".mp3",
-      "audio/wav": ".wav",
-      "audio/webm": ".webm",
-      "audio/ogg": ".ogg",
-      "audio/aac": ".aac",
-      "image/jpeg": ".jpg",
-      "image/jpg": ".jpg",
-      "image/png": ".png",
-      "image/gif": ".gif",
-      "image/webp": ".webp",
-      "image/svg+xml": ".svg",
-    };
-
-    return mimeToExtension[file.type] || "";
+    return MIME_TO_EXTENSION.get(file.type) ?? "";
   };
 
   const handleSubmit = async (data: MediaCreateFormData) => {

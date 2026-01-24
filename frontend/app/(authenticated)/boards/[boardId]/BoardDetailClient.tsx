@@ -20,9 +20,10 @@ import Header from "../../Header"
 import KeyForm from "./KeyForm"
 
 export default function BoardDetailClient() {
-  const { boardId } = useParams()
-  const { data: board } = useGetBoardById(boardId as string)
-  const createKeyMutation = useCreateKey(boardId as string)
+  const params = useParams()
+  const boardId = String(params.boardId ?? '')
+  const { data: board } = useGetBoardById(boardId)
+  const createKeyMutation = useCreateKey(boardId)
 
   const [addKeyOpen, setAddKeyOpen] = useState(false)
 
@@ -69,7 +70,7 @@ export default function BoardDetailClient() {
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 pb-4">
             <KeyForm
-              boardId={boardId as string}
+              boardId={boardId}
               existingKeys={board?.keys || []}
               mode="add"
               onSubmit={handleAddKey}

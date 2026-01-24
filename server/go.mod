@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.21.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.1
 	github.com/gofiber/fiber/v2 v2.52.10
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/hibiken/asynq v0.25.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
@@ -89,7 +90,6 @@ require (
 	cloud.google.com/go/storage v1.59.1
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/go-playground/validator/v10 v10.30.1
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/h2non/bimg v1.1.9

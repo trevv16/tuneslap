@@ -4,8 +4,16 @@ info:
   version: '1.0.0'
   description: Public demo endpoints for the TuneSlap homepage
 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 # Demo endpoints are public and don't require authentication
-security: []
+security:
+  - {}
 
 paths:
   /demo/board:

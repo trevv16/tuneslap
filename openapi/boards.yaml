@@ -899,6 +899,7 @@ paths:
                     example: Keys retrieved successfully
                   data:
                     type: array
+                    maxItems: 500
                     items:
                       $ref: '#/components/schemas/KeyResponse'
         '401':
