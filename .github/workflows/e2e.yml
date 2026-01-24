@@ -50,9 +50,6 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Build application
-        run: yarn build
-
       - name: Run Playwright tests
         run: yarn test:e2e:chromium
 

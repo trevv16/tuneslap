@@ -92,17 +92,11 @@ export default defineConfig({
   ],
 
   // Run local dev server before starting the tests
-  // In CI, use standalone server since the app is built with output: standalone
   webServer: {
-    command: process.env.CI
-      ? 'node .next/standalone/server.js'
-      : 'yarn dev',
+    command: 'yarn dev',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    env: {
-      PORT: '3001',
-    },
+    timeout: 180 * 1000, // 3 min timeout for CI cold start
   },
 
   // Global timeout for each test
