@@ -82,8 +82,15 @@ jobs:
         working-directory: ./
         run: ./scripts/generate-types.sh --frontend-only
       
-      - name: Run unit tests
-        run: yarn test:unit
+      - name: Run unit tests with coverage
+        run: yarn test:unit --coverage
+      
+      - name: Upload unit test coverage to Codacy
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: frontend/coverage/lcov.info
 
   frontend-integration-tests:
     name: Frontend - Integration Tests
@@ -113,8 +120,15 @@ jobs:
         working-directory: ./
         run: ./scripts/generate-types.sh --frontend-only
       
-      - name: Run integration tests
-        run: yarn test:integration
+      - name: Run integration tests with coverage
+        run: yarn test:integration --coverage
+      
+      - name: Upload integration test coverage to Codacy
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: frontend/coverage/lcov.info
 
   backend-ci:
     name: Backend - Continuous Integration
