@@ -21,7 +21,7 @@ Object.assign(global, {
 })
 
 // Import fetch globals from undici (bundled with Node 18+)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// eslint-disable-next-line `@typescript-eslint/no-require-imports`
 const { fetch, Request, Response, Headers, FormData } = require('undici')
 Object.assign(globalThis, { fetch, Request, Response, Headers, FormData })
 
@@ -70,9 +70,8 @@ class IntersectionObserverMock {
 }
 Object.defineProperty(window, 'IntersectionObserver', { value: IntersectionObserverMock })
 
-// Mock fetch
-global.fetch = jest.fn()
-
+// Avoid mocking fetch globally; MSW v2 relies on undici fetch above.
+// Tests needing fetch assertion can override in their own setup.
 // Mock AudioContext
 class AudioContextMock {
   createBufferSource = jest.fn(() => ({
