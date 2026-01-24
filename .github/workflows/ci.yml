@@ -128,11 +128,13 @@ jobs:
           go tool cover -func=coverage.out
       
       - name: Convert coverage to Cobertura format
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         run: |
           go install github.com/boumenot/gocover-cobertura@latest
           gocover-cobertura < coverage.out > coverage.xml
       
       - name: Upload coverage to Codacy
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
