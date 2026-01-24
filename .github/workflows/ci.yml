@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24.13.0
+          node-version-file: './frontend/.nvmrc'
           cache: 'yarn'
           cache-dependency-path: './frontend/yarn.lock'
       
@@ -81,7 +81,7 @@ jobs:
       - name: Setup Node.js (for swagger-cli)
         uses: actions/setup-node@v6
         with:
-          node-version: 24.13.0
+          node-version-file: './frontend/.nvmrc'
       
       - name: Download Go dependencies
         run: go mod download
