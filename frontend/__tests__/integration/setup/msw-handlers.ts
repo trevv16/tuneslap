@@ -14,7 +14,8 @@ import {
 } from '@/__mocks__/data/fixtures'
 
 // Base URL pattern to match API requests
-const API_BASE = '*/api/v1'
+// Must match the NEXT_PUBLIC_API_URL set in jest.setup.ts
+const API_BASE = 'http://localhost:8082/api/v1'
 
 export const handlers = [
   // Auth endpoints

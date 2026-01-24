@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// Set test API URL for MSW to intercept
+process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8082/api/v1'
+
 // Polyfill for Fetch API globals required by MSW v2
 // jsdom doesn't provide native fetch globals, but Node 18+ does
 import { TextDecoder, TextEncoder } from 'util'
@@ -25,15 +28,37 @@ Object.assign(global, {
 const { fetch, Request, Response, Headers, FormData } = require('undici')
 Object.assign(globalThis, { fetch, Request, Response, Headers, FormData })
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-  length: 0,
-  key: jest.fn(),
+// Mock localStorage with actual storage functionality
+class LocalStorageMock implements Storage {
+  private store: Record<string, string> = {}
+  
+  get length(): number {
+    return Object.keys(this.store).length
+  }
+  
+  clear(): void {
+    this.store = {}
+  }
+  
+  getItem(key: string): string | null {
+    return this.store[key] ?? null
+  }
+  
+  key(index: number): string | null {
+    const keys = Object.keys(this.store)
+    return keys[index] ?? null
+  }
+  
+  removeItem(key: string): void {
+    delete this.store[key]
+  }
+  
+  setItem(key: string, value: string): void {
+    this.store[key] = value
+  }
 }
+
+const localStorageMock = new LocalStorageMock()
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
 // Mock matchMedia
@@ -114,9 +139,7 @@ Object.defineProperty(window, 'Audio', { value: createAudioMock, writable: true,
 // Reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks()
-  localStorageMock.getItem.mockReset()
-  localStorageMock.setItem.mockReset()
-  localStorageMock.removeItem.mockReset()
+  localStorageMock.clear()
 })
 
 // MSW server setup for integration tests
@@ -133,7 +156,7 @@ try {
 }
 
 if (server) {
-  beforeAll(() => server?.listen({ onUnhandledRequest: 'bypass' }))
+  beforeAll(() => server?.listen({ onUnhandledRequest: 'error' }))
   afterEach(() => server?.resetHandlers())
   afterAll(() => server?.close())
 }
