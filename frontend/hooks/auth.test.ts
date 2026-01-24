@@ -25,7 +25,7 @@ describe('useSignUp', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.Mock
+    const MockAuthApi = AuthApi as unknown as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       signup: mockSignup,
     }))
@@ -83,7 +83,7 @@ describe('useSignIn', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.Mock
+    const MockAuthApi = AuthApi as unknown as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       signin: mockSignin,
     }))
@@ -160,7 +160,7 @@ describe('useForgotPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.Mock
+    const MockAuthApi = AuthApi as unknown as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       forgot: mockForgot,
     }))
@@ -215,7 +215,7 @@ describe('useResetPassword', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockAuthApi = AuthApi as jest.Mock
+    const MockAuthApi = AuthApi as unknown as jest.Mock
     MockAuthApi.mockImplementation(() => ({
       reset: mockReset,
     }))

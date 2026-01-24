@@ -41,7 +41,7 @@ describe('useGetBoards', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.Mock
+    const MockBoardsApi = BoardsApi as unknown as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       getAllBoards: mockGetAllBoards,
     }))
@@ -99,7 +99,7 @@ describe('useGetBoardById', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.requireMock('@/utils/token').getStoredToken.mockReturnValue('mock-token')
-    const MockBoardsApi = BoardsApi as jest.Mock
+    const MockBoardsApi = BoardsApi as unknown as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       getBoardById: mockGetBoardById,
     }))
@@ -140,7 +140,7 @@ describe('useCreateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.Mock
+    const MockBoardsApi = BoardsApi as unknown as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       createBoard: mockCreateBoard,
     }))
@@ -200,7 +200,7 @@ describe('useUpdateBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.Mock
+    const MockBoardsApi = BoardsApi as unknown as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       updateBoard: mockUpdateBoard,
     }))
@@ -258,7 +258,7 @@ describe('useDeleteBoard', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    const MockBoardsApi = BoardsApi as jest.Mock
+    const MockBoardsApi = BoardsApi as unknown as jest.Mock
     MockBoardsApi.mockImplementation(() => ({
       deleteBoard: mockDeleteBoard,
     }))
