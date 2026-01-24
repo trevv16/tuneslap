@@ -32,7 +32,7 @@ export default function Hero() {
                 Start Your Soundboard
               </Link>
               <Link href="#demo" className="text-sm/6 font-semibold text-base">
-                Watch Demo <span aria-hidden="true">→</span>
+                Try Demo <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>
