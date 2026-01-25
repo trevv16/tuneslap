@@ -39,7 +39,11 @@ export default function MediaDetails({
 }: MediaDetailsProps) {
   return (
     <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full max-w-sm sm:max-w-md lg:max-w-lg overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-full max-w-sm sm:max-w-md lg:max-w-lg overflow-y-auto"
+        data-testid="media-details"
+      >
         <SheetHeader>
           <SheetTitle>Details</SheetTitle>
         </SheetHeader>
