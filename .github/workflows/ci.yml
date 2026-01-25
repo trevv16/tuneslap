@@ -81,10 +81,13 @@ jobs:
       
       - name: Upload unit test coverage to Codacy
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: frontend/coverage/lcov.info
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --coverage-reports frontend/coverage/lcov.info \
+            --language typescript \
+            --partial
 
   frontend-integration-tests:
     name: Frontend - Test (Integration)
@@ -116,10 +119,13 @@ jobs:
       
       - name: Upload integration test coverage to Codacy
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: frontend/coverage/lcov.info
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --coverage-reports frontend/coverage/lcov.info \
+            --language typescript \
+            --partial
 
   frontend-e2e-tests:
     name: Frontend - Test (E2E)
@@ -255,10 +261,24 @@ jobs:
       
       - name: Upload coverage to Codacy
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: ./server/coverage.xml
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --coverage-reports coverage.xml \
+            --language go \
+            --partial
       
       - name: Build Go application
         run: go build -o tuneslap .
+
+  finalize-coverage:
+    name: Finalize Coverage Report
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: [frontend-unit-tests, frontend-integration-tests, backend-ci]
+    steps:
+      - name: Notify Codacy coverage is complete
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) final
