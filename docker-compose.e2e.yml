@@ -32,7 +32,12 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
       - MEDIA_BUCKET=${MEDIA_BUCKET:-tuneslap-media}
       - USER_UPLOADS_BUCKET=${USER_UPLOADS_BUCKET:-tuneslap-uploads}
-    # No volume mounts - use built binary for faster startup
+    volumes:
+      # Mount server code for air to build
+      - ./server:/app
+      - ./server/keys:/app/keys
+      # Exclude build artifacts
+      - /app/tmp
     command: air
     depends_on:
       mongodb:

@@ -5,7 +5,8 @@ const eslintConfig = [
   ...nextConfig,
   {
     // Ignore e2e test files - Playwright's `use` function triggers react-hooks/rules-of-hooks
-    ignores: ["e2e/**"],
+    // Ignore Playwright report/results - generated minified JS triggers lint errors
+    ignores: ["e2e/**", "playwright-report/**", "test-results/**"],
   },
 ];
 

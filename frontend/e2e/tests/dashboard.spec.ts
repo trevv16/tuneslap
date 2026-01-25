@@ -15,14 +15,10 @@ test.describe('Dashboard', () => {
     await login(page)
   })
 
-  test('should display empty state when no boards exist', async ({ page }) => {
-    // Note: With real E2E testing, the seeded user has a board.
-    // This test now verifies the UI behavior when navigating to dashboard.
-    // If you need to test empty state, create a new user without boards.
+  test('should display dashboard with seeded board', async ({ page }) => {
+    // The E2E test user has a seeded board from server setup
     await dashboardPage.goto()
 
-    // The E2E test user has a seeded board, so we check for boards visible instead
-    // To test empty state, we would need a separate user without boards
     await dashboardPage.expectBoardsVisible()
   })
 
