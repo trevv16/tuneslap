@@ -85,7 +85,7 @@ jobs:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-            --coverage-reports frontend/coverage/lcov.info \
+            --coverage-reports coverage/lcov.info \
             --language typescript \
             --partial
 
@@ -123,7 +123,7 @@ jobs:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-            --coverage-reports frontend/coverage/lcov.info \
+            --coverage-reports coverage/lcov.info \
             --language typescript \
             --partial
 
