@@ -3,9 +3,33 @@ name: Continuous Integration
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.cursor/**'
+      - '.github/workflows/auto-approve.yml'
+      - '.github/workflows/release.yml'
+      - '.changeset/config.json'
+      - 'infra/**'
+      - 'LICENSE'
+      - 'renovate.json'
+      - '.vscode/**'
+      - '.husky/**'
 
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.cursor/**'
+      - '.github/workflows/auto-approve.yml'
+      - '.github/workflows/release.yml'
+      - '.changeset/config.json'
+      - 'infra/**'
+      - 'LICENSE'
+      - 'renovate.json'
+      - '.vscode/**'
+      - '.husky/**'
 
 jobs:
   frontend-lint:
