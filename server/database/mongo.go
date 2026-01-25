@@ -32,12 +32,23 @@ func StartMongoDB() error {
 		dbName = database
 	}
 
+	// Set connection timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	clientOpts := options.Client().ApplyURI(uri)
 	var err error
-	mongoClient, err = mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+	mongoClient, err = mongo.Connect(ctx, clientOpts)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to connect to MongoDB: %w", err)
 	}
 
+	// Verify connection with ping
+	if err := mongoClient.Ping(ctx, nil); err != nil {
+		return fmt.Errorf("failed to ping MongoDB: %w", err)
+	}
+
+	fmt.Println("MongoDB connected successfully")
 	return nil
 }
 

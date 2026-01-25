@@ -113,10 +113,10 @@ func TestStartMongoDB_InvalidURI(t *testing.T) {
 	mongoClient = nil
 	dbName = ""
 
-	// This should panic due to invalid URI
-	assert.Panics(t, func() {
-		StartMongoDB()
-	})
+	// This should return an error due to invalid URI
+	err := StartMongoDB()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to connect to MongoDB")
 }
 
 func TestCloseMongoDB(t *testing.T) {

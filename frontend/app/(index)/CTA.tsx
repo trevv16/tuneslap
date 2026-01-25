@@ -30,7 +30,7 @@ export default function CTA() {
             Get started
           </Link>
           <Link href="#demo" className="text-sm/6 font-semibold text-base">
-            Demo <span aria-hidden="true">→</span>
+            Try Demo <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>

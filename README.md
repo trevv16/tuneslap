@@ -47,7 +47,7 @@ Get your soundboard running in seconds with Docker.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/tuneslap.git
+git clone https://github.com/trevv16/tuneslap.git
 cd tuneslap
 
 # 2. Set up your environment
