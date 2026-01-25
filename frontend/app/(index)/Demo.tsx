@@ -7,7 +7,18 @@ import { unstable_cache } from 'next/cache';
 // Demo board ID - must match server/config/demo.go
 const DEMO_BOARD_ID = '000000000000000000000002';
 
+// Demo user ID for constructing storage URLs
+const DEMO_USER_ID = '000000000000000000000001';
+
+// Storage URL base - matches S3_EXTERNAL_ENDPOINT/MEDIA_BUCKET in docker-compose
+const STORAGE_URL_BASE = 'https://media.tuneslap.com/tuneslap-media';
+
+// Construct the storage URL for a demo audio file
+const getDemoAudioUrl = (fileName: string) =>
+  `${STORAGE_URL_BASE}/${DEMO_USER_ID}/audio/${fileName}`;
+
 // Fallback demo keys in case the API is unavailable at build time
+// URLs match what the server generates when seeding: {endpoint}/{bucket}/{userId}/audio/{file}
 const FALLBACK_DATE = new Date('2024-01-01T00:00:00Z');
 const fallbackKeys: KeyResponse[] = [
   {
@@ -17,7 +28,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Applause',
     description: 'Demo sound: Applause',
     hotKey: '1',
-    audioUrl: 'https://cdn.freesound.org/previews/100/100904_1163166-lq.mp3',
+    audioUrl: getDemoAudioUrl('applause.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -29,7 +40,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Drum Roll',
     description: 'Demo sound: Drum Roll',
     hotKey: '2',
-    audioUrl: 'https://cdn.freesound.org/previews/569/569113_12672827-lq.mp3',
+    audioUrl: getDemoAudioUrl('drum-roll.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -41,7 +52,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Laughter',
     description: 'Demo sound: Laughter',
     hotKey: '3',
-    audioUrl: 'https://cdn.freesound.org/previews/33/33658_43834-lq.mp3',
+    audioUrl: getDemoAudioUrl('laughter.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -53,7 +64,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Air Horn',
     description: 'Demo sound: Air Horn',
     hotKey: '4',
-    audioUrl: 'https://cdn.freesound.org/previews/110/110662_1927446-lq.mp3',
+    audioUrl: getDemoAudioUrl('air-horn.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -65,7 +76,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Whoosh',
     description: 'Demo sound: Whoosh',
     hotKey: '5',
-    audioUrl: 'https://cdn.freesound.org/previews/60/60009_71257-lq.mp3',
+    audioUrl: getDemoAudioUrl('whoosh.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -77,7 +88,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Bell Ding',
     description: 'Demo sound: Bell Ding',
     hotKey: '6',
-    audioUrl: 'https://cdn.freesound.org/previews/411/411089_5121236-lq.mp3',
+    audioUrl: getDemoAudioUrl('bell-ding.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -89,7 +100,7 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Boing',
     description: 'Demo sound: Boing',
     hotKey: '7',
-    audioUrl: 'https://cdn.freesound.org/previews/131/131660_2398403-lq.mp3',
+    audioUrl: getDemoAudioUrl('boing.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
@@ -101,14 +112,14 @@ const fallbackKeys: KeyResponse[] = [
     name: 'Ta-Da',
     description: 'Demo sound: Ta-Da',
     hotKey: '8',
-    audioUrl: 'https://cdn.freesound.org/previews/397/397355_4284968-lq.mp3',
+    audioUrl: getDemoAudioUrl('tada.mp3'),
     imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
     createdAt: FALLBACK_DATE,
     updatedAt: FALLBACK_DATE,
   },
 ];
 
-// Cached function for ISR - revalidates every hour
+// Cached function for ISR - revalidates every minute for faster sync after deployment
 const getDemoBoard = unstable_cache(
   async (): Promise<KeyResponse[]> => {
     try {
@@ -140,7 +151,7 @@ const getDemoBoard = unstable_cache(
     }
   },
   ['demo-board'],
-  { revalidate: 3600 } // Revalidate every hour
+  { revalidate: 60 } // Revalidate every minute
 );
 
 export default async function Demo() {
