@@ -121,7 +121,7 @@ func HandleMediaProcessTask(ctx context.Context, task *asynq.Task) error {
 			return fmt.Errorf("image processing params are required")
 		}
 
-		log.Printf("[Task] Image params: format=%d", payload.ProcessingParams.Image.Format)
+		log.Printf("[Task] Image params: format=%s", payload.ProcessingParams.Image.Format)
 
 		// process the image
 		log.Printf("[Task] Calling image.ProcessImage for media ID: %s", payload.MediaID.Hex())

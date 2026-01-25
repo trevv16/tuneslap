@@ -66,7 +66,7 @@ type AudioProcessingParams struct {
 
 type ImageProcessingParams struct {
 	ResizeTo     [2]int `json:"resizeTo,omitempty"`     // [width, height]
-	Format       int    `json:"format,omitempty"`       // "webp", "png"
+	Format       string `json:"format,omitempty"`       // "webp", "png", "jpeg", "gif", "svg"
 	Crop         [4]int `json:"crop,omitempty"`         // [x, y, width, height]
 	AspectRatio  string `json:"aspectRatio,omitempty"`  // "16:9", "1:1", etc.
 	ApplyFilters string `json:"applyFilters,omitempty"` // ["grayscale", "blur", etc.]
