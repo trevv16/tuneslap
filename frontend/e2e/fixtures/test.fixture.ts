@@ -1,5 +1,5 @@
 import { test as base, expect, type Page, type BrowserContext } from '@playwright/test'
-import { login, STORAGE_STATE, E2E_TEST_USER } from './auth.fixture'
+import { login, STORAGE_STATE } from './auth.fixture'
 
 /**
  * Extended test fixtures for true E2E testing.

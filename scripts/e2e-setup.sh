@@ -32,7 +32,7 @@ for i in $(seq 1 $MAX_RETRIES); do
         echo "Backend is healthy!"
         break
     fi
-    if [ $i -eq $MAX_RETRIES ]; then
+    if [ "$i" -eq "$MAX_RETRIES" ]; then
         echo "Error: Backend did not become healthy in time"
         echo "Checking container logs..."
         docker compose -f docker-compose.e2e.yml logs server

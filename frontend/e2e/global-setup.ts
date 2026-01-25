@@ -42,7 +42,7 @@ async function waitForBackend(): Promise<void> {
  * Global setup for Playwright E2E tests.
  * Runs once before all tests to ensure the test environment is ready.
  */
-export default async function globalSetup(config: FullConfig): Promise<void> {
+export default async function globalSetup(_config: FullConfig): Promise<void> {
   console.log('')
   console.log('======================================')
   console.log('E2E Global Setup')
