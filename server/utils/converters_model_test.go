@@ -117,7 +117,7 @@ func TestToMediaProcessingParamsAudio(t *testing.T) {
 func TestToMediaProcessingParamsImage(t *testing.T) {
 	params := models.ImageProcessingParams{
 		ResizeTo:     [2]int{1920, 1080},
-		Format:       0,
+		Format:       "webp",
 		Crop:         [4]int{10, 20, 100, 200},
 		AspectRatio:  "16:9",
 		ApplyFilters: "grayscale",

@@ -77,10 +77,10 @@ func TestImageProcessingParams(t *testing.T) {
 
 	t.Run("format parameter", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: 1, // webp format typically
+			Format: "webp",
 		}
 
-		assert.Equal(t, 1, params.Format)
+		assert.Equal(t, "webp", params.Format)
 	})
 }
 
