@@ -56,7 +56,7 @@ cd tuneslap
 cp server/example.env server/.env
 
 # 3. Launch TuneSlap
-docker-compose up -d
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 That's it!
