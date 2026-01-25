@@ -52,7 +52,7 @@ jobs:
         run: yarn build
 
   frontend-unit-tests:
-    name: Frontend - Unit Tests
+    name: Frontend - Test (Unit)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -87,7 +87,7 @@ jobs:
           coverage-reports: frontend/coverage/lcov.info
 
   frontend-integration-tests:
-    name: Frontend - Integration Tests
+    name: Frontend - Test (Integration)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -122,7 +122,7 @@ jobs:
           coverage-reports: frontend/coverage/lcov.info
 
   frontend-e2e-tests:
-    name: Frontend - E2E Tests
+    name: Frontend - Test (E2E)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
