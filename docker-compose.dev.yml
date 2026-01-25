@@ -1,3 +1,7 @@
+# Development Docker Compose - Hot reloading and development tools
+# For local production testing with source builds, use docker-compose.prod.yml
+# For deployment with pre-built images, use docker-compose.deploy.yml
+
 services:
   server:
     build:

@@ -6,7 +6,7 @@ This guide covers deploying TuneSlap using Docker Compose for self-hosting.
 
 - Docker and Docker Compose installed
 - Google Cloud Platform account (for GCS storage)
-- MongoDB and Redis (included in docker-compose.yml)
+- MongoDB and Redis (included in docker-compose files)
 
 ## Quick Start
 
@@ -105,11 +105,17 @@ S3_EXTERNAL_ENDPOINT=http://localhost:9000
 6. Place the key file in `server/keys/` directory
 7. Update `GOOGLE_PRIVATE_KEY_PATH` to point to your key file
 
-The `setup-keys` service in docker-compose.yml will help generate keys if needed, but you'll need to have `gcloud` CLI authenticated on your host machine.
+The `setup-keys` service in docker-compose.prod.yml will help generate keys if needed, but you'll need to have `gcloud` CLI authenticated on your host machine.
 
 ## Docker Compose Configuration
 
-The `docker-compose.yml` file includes:
+There are three Docker Compose files:
+
+- **docker-compose.dev.yml**: Local development with hot reloading
+- **docker-compose.prod.yml**: Local production testing (builds from source)
+- **docker-compose.deploy.yml**: Deployment (uses pre-built images from Docker Hub)
+
+The compose files include:
 
 - **server**: Go backend API
 - **frontend**: Next.js frontend
@@ -122,7 +128,7 @@ The `docker-compose.yml` file includes:
 
 ### Customizing Ports
 
-To change the default ports, modify the `ports` section in `docker-compose.yml`:
+To change the default ports, modify the `ports` section in your compose file:
 
 ```yaml
 services:
@@ -157,7 +163,7 @@ For production deployments, consider:
 
 ### Domain Configuration
 
-The default `docker-compose.yml` is configured for production domains:
+The `docker-compose.prod.yml` and `docker-compose.deploy.yml` files are configured for production domains:
 
 | Service | Domain | Internal Port |
 |---------|--------|---------------|
