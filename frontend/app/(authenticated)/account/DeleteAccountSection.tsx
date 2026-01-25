@@ -1,6 +1,6 @@
 export default function DeleteAccountSection() {
   return (
-    <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+    <div data-testid="delete-account-section" className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
       <div>
         <h2 className="text-base/7 font-semibold text-base">Delete account</h2>
         <p className="mt-1 text-sm/6 text-gray-400">

@@ -11,6 +11,7 @@ const config: Config = {
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
     '<rootDir>/__tests__/integration/setup/',
+    '<rootDir>/e2e/',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {

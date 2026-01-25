@@ -19,7 +19,7 @@
     "build:frontend": "cd frontend && yarn build",
     "build:server": "cd server && make build",
     "test:server": "cd server && make test",
-    "verify:frontend": "cd frontend && yarn typecheck && yarn lint && yarn build",
+    "verify:frontend": "cd frontend && yarn typecheck && yarn lint && yarn test:unit && yarn build",
     "verify:server": "cd server && make fmt-check && make lint && make test && make build",
     "verify": "concurrently \"yarn verify:frontend\" \"yarn verify:server\"",
     "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:server\"",

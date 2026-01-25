@@ -1,6 +1,6 @@
 export default function ChangePasswordSection() {
   return (
-    <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+    <div data-testid="change-password-section" className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
       <div>
         <h2 className="font-semibold text-base">Change password</h2>
         <p className="mt-1 text-sm/6 text-gray-400">Update your password associated with your account.</p>

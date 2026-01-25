@@ -81,7 +81,7 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full" data-testid="user-menu-trigger">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={user?.imageUrl && user.imageUrl !== "" ? user.imageUrl : undefined}
@@ -119,6 +119,7 @@ export default function Navbar() {
                 <DropdownMenuItem
                   onClick={signOut}
                   className="cursor-pointer text-destructive focus:text-destructive"
+                  data-testid="sign-out-button"
                 >
                   Sign out
                 </DropdownMenuItem>
@@ -206,6 +207,7 @@ export default function Navbar() {
                         setSheetOpen(false)
                         signOut()
                       }}
+                      data-testid="sign-out-button-mobile"
                     >
                       Sign out
                     </Button>
