@@ -13,6 +13,4 @@ jobs:
       pull-requests: write
     steps:
       - name: Auto approve PR
-        uses: hmarr/auto-approve-action@44888193675f29571c9b84c5b79488c3f3eb6e5c # v4.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        uses: hmarr/auto-approve-action@8f929096a962e83ccdfa8afcf855f39f12d4dac7 # v4
