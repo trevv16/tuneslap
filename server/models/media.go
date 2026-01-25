@@ -81,12 +81,12 @@ type Media struct {
 	ID                 primitive.ObjectID   `json:"id" bson:"_id" validate:"required"`
 	AuthorId           primitive.ObjectID   `json:"authorId" bson:"authorId" validate:"required"`
 	MediaType          string               `json:"mediaType" bson:"mediaType" validate:"required,oneof=image audio"`
-	FileName           string               `json:"fileName" bson:"fileName" validate:"required,min=3,max=100,alphanumspace,excludesall=<>{}[]()&|\\"`
+	FileName           string               `json:"fileName" bson:"fileName" validate:"required,min=3,max=100,filename"`
 	Description        string               `json:"description,omitempty" bson:"description,omitempty" validate:"omitempty,max=1000"`
-	FileUrl            string               `json:"fileUrl" bson:"fileUrl" validate:"required,url,excludesall=<>{}[]()&|\\"`
-	ProcessedUrl       string               `json:"processedUrl" bson:"processedUrl" validate:"required,url,excludesall=<>{}[]()&|\\"`
-	WaveformUrl        string               `json:"waveformUrl" bson:"waveformUrl" validate:"required,url,excludesall=<>{}[]()&|\\"`
-	ContentType        string               `json:"contentType" bson:"contentType" validate:"required,min=3,max=100,alphanumspace,excludesall=<>{}[]()&|\\"`
+	FileUrl            string               `json:"fileUrl" bson:"fileUrl" validate:"required,url"`
+	ProcessedUrl       string               `json:"processedUrl" bson:"processedUrl" validate:"omitempty,url"`
+	WaveformUrl        string               `json:"waveformUrl" bson:"waveformUrl" validate:"omitempty,url"`
+	ContentType        string               `json:"contentType" bson:"contentType" validate:"required,min=3,max=100,contenttype"`
 	FileSize           int64                `json:"fileSize" bson:"fileSize" validate:"required,min=1,max=1000000000"`
 	Status             string               `json:"status" bson:"status" validate:"required,oneof=pending processing done error"`
 	ProcessingParams   ProcessingParams     `json:"processingParams,omitempty" bson:"processingParams,omitempty"`

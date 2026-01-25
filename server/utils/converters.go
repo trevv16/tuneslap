@@ -168,13 +168,6 @@ func ToMediaProcessingParamsAudio(params models.AudioProcessingParams) *api.Medi
 }
 
 func ToMediaProcessingParamsImage(params models.ImageProcessingParams) *api.MediaProcessingParamsImage {
-	formatStr := ""
-	if params.Format > 0 {
-		// Format is stored as int in internal model, need to convert to string
-		// This might need adjustment based on actual format values
-		formatStr = string(rune(params.Format))
-	}
-
 	resizeTo := make([]int32, 2)
 	resizeTo[0] = int32(params.ResizeTo[0])
 	resizeTo[1] = int32(params.ResizeTo[1])
@@ -190,9 +183,15 @@ func ToMediaProcessingParamsImage(params models.ImageProcessingParams) *api.Medi
 		applyFilters = []string{params.ApplyFilters}
 	}
 
+	// Format is now a string, use it directly or default to "webp"
+	format := params.Format
+	if format == "" {
+		format = "webp"
+	}
+
 	return &api.MediaProcessingParamsImage{
 		ResizeTo:     resizeTo,
-		Format:       formatStr,
+		Format:       format,
 		Crop:         crop,
 		AspectRatio:  stringPtr(params.AspectRatio),
 		ApplyFilters: applyFilters,
@@ -239,18 +238,14 @@ func ProcessingParamsFromAPI(params *api.MediaProcessingParams) models.Processin
 			if len(params.Image.ResizeTo) >= 2 {
 				resizeTo = int32ArrayToIntArray(params.Image.ResizeTo)
 			}
-			formatInt := 0
-			if params.Image.Format != "" {
-				// Convert format string to int if needed
-				formatInt = int(params.Image.Format[0])
-			}
 			applyFilters := ""
 			if len(params.Image.ApplyFilters) > 0 {
 				applyFilters = params.Image.ApplyFilters[0]
 			}
+			// Format is now a string, pass it directly
 			image := models.ImageProcessingParams{
 				ResizeTo:     resizeTo,
-				Format:       formatInt,
+				Format:       params.Image.Format,
 				Crop:         crop,
 				AspectRatio:  stringVal(params.Image.AspectRatio),
 				ApplyFilters: applyFilters,

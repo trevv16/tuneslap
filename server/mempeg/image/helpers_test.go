@@ -3,7 +3,6 @@ package image
 import (
 	"testing"
 
-	"github.com/h2non/bimg"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,28 +45,53 @@ func TestGetProcessedFileName(t *testing.T) {
 func TestGetContentTypeFromFormat(t *testing.T) {
 	tests := []struct {
 		name     string
-		format   int
+		format   string
 		expected string
 	}{
 		{
-			name:     "WEBP format",
-			format:   int(bimg.WEBP),
+			name:     "webp format",
+			format:   "webp",
 			expected: "image/webp",
 		},
 		{
-			name:     "PNG format",
-			format:   int(bimg.PNG),
+			name:     "png format",
+			format:   "png",
 			expected: "image/png",
 		},
 		{
-			name:     "unknown format defaults to PNG",
-			format:   999,
-			expected: "image/png",
+			name:     "jpeg format",
+			format:   "jpeg",
+			expected: "image/jpeg",
 		},
 		{
-			name:     "zero format defaults to PNG",
-			format:   0,
-			expected: "image/png",
+			name:     "jpg format",
+			format:   "jpg",
+			expected: "image/jpeg",
+		},
+		{
+			name:     "gif format",
+			format:   "gif",
+			expected: "image/gif",
+		},
+		{
+			name:     "svg format",
+			format:   "svg",
+			expected: "image/svg+xml",
+		},
+		{
+			name:     "tiff format",
+			format:   "tiff",
+			expected: "image/tiff",
+		},
+		{
+			name:     "unknown format defaults to webp",
+			format:   "unknown",
+			expected: "image/webp",
+		},
+		{
+			name:     "empty format defaults to webp",
+			format:   "",
+			expected: "image/webp",
 		},
 	}
 
@@ -87,7 +111,7 @@ func BenchmarkGetProcessedFileName(b *testing.B) {
 }
 
 func BenchmarkGetContentTypeFromFormat(b *testing.B) {
-	formats := []int{int(bimg.WEBP), int(bimg.PNG), 999}
+	formats := []string{"webp", "png", "jpeg", "gif", "unknown"}
 	for i := 0; i < b.N; i++ {
 		GetContentTypeFromFormat(formats[i%len(formats)])
 	}
