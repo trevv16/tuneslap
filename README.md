@@ -2,6 +2,8 @@
   <img src="frontend/public/logo.png" alt="TuneSlap" width="250" />
   <p><strong>The collaborative soundboard for modern creators.</strong></p>
 
+  <img src="frontend/public/board-screenshot.png" alt="TuneSlap Board Screenshot" width="800" />
+
   <p>
     <a href="https://app.codacy.com/gh/trevv16/tuneslap/dashboard"><img src="https://app.codacy.com/project/badge/Grade/337b2d6d49a34d31b0a0bf59187ecef5" alt="Codacy Grade"></a>
     <a href="https://app.codacy.com/gh/trevv16/tuneslap/dashboard"><img src="https://app.codacy.com/project/badge/Coverage/337b2d6d49a34d31b0a0bf59187ecef5" alt="Codacy Coverage"></a>
@@ -47,7 +49,7 @@ Get your soundboard running in seconds with Docker.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/tuneslap.git
+git clone https://github.com/trevv16/tuneslap.git
 cd tuneslap
 
 # 2. Set up your environment

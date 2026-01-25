@@ -216,7 +216,7 @@ func TestIntegrationNormalizeWithParams(t *testing.T) {
 
 	t.Run("normalizes with PNG format", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: int(bimg.PNG),
+			Format: "png",
 		}
 
 		result, err := Normalize(testImage, params)

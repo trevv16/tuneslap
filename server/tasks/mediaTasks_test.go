@@ -39,7 +39,7 @@ func TestNewMediaProcessTask(t *testing.T) {
 			processingParams: models.ProcessingParams{
 				Image: &models.ImageProcessingParams{
 					ResizeTo: [2]int{800, 600},
-					Format:   1, // 1 for webp format
+					Format:   "webp",
 				},
 			},
 			expectError: false,
@@ -206,7 +206,7 @@ func TestNewMediaProcessTask_ErrorScenarios(t *testing.T) {
 			params: models.ProcessingParams{
 				Image: &models.ImageProcessingParams{
 					ResizeTo: [2]int{1920, 1080},
-					Format:   2, // 2 for png format
+					Format:   "png",
 					Crop:     [4]int{0, 0, 1920, 1080},
 				},
 			},
@@ -267,7 +267,7 @@ func TestMediaProcessPayload_Validation(t *testing.T) {
 				ProcessingParams: models.ProcessingParams{
 					Image: &models.ImageProcessingParams{
 						ResizeTo: [2]int{800, 600},
-						Format:   1,
+						Format:   "webp",
 					},
 				},
 			},

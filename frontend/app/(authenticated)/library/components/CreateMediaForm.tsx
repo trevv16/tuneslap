@@ -15,6 +15,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import ProcessMediaModal from './ProcessMediaModal'
 
+const DEMO_MAX_MEDIA_COUNT = 5
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+
 type CreateMediaFormProps = {
   setOpen: (open: boolean) => void
 }
@@ -47,6 +50,17 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
 
     return null
   }, [selectedFile, mediaStats])
+
+  const demoLimitError = useMemo(() => {
+    if (!isDemoMode || !mediaStats?.data) return null
+
+    const totalCount = (mediaStats.data.imageCount || 0) + (mediaStats.data.audioCount || 0)
+    if (totalCount >= DEMO_MAX_MEDIA_COUNT) {
+      return `Demo mode limit reached: maximum ${DEMO_MAX_MEDIA_COUNT} uploads allowed. Delete some files to upload more.`
+    }
+
+    return null
+  }, [mediaStats])
 
   const getFileExtension = (file: File | undefined): string => {
     if (!file) return ''
@@ -178,7 +192,13 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
       <DemoBanner message="Demo mode: Files will be deleted within one hour. Max file size: 10MB. Max uploads: 5." />
-      
+
+      {demoLimitError && (
+        <div className="rounded-md bg-destructive/10 border border-destructive p-4">
+          <p className="text-sm text-destructive">{demoLimitError}</p>
+        </div>
+      )}
+
       {/* File Upload */}
       <div>
         <Label>File</Label>
@@ -301,7 +321,7 @@ export default function CreateMediaForm({ setOpen }: CreateMediaFormProps) {
         </Button>
         <Button
           type="submit"
-          disabled={isSubmitting || !!storageError}
+          disabled={isSubmitting || !!storageError || !!demoLimitError}
           className="flex-1"
         >
           {isSubmitting ? 'Uploading...' : 'Upload Media'}

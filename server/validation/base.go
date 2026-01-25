@@ -48,6 +48,8 @@ func NewValidator() *Validator {
 	// Register custom validations
 	v.RegisterValidation("alphanumspace", validateAlphaNumSpace)
 	v.RegisterValidation("excludesall", validateExcludesAll)
+	v.RegisterValidation("filename", validateFileName)
+	v.RegisterValidation("contenttype", validateContentType)
 
 	return &Validator{validate: v}
 }
@@ -97,6 +99,10 @@ func (v *Validator) getErrorMessage(field, tag, param string) string {
 		return fmt.Sprintf("%s can only contain letters, numbers, and spaces", field)
 	case "excludesall":
 		return fmt.Sprintf("%s cannot contain special characters: %s", field, param)
+	case "filename":
+		return fmt.Sprintf("%s can only contain letters, numbers, spaces, hyphens, underscores, and dots", field)
+	case "contenttype":
+		return fmt.Sprintf("%s must be a valid MIME type", field)
 	default:
 		return fmt.Sprintf("%s is invalid", field)
 	}
@@ -121,6 +127,41 @@ func validateExcludesAll(fl validator.FieldLevel) bool {
 	excluded := fl.Param()
 	for _, char := range excluded {
 		if strings.ContainsRune(value, char) {
+			return false
+		}
+	}
+	return true
+}
+
+// validateFileName validates filename characters (allows alphanumeric, spaces, hyphens, underscores, dots)
+func validateFileName(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	for _, char := range value {
+		if !((char >= 'a' && char <= 'z') ||
+			(char >= 'A' && char <= 'Z') ||
+			(char >= '0' && char <= '9') ||
+			char == ' ' ||
+			char == '-' ||
+			char == '_' ||
+			char == '.') {
+			return false
+		}
+	}
+	return true
+}
+
+// validateContentType validates MIME type format (allows alphanumeric, slashes, hyphens, plus signs, dots)
+func validateContentType(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	for _, char := range value {
+		if !((char >= 'a' && char <= 'z') ||
+			(char >= 'A' && char <= 'Z') ||
+			(char >= '0' && char <= '9') ||
+			char == '/' ||
+			char == '-' ||
+			char == '+' ||
+			char == '.' ||
+			char == '*') {
 			return false
 		}
 	}

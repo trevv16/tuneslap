@@ -72,20 +72,33 @@ func TestNormalizeWithParams(t *testing.T) {
 		assert.Equal(t, 500, defaultNormalizeOptions.Height)
 	})
 
-	t.Run("uses custom format when specified", func(t *testing.T) {
+	t.Run("uses custom format when specified as string", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: int(bimg.PNG),
+			Format: "png",
 		}
 
-		assert.Equal(t, int(bimg.PNG), params.Format)
-		assert.NotEqual(t, int(bimg.WEBP), params.Format)
+		assert.Equal(t, "png", params.Format)
+		assert.NotEqual(t, "webp", params.Format)
 	})
 
 	t.Run("uses default format when not specified", func(t *testing.T) {
 		params := models.ImageProcessingParams{}
 
-		// Format 0 means use default (WEBP)
-		assert.Equal(t, 0, params.Format)
+		// Empty string means use default (WEBP)
+		assert.Equal(t, "", params.Format)
+	})
+
+	t.Run("format is string type not int", func(t *testing.T) {
+		// This test ensures we don't regress to using int for Format
+		// The OpenAPI spec defines format as a string enum: jpeg, png, gif, webp, svg
+		params := models.ImageProcessingParams{
+			Format: "webp",
+		}
+
+		// Verify it's a string, not an int
+		var formatValue interface{} = params.Format
+		_, isString := formatValue.(string)
+		assert.True(t, isString, "Format should be a string type, not int")
 	})
 
 	t.Run("validates dimensions are positive", func(t *testing.T) {
@@ -145,17 +158,17 @@ func TestNormalizeOptionsBuilding(t *testing.T) {
 		assert.Equal(t, 768, opts.Height)
 	})
 
-	t.Run("builds options with custom format", func(t *testing.T) {
+	t.Run("builds options with custom string format", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: int(bimg.PNG),
+			Format: "png",
 		}
 
 		opts := bimg.Options{
 			Type: bimg.WEBP,
 		}
 
-		if params.Format > 0 {
-			opts.Type = bimg.ImageType(params.Format)
+		if params.Format != "" {
+			opts.Type = stringToImageType(params.Format)
 		}
 
 		assert.Equal(t, bimg.PNG, opts.Type)
@@ -207,6 +220,73 @@ func TestNormalizeOutputFormat(t *testing.T) {
 		assert.NotEqual(t, bimg.WEBP, bimg.PNG)
 		assert.NotEqual(t, bimg.WEBP, bimg.JPEG)
 		assert.NotEqual(t, bimg.PNG, bimg.JPEG)
+	})
+}
+
+func TestStringToImageType(t *testing.T) {
+	t.Run("converts jpeg string to bimg.JPEG", func(t *testing.T) {
+		assert.Equal(t, bimg.JPEG, stringToImageType("jpeg"))
+	})
+
+	t.Run("converts jpg string to bimg.JPEG", func(t *testing.T) {
+		assert.Equal(t, bimg.JPEG, stringToImageType("jpg"))
+	})
+
+	t.Run("converts png string to bimg.PNG", func(t *testing.T) {
+		assert.Equal(t, bimg.PNG, stringToImageType("png"))
+	})
+
+	t.Run("converts webp string to bimg.WEBP", func(t *testing.T) {
+		assert.Equal(t, bimg.WEBP, stringToImageType("webp"))
+	})
+
+	t.Run("converts gif string to bimg.GIF", func(t *testing.T) {
+		assert.Equal(t, bimg.GIF, stringToImageType("gif"))
+	})
+
+	t.Run("converts svg string to bimg.SVG", func(t *testing.T) {
+		assert.Equal(t, bimg.SVG, stringToImageType("svg"))
+	})
+
+	t.Run("converts tiff string to bimg.TIFF", func(t *testing.T) {
+		assert.Equal(t, bimg.TIFF, stringToImageType("tiff"))
+	})
+
+	t.Run("defaults to WEBP for unknown format", func(t *testing.T) {
+		assert.Equal(t, bimg.WEBP, stringToImageType("unknown"))
+	})
+
+	t.Run("defaults to WEBP for empty string", func(t *testing.T) {
+		assert.Equal(t, bimg.WEBP, stringToImageType(""))
+	})
+
+	t.Run("handles OpenAPI enum values correctly", func(t *testing.T) {
+		// These are the exact values from the OpenAPI ImageOutputFormat enum
+		openAPIFormats := []struct {
+			input    string
+			expected bimg.ImageType
+		}{
+			{"jpeg", bimg.JPEG},
+			{"png", bimg.PNG},
+			{"gif", bimg.GIF},
+			{"webp", bimg.WEBP},
+			{"svg", bimg.SVG},
+		}
+
+		for _, tc := range openAPIFormats {
+			t.Run(tc.input, func(t *testing.T) {
+				result := stringToImageType(tc.input)
+				assert.Equal(t, tc.expected, result, "Format '%s' should convert to correct bimg type", tc.input)
+			})
+		}
+	})
+
+	t.Run("invalid format does not cause error", func(t *testing.T) {
+		// Should not panic, should return default
+		assert.NotPanics(t, func() {
+			result := stringToImageType("invalid_format_12345")
+			assert.Equal(t, bimg.WEBP, result)
+		})
 	})
 }
 
@@ -352,9 +432,9 @@ func TestIntegrationNormalizeWithCustomParams(t *testing.T) {
 		}
 	})
 
-	t.Run("converts to PNG when format specified", func(t *testing.T) {
+	t.Run("converts to PNG when format specified as string", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: int(bimg.PNG),
+			Format: "png",
 		}
 
 		result, err := Normalize(testImage, params)
@@ -366,9 +446,9 @@ func TestIntegrationNormalizeWithCustomParams(t *testing.T) {
 		assert.Equal(t, "png", imgType)
 	})
 
-	t.Run("converts to JPEG when format specified", func(t *testing.T) {
+	t.Run("converts to JPEG when format specified as string", func(t *testing.T) {
 		params := models.ImageProcessingParams{
-			Format: int(bimg.JPEG),
+			Format: "jpeg",
 		}
 
 		result, err := Normalize(testImage, params)
@@ -378,6 +458,20 @@ func TestIntegrationNormalizeWithCustomParams(t *testing.T) {
 
 		imgType := bimg.NewImage(result).Type()
 		assert.Equal(t, "jpeg", imgType)
+	})
+
+	t.Run("converts to GIF when format specified as string", func(t *testing.T) {
+		params := models.ImageProcessingParams{
+			Format: "gif",
+		}
+
+		result, err := Normalize(testImage, params)
+		if err != nil {
+			t.Skipf("Normalize error: %v", err)
+		}
+
+		imgType := bimg.NewImage(result).Type()
+		assert.Equal(t, "gif", imgType)
 	})
 
 	t.Run("uses WEBP as default format", func(t *testing.T) {

@@ -362,7 +362,7 @@ func (h *MediaHandler) HandleGenerateUploadURL(c *fiber.Ctx) error {
 
 	// Determine media type from content type
 	mediaType := "audio"
-	if requestBody.ContentType != "" && requestBody.ContentType[:5] == "image" {
+	if strings.HasPrefix(requestBody.ContentType, "image") {
 		mediaType = "image"
 	}
 

@@ -20,6 +20,26 @@ func NormalizeDefault(input []byte) ([]byte, error) {
 	return bimg.NewImage(input).Process(defaultNormalizeOptions)
 }
 
+// stringToImageType converts a format string to bimg.ImageType
+func stringToImageType(format string) bimg.ImageType {
+	switch format {
+	case "jpeg", "jpg":
+		return bimg.JPEG
+	case "png":
+		return bimg.PNG
+	case "webp":
+		return bimg.WEBP
+	case "gif":
+		return bimg.GIF
+	case "svg":
+		return bimg.SVG
+	case "tiff":
+		return bimg.TIFF
+	default:
+		return bimg.WEBP // Default to WEBP
+	}
+}
+
 // Normalize processes an image with custom dimensions from params
 // Falls back to default dimensions if params.ResizeTo is not set
 func Normalize(input []byte, params models.ImageProcessingParams) ([]byte, error) {
@@ -39,8 +59,8 @@ func Normalize(input []byte, params models.ImageProcessingParams) ([]byte, error
 	}
 
 	// Support custom output format if specified
-	if params.Format > 0 {
-		options.Type = bimg.ImageType(params.Format)
+	if params.Format != "" {
+		options.Type = stringToImageType(params.Format)
 	}
 
 	return bimg.NewImage(input).Process(options)

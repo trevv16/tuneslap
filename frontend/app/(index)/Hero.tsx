@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 
 export default function Hero() {
@@ -38,11 +39,11 @@ export default function Hero() {
           </div>
           <div className="mt-16 flow-root sm:mt-24">
             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-gray-900/10 ring-inset lg:-m-4 lg:rounded-2xl lg:p-4">
-              <img
+              <Image
                 alt="App screenshot"
-                src="https://tailwindcss.com/plus-assets/img/component-images/project-app-screenshot.png"
-                width={2432}
-                height={1442}
+                src="/board-screenshot.png"
+                width={1246}
+                height={730}
                 className="rounded-md shadow-2xl ring-1 ring-gray-900/10"
               />
             </div>

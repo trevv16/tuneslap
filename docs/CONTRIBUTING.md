@@ -16,7 +16,7 @@ Thank you for your interest in contributing to TuneSlap! This document provides 
 1. Fork and clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/tuneslap.git
+git clone https://github.com/trevv16/tuneslap.git
 cd tuneslap
 ```
 

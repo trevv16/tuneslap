@@ -14,7 +14,7 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-center gap-4 sm:items-end">
             <Link
-              href="https://github.com/tuneslap/tuneslap"
+              href="https://github.com/trevv16/tuneslap"
               target="_blank"
               rel="noopener noreferrer"
               className="text-base hover:text-highlight transition-colors"

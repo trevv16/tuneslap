@@ -38,34 +38,24 @@ export default function MediaDetails({
   onDelete
 }: MediaDetailsProps) {
   return (
-    <>
-      {/* Mobile: Sheet overlay */}
-      <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="right" className="w-full max-w-sm lg:hidden">
-          <SheetHeader>
-            <SheetTitle>Details</SheetTitle>
-          </SheetHeader>
-          <div className="flex-1 overflow-y-auto px-4 py-4">
-            <MediaDetailsContent
-              item={item}
-              onDownload={onDownload}
-              onDelete={onDelete}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Desktop: Sidebar */}
-      <aside className="hidden w-96 overflow-y-auto border-l bg-card p-8 lg:block">
-        <div className="space-y-6 pb-16">
+    <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        side="right"
+        className="w-full max-w-sm sm:max-w-md lg:max-w-lg overflow-y-auto"
+        data-testid="media-details"
+      >
+        <SheetHeader>
+          <SheetTitle>Details</SheetTitle>
+        </SheetHeader>
+        <div className="px-6 py-4">
           <MediaDetailsContent
             item={item}
             onDownload={onDownload}
             onDelete={onDelete}
           />
         </div>
-      </aside>
-    </>
+      </SheetContent>
+    </Sheet>
   )
 }
 
@@ -214,7 +204,7 @@ function MediaDetailsContent({
       </div>
 
       {/* Information */}
-      <div>
+      <div className="mt-6">
         <h3 className="font-medium text-foreground">Information</h3>
         <Separator className="my-2" />
         <dl className="divide-y">
@@ -242,7 +232,7 @@ function MediaDetailsContent({
       </div>
 
       {/* Processing Activity */}
-      <div>
+      <div className="mt-6">
         <h3 className="font-medium text-foreground">Processing Activity</h3>
         <Separator className="my-2" />
         <div className="text-sm text-muted-foreground space-y-4">
@@ -259,7 +249,7 @@ function MediaDetailsContent({
       </div>
 
       {/* Download and Delete buttons */}
-      <div className="flex gap-3">
+      <div className="mt-6 flex gap-3">
         <Button onClick={onDownload} className="flex-1">
           Download
         </Button>

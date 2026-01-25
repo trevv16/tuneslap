@@ -8,7 +8,7 @@ import { useState } from "react"
 
 const navigation = [
   { name: "Features", href: "#features" },
-  { name: "Demo", href: "#demo" },
+  { name: "GitHub", href: "https://github.com/trevv16/tuneslap" },
 ]
 
 export default function Header() {
@@ -42,7 +42,7 @@ export default function Header() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link href="/auth/signin" className="text-sm/6 font-semibold text-base">
-            Sign In <span aria-hidden="true">&rarr;</span>
+            Try Demo <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
       </nav>
@@ -81,7 +81,7 @@ export default function Header() {
                   href="/auth/signin"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-base hover:bg-highlight"
                 >
-                  Sign in
+                  Try Demo
                 </Link>
               </div>
             </div>

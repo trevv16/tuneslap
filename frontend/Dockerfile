@@ -6,13 +6,8 @@ WORKDIR /workspace/frontend
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
-COPY frontend/package.json frontend/yarn.lock* frontend/package-lock.json* frontend/pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn install; \
-  elif [ -f package-lock.json ]; then npm install; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY frontend/package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -46,12 +41,8 @@ RUN npm install -g @openapitools/openapi-generator-cli swagger-cli && \
 
 # Build the Next.js application
 WORKDIR /workspace/frontend
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+
+RUN yarn build
 
 # Production image, copy all the files and run next
 FROM base AS runner

@@ -13,7 +13,7 @@ This guide covers deploying TuneSlap using Docker Compose for self-hosting.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/tuneslap.git
+git clone https://github.com/trevv16/tuneslap.git
 cd tuneslap
 ```
 
