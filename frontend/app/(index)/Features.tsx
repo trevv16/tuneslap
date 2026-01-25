@@ -14,24 +14,24 @@ const features: Feature[] = [
     subtitle: "Built-in Optimization",
     description:
       "Upload your audio and images, and TuneSlap automatically processes them for the best quality and smallest file size. Audio files are normalized and converted to optimal formats. Images are compressed and resized without losing clarity.",
-    imageSrc: "/defaultKey.png", // Placeholder - replace with actual screenshot
-    imageAlt: "Media processing interface showing file optimization",
+    imageSrc: "/media-processing-screenshot.png",
+    imageAlt: "Media processing interface showing file optimization options",
   },
   {
     title: "Collaboration",
     subtitle: "Work Together",
     description:
       "Share your soundboards with teammates and set permissions for who can view or edit. Perfect for podcast teams, streaming groups, or anyone who needs to coordinate sounds across multiple people.",
-    imageSrc: "/defaultBoard.png", // Placeholder - replace with actual screenshot
+    imageSrc: "/collaboration-screenshot.png",
     imageAlt: "Collaboration interface showing shared board with team members",
   },
   {
     title: "Self-Hosted",
     subtitle: "Own Your Data",
     description:
-      "Run TuneSlap on your own infrastructure with Docker. Your sounds, your servers, your rules. No vendor lock-in, no unexpected costs, and complete control over your data and privacy.",
-    imageSrc: "/logo.png", // Placeholder - replace with actual screenshot
-    imageAlt: "Docker deployment showing self-hosted setup",
+      "Run TuneSlap on your own infrastructure with Docker. Your sounds, your servers, your storage, your rules. No vendor lock-in, no unexpected costs, and complete control over your data and privacy.",
+    imageSrc: "/self-hosted-screenshot.png",
+    imageAlt: "Self-hosted S3 compatible storage with MinIO console showing uploaded media",
   },
 ];
 

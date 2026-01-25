@@ -103,8 +103,14 @@ func SetupAndRunApp() error {
 
 // attachMiddleware attaches all middleware to the Fiber app
 func attachMiddleware(app *fiber.App) {
-	// recover middleware
-	app.Use(recover.New())
+	// recover middleware - returns JSON error responses for API routes
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+		StackTraceHandler: func(c *fiber.Ctx, e interface{}) {
+			// Log the error with stack trace
+			fmt.Printf("[Panic Recovery] %v\n", e)
+		},
+	}))
 
 	// logger middleware
 	app.Use(logger.New(logger.Config{

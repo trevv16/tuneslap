@@ -87,47 +87,40 @@ export default function LibraryClient() {
 
   return (
     <>
-      <div className="flex h-full">
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <LibraryHeader onAddFile={handleAddFile} />
+      <LibraryHeader onAddFile={handleAddFile} />
 
-          <div className="flex flex-1 items-stretch overflow-hidden">
-            <main className={selectedItem ? "lg:flex-1" : "flex-1"}>
-              <LibraryTabs
-                currentTab={tab}
-                onTabChange={setTab}
-                viewMode={view}
-                onViewModeChange={setView}
-              />
+      <LibraryTabs
+        currentTab={tab}
+        onTabChange={setTab}
+        viewMode={view}
+        onViewModeChange={setView}
+      />
 
-              {!hasMounted || isLoading ? (
-                <MediaGallerySkeleton viewMode={view} />
-              ) : error ? (
-                <div className="mt-24 text-center">
-                  <p className="text-destructive">Error loading media: {error.message}</p>
-                </div>
-              ) : (
-                <MediaGallery
-                  items={mediaItems}
-                  selectedItem={selectedItem}
-                  onItemClick={handleItemClick}
-                  onUploadClick={handleUploadClick}
-                  viewMode={view}
-                />
-              )}
-            </main>
-
-            {selectedItem && (
-              <MediaDetails
-                item={selectedItem}
-                onClose={closeSidebar}
-                onDownload={handleDownload}
-                onDelete={handleDelete}
-              />
-            )}
-          </div>
+      {!hasMounted || isLoading ? (
+        <MediaGallerySkeleton viewMode={view} />
+      ) : error ? (
+        <div className="mt-24 text-center">
+          <p className="text-destructive">Error loading media: {error.message}</p>
         </div>
-      </div>
+      ) : (
+        <MediaGallery
+          items={mediaItems}
+          selectedItem={selectedItem}
+          onItemClick={handleItemClick}
+          onUploadClick={handleUploadClick}
+          viewMode={view}
+        />
+      )}
+
+      {/* Details drawer - renders as overlay via Sheet portal */}
+      {selectedItem && (
+        <MediaDetails
+          item={selectedItem}
+          onClose={closeSidebar}
+          onDownload={handleDownload}
+          onDelete={handleDelete}
+        />
+      )}
 
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
         <DialogContent className="sm:max-w-lg">

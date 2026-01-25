@@ -81,10 +81,14 @@ func GetValidObjectId(c *fiber.Ctx, idKey string) (primitive.ObjectID, error) {
 
 // SendErrorResponse sends a standardized error response
 func SendErrorResponse(c *fiber.Ctx, status int, message string, err error) error {
+	var errData interface{}
+	if err != nil {
+		errData = err.Error()
+	}
 	return c.Status(status).JSON(fiber.Map{
 		"success": false,
 		"message": message,
-		"data":    err.Error(),
+		"data":    errData,
 	})
 }
 
