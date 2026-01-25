@@ -6,6 +6,8 @@ interface Feature {
   description: string;
   imageSrc: string;
   imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
 }
 
 const features: Feature[] = [
@@ -16,6 +18,8 @@ const features: Feature[] = [
       "Upload your audio and images, and TuneSlap automatically processes them for the best quality and smallest file size. Audio files are normalized and converted to optimal formats. Images are compressed and resized without losing clarity.",
     imageSrc: "/media-processing-screenshot.png",
     imageAlt: "Media processing interface showing file optimization options",
+    imageWidth: 1512,
+    imageHeight: 1094,
   },
   {
     title: "Collaboration",
@@ -24,6 +28,8 @@ const features: Feature[] = [
       "Share your soundboards with teammates and set permissions for who can view or edit. Perfect for podcast teams, streaming groups, or anyone who needs to coordinate sounds across multiple people.",
     imageSrc: "/collaboration-screenshot.png",
     imageAlt: "Collaboration interface showing shared board with team members",
+    imageWidth: 1246,
+    imageHeight: 473,
   },
   {
     title: "Self-Hosted",
@@ -32,6 +38,8 @@ const features: Feature[] = [
       "Run TuneSlap on your own infrastructure with Docker. Your sounds, your servers, your storage, your rules. No vendor lock-in, no unexpected costs, and complete control over your data and privacy.",
     imageSrc: "/self-hosted-screenshot.png",
     imageAlt: "Self-hosted S3 compatible storage with MinIO console showing uploaded media",
+    imageWidth: 1110,
+    imageHeight: 710,
   },
 ];
 
@@ -43,12 +51,13 @@ function FeatureRow({
   imageOnLeft: boolean;
 }) {
   const imageBlock = (
-    <div className="relative aspect-video overflow-hidden rounded-xl bg-card shadow-lg ring-1 ring-border">
+    <div className="relative overflow-hidden rounded-xl bg-card shadow-lg ring-1 ring-border">
       <Image
         src={feature.imageSrc}
         alt={feature.imageAlt}
-        fill
-        className="object-cover"
+        width={feature.imageWidth}
+        height={feature.imageHeight}
+        className="w-full h-auto"
       />
     </div>
   );
