@@ -29,7 +29,7 @@ export default defineConfig({
   // Shared settings for all projects
   use: {
     // Base URL for navigation
-    baseURL: 'http://localhost:3001',
+    baseURL: 'http://localhost:3000',
 
     // Collect trace when retrying a failed test
     trace: 'on-first-retry',
@@ -43,18 +43,11 @@ export default defineConfig({
 
   // Configure projects for major browsers
   projects: [
-    // Setup project for authentication state
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-    },
-
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
       },
-      dependencies: ['setup'],
     },
 
     {
@@ -62,7 +55,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
       },
-      dependencies: ['setup'],
     },
 
     {
@@ -70,7 +62,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
       },
-      dependencies: ['setup'],
     },
 
     // Mobile viewports
@@ -79,7 +70,6 @@ export default defineConfig({
       use: {
         ...devices['Pixel 5'],
       },
-      dependencies: ['setup'],
     },
 
     {
@@ -87,23 +77,24 @@ export default defineConfig({
       use: {
         ...devices['iPhone 12'],
       },
-      dependencies: ['setup'],
     },
   ],
 
   // Run local dev server before starting the tests
   webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:3001',
+    command: 'npx next dev --webpack',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 180 * 1000, // 3 min timeout for CI cold start
+    timeout: 60 * 1000, // 1 min timeout for dev server startup
+    stdout: 'ignore', // Suppress verbose output  
+    stderr: 'pipe', // Show errors
   },
 
   // Global timeout for each test
-  timeout: 60 * 1000,
+  timeout: 30 * 1000,
 
   // Timeout for each action (click, fill, etc.)
   expect: {
-    timeout: 10 * 1000,
+    timeout: 5 * 1000,
   },
 })

@@ -5,8 +5,9 @@
   "scripts": {
     "generate-types": "cd .. && bash scripts/generate-types.sh --frontend-only",
     "prebuild": "yarn run generate-types",
-    "predev": "yarn run generate-types",
-    "dev": "next dev",
+    "predev": "[ \"$SKIP_GENERATE_TYPES\" = \"1\" ] || yarn run generate-types",
+    "dev": "next dev --webpack",
+    "dev:e2e": "SKIP_GENERATE_TYPES=1 next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
@@ -17,11 +18,11 @@
     "test:integration": "jest --testPathPatterns=__tests__/integration --forceExit",
     "test:watch": "jest --watch --testPathIgnorePatterns='e2e'",
     "test:coverage": "jest --coverage --testPathIgnorePatterns='e2e'",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e": "unset NO_COLOR && playwright test",
+    "test:e2e:ui": "unset NO_COLOR && playwright test --ui",
+    "test:e2e:headed": "unset NO_COLOR && playwright test --headed",
+    "test:e2e:debug": "unset NO_COLOR && playwright test --debug",
+    "test:e2e:chromium": "unset NO_COLOR && playwright test --project=chromium",
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {

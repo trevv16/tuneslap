@@ -88,8 +88,14 @@ export function createApiMocks(page: Page) {
        * Mock the /me endpoint for current user.
        */
       me: async (user = mockUserResponse, options?: MockResponseOptions) => {
-        await page.route('**/api/v1/users/me', async (route) => {
-          await fulfillJson(route, user, options)
+        await page.route('**/users/me', async (route) => {
+          // Wrap user in the expected API response format
+          const response = {
+            success: true,
+            message: 'Success',
+            data: user,
+          }
+          await fulfillJson(route, response, options)
         })
       },
 
@@ -97,7 +103,7 @@ export function createApiMocks(page: Page) {
        * Mock /me to return unauthorized.
        */
       meUnauthorized: async () => {
-        await page.route('**/api/v1/users/me', async (route) => {
+        await page.route('**/users/me', async (route) => {
           await fulfillJson(route, mockUnauthorizedResponse, { status: 401 })
         })
       },
@@ -106,11 +112,21 @@ export function createApiMocks(page: Page) {
     boards: {
       /**
        * Mock the boards list endpoint.
+       * Uses pattern to only match API calls, not page navigation.
        */
       list: async (boards = mockBoards, options?: MockResponseOptions) => {
-        await page.route('**/api/v1/boards', async (route) => {
+        await page.route('**/api/**/boards', async (route) => {
           if (route.request().method() === 'GET') {
-            await fulfillJson(route, boards, options)
+            // Wrap in API response format
+            const response = {
+              success: true,
+              message: 'Success',
+              data: {
+                boards,
+                pagination: { page: 1, limit: 20, total: boards.length, totalPages: 1 },
+              },
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -121,9 +137,17 @@ export function createApiMocks(page: Page) {
        * Mock empty boards list.
        */
       listEmpty: async (options?: MockResponseOptions) => {
-        await page.route('**/api/v1/boards', async (route) => {
+        await page.route('**/api/**/boards', async (route) => {
           if (route.request().method() === 'GET') {
-            await fulfillJson(route, [], options)
+            const response = {
+              success: true,
+              message: 'Success',
+              data: {
+                boards: [],
+                pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+              },
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -132,14 +156,18 @@ export function createApiMocks(page: Page) {
 
       /**
        * Mock a single board by ID.
+       * Returns BoardResponse directly (not wrapped).
        */
       get: async (
         id: string,
         board = mockBoard,
         options?: MockResponseOptions
       ) => {
-        await page.route(`**/api/v1/boards/${id}`, async (route) => {
-          if (route.request().method() === 'GET') {
+        await page.route(`**/boards/${id}`, async (route) => {
+          const url = route.request().url()
+          // Only mock API calls (contain /api/ or api.tuneslap.com), not page navigation
+          if (route.request().method() === 'GET' && (url.includes('/api/') || url.includes('api.tuneslap.com'))) {
+            // Return board directly - API client expects BoardResponse, not wrapped
             await fulfillJson(route, board, options)
           } else {
             await route.continue()
@@ -151,8 +179,11 @@ export function createApiMocks(page: Page) {
        * Mock getting an empty board (no keys).
        */
       getEmpty: async (id: string, options?: MockResponseOptions) => {
-        await page.route(`**/api/v1/boards/${id}`, async (route) => {
-          if (route.request().method() === 'GET') {
+        await page.route(`**/boards/${id}`, async (route) => {
+          const url = route.request().url()
+          // Only mock API calls, not page navigation
+          if (route.request().method() === 'GET' && (url.includes('/api/') || url.includes('api.tuneslap.com'))) {
+            // Return board directly - API client expects BoardResponse, not wrapped
             await fulfillJson(route, { ...mockEmptyBoard, id }, options)
           } else {
             await route.continue()
@@ -164,11 +195,16 @@ export function createApiMocks(page: Page) {
        * Mock board creation.
        */
       create: async (
-        response = mockBoard,
+        board = mockBoard,
         options?: MockResponseOptions
       ) => {
-        await page.route('**/api/v1/boards', async (route) => {
+        await page.route('**/api/**/boards', async (route) => {
           if (route.request().method() === 'POST') {
+            const response = {
+              success: true,
+              message: 'Board created successfully',
+              data: board,
+            }
             await fulfillJson(route, response, { status: 201, ...options })
           } else {
             await route.continue()
@@ -181,11 +217,16 @@ export function createApiMocks(page: Page) {
        */
       update: async (
         id: string,
-        response = mockBoard,
+        board = mockBoard,
         options?: MockResponseOptions
       ) => {
-        await page.route(`**/api/v1/boards/${id}`, async (route) => {
+        await page.route(`**/api/**/boards/${id}`, async (route) => {
           if (route.request().method() === 'PATCH') {
+            const response = {
+              success: true,
+              message: 'Board updated successfully',
+              data: board,
+            }
             await fulfillJson(route, response, options)
           } else {
             await route.continue()
@@ -197,9 +238,13 @@ export function createApiMocks(page: Page) {
        * Mock board deletion.
        */
       delete: async (id: string, options?: MockResponseOptions) => {
-        await page.route(`**/api/v1/boards/${id}`, async (route) => {
+        await page.route(`**/api/**/boards/${id}`, async (route) => {
           if (route.request().method() === 'DELETE') {
-            await fulfillJson(route, { success: true }, options)
+            const response = {
+              success: true,
+              message: 'Board deleted successfully',
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -212,9 +257,17 @@ export function createApiMocks(page: Page) {
        * Mock the media list endpoint.
        */
       list: async (media = mockMedia, options?: MockResponseOptions) => {
-        await page.route('**/api/v1/media**', async (route) => {
+        await page.route('**/media**', async (route) => {
           if (route.request().method() === 'GET') {
-            await fulfillJson(route, media, options)
+            const response = {
+              success: true,
+              message: 'Success',
+              data: {
+                media,
+                pagination: { page: 1, limit: 20, total: media.length, totalPages: 1 },
+              },
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -225,9 +278,17 @@ export function createApiMocks(page: Page) {
        * Mock empty media list.
        */
       listEmpty: async (options?: MockResponseOptions) => {
-        await page.route('**/api/v1/media**', async (route) => {
+        await page.route('**/media**', async (route) => {
           if (route.request().method() === 'GET') {
-            await fulfillJson(route, [], options)
+            const response = {
+              success: true,
+              message: 'Success',
+              data: {
+                media: [],
+                pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+              },
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -242,9 +303,17 @@ export function createApiMocks(page: Page) {
         options?: MockResponseOptions
       ) => {
         const filtered = mockMedia.filter((m) => m.mediaType === type)
-        await page.route('**/api/v1/media**', async (route) => {
+        await page.route('**/media**', async (route) => {
           if (route.request().method() === 'GET') {
-            await fulfillJson(route, filtered, options)
+            const response = {
+              success: true,
+              message: 'Success',
+              data: {
+                media: filtered,
+                pagination: { page: 1, limit: 20, total: filtered.length, totalPages: 1 },
+              },
+            }
+            await fulfillJson(route, response, options)
           } else {
             await route.continue()
           }
@@ -258,11 +327,16 @@ export function createApiMocks(page: Page) {
        */
       create: async (
         boardId: string,
-        response: unknown,
+        key: unknown,
         options?: MockResponseOptions
       ) => {
-        await page.route(`**/api/v1/boards/${boardId}/keys`, async (route) => {
+        await page.route(`**/api/**/boards/${boardId}/keys`, async (route) => {
           if (route.request().method() === 'POST') {
+            const response = {
+              success: true,
+              message: 'Key created successfully',
+              data: key,
+            }
             await fulfillJson(route, response, { status: 201, ...options })
           } else {
             await route.continue()
@@ -275,12 +349,17 @@ export function createApiMocks(page: Page) {
      * Mock all API calls to return an error.
      */
     allError: async (message = 'Server error') => {
-      await page.route('**/api/v1/**', async (route) => {
-        await fulfillJson(
-          route,
-          { ...mockErrorResponse, message },
-          { status: 500 }
-        )
+      await page.route('**/*', async (route) => {
+        const url = route.request().url()
+        if (url.includes('/api/') || url.includes('/users/') || url.includes('/boards/') || url.includes('/media/')) {
+          await fulfillJson(
+            route,
+            { ...mockErrorResponse, message },
+            { status: 500 }
+          )
+        } else {
+          await route.continue()
+        }
       })
     },
 
@@ -288,8 +367,13 @@ export function createApiMocks(page: Page) {
      * Mock all API calls to return unauthorized.
      */
     allUnauthorized: async () => {
-      await page.route('**/api/v1/**', async (route) => {
-        await fulfillJson(route, mockUnauthorizedResponse, { status: 401 })
+      await page.route('**/*', async (route) => {
+        const url = route.request().url()
+        if (url.includes('/api/') || url.includes('/users/') || url.includes('/boards/') || url.includes('/media/')) {
+          await fulfillJson(route, mockUnauthorizedResponse, { status: 401 })
+        } else {
+          await route.continue()
+        }
       })
     },
   }

@@ -14,8 +14,8 @@ test.describe('Dashboard', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate to set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 

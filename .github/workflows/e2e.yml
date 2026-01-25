@@ -34,14 +34,11 @@ jobs:
         with:
           node-version-file: './frontend/.nvmrc'
           cache: 'yarn'
-          cache-dependency-path: './frontend/yarn.lock'
+          cache-dependency-path: './yarn.lock'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Install root dependencies
         working-directory: ./
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Generate types
         working-directory: ./
@@ -52,7 +49,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'

@@ -30,7 +30,8 @@ export class AccountPage {
   // Delete account
   readonly deleteAccountButton: Locator
 
-  // Sign out (in Navbar)
+  // Sign out (in Navbar dropdown)
+  readonly userMenuTrigger: Locator
   readonly signOutButton: Locator
 
   constructor(page: Page) {
@@ -58,10 +59,9 @@ export class AccountPage {
     // Delete account button
     this.deleteAccountButton = page.getByRole('button', { name: /yes, delete my account/i })
 
-    // Sign out in navbar
-    this.signOutButton = page.getByRole('button', { name: /sign out/i }).or(
-      page.getByRole('menuitem', { name: /sign out/i })
-    )
+    // Sign out in navbar (dropdown)
+    this.userMenuTrigger = page.getByTestId('user-menu-trigger')
+    this.signOutButton = page.getByTestId('sign-out-button')
   }
 
   // Navigation
@@ -86,9 +86,14 @@ export class AccountPage {
     await this.confirmPasswordInput.fill(confirmPassword)
   }
 
-  // Sign out
+  // Sign out (opens user menu first, then clicks sign out)
   async signOut(): Promise<void> {
+    await this.userMenuTrigger.click()
     await this.signOutButton.click()
+  }
+
+  async openUserMenu(): Promise<void> {
+    await this.userMenuTrigger.click()
   }
 
   // Assertions

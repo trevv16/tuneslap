@@ -31,8 +31,8 @@ export class DashboardPage {
     this.page = page
 
     // Header
-    this.pageTitle = page.getByRole('heading', { level: 1 })
-    this.newBoardButton = page.getByRole('button', { name: /new board/i })
+    this.pageTitle = page.getByRole('heading', { level: 2 })
+    this.newBoardButton = page.getByRole('button', { name: /create/i })
 
     // Boards list
     this.boardsList = page.getByTestId('boards-list')
@@ -54,6 +54,10 @@ export class DashboardPage {
   // Navigation
   async goto(): Promise<void> {
     await this.page.goto('/dashboard')
+    // Wait for page to stabilize after data loading
+    await this.page.waitForLoadState('networkidle')
+    // Wait for either boards list or empty state to be visible
+    await this.boardsList.or(this.emptyState).waitFor({ state: 'visible', timeout: 10000 })
   }
 
   // Actions

@@ -23,14 +23,11 @@ jobs:
         with:
           node-version-file: './frontend/.nvmrc'
           cache: 'yarn'
-          cache-dependency-path: './frontend/yarn.lock'
+          cache-dependency-path: './yarn.lock'
       
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
-      - name: Install root dependencies
         working-directory: ./
-        run: yarn install
+        run: yarn install --frozen-lockfile
       
       - name: Generate types
         working-directory: ./
@@ -40,9 +37,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ./frontend/.next/cache
-          key: nextjs-${{ hashFiles('frontend/yarn.lock') }}-${{ hashFiles('frontend/**/*.ts', 'frontend/**/*.tsx') }}
+          key: nextjs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('frontend/**/*.ts', 'frontend/**/*.tsx') }}
           restore-keys: |
-            nextjs-${{ hashFiles('frontend/yarn.lock') }}-
+            nextjs-${{ hashFiles('yarn.lock') }}-
             nextjs-
       
       - name: Run type check
@@ -69,14 +66,11 @@ jobs:
         with:
           node-version-file: './frontend/.nvmrc'
           cache: 'yarn'
-          cache-dependency-path: './frontend/yarn.lock'
+          cache-dependency-path: './yarn.lock'
       
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
-      - name: Install root dependencies
         working-directory: ./
-        run: yarn install
+        run: yarn install --frozen-lockfile
       
       - name: Generate types
         working-directory: ./
@@ -107,14 +101,11 @@ jobs:
         with:
           node-version-file: './frontend/.nvmrc'
           cache: 'yarn'
-          cache-dependency-path: './frontend/yarn.lock'
+          cache-dependency-path: './yarn.lock'
       
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      
-      - name: Install root dependencies
         working-directory: ./
-        run: yarn install
+        run: yarn install --frozen-lockfile
       
       - name: Generate types
         working-directory: ./

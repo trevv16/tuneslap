@@ -14,8 +14,8 @@ test.describe('Account Settings', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -55,8 +55,8 @@ test.describe('Theme Toggle', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -89,8 +89,8 @@ test.describe('Change Password Form', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -113,8 +113,8 @@ test.describe('Delete Account', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -135,25 +135,16 @@ test.describe('Sign Out', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
-  test('should have sign out button visible', async ({ page }) => {
+  test('should have sign out button visible', async () => {
     await accountPage.goto()
 
-    // Sign out button is in the navbar, may need to open a menu
-    const signOutVisible = await accountPage.signOutButton.isVisible()
-    
-    if (!signOutVisible) {
-      // Try opening user menu first
-      const userMenu = page.getByRole('button', { name: /menu|user|account/i })
-      if (await userMenu.isVisible()) {
-        await userMenu.click()
-      }
-    }
-
+    // Sign out button is in the user dropdown menu - need to open it first
+    await accountPage.openUserMenu()
     await expect(accountPage.signOutButton).toBeVisible()
   })
 })

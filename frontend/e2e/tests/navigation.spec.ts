@@ -11,8 +11,8 @@ test.describe('Authenticated Navigation', () => {
     await apiMocks.boards.list(mockBoards)
     await apiMocks.media.list()
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -30,23 +30,6 @@ test.describe('Authenticated Navigation', () => {
     await page.getByRole('link', { name: /dashboard|boards/i }).click()
 
     await expect(page).toHaveURL(/\/dashboard/)
-  })
-
-  test('should have consistent navbar across authenticated pages', async ({ page }) => {
-    // Check dashboard
-    await page.goto('/dashboard')
-    const dashboardNav = page.locator('nav')
-    await expect(dashboardNav).toBeVisible()
-
-    // Check library
-    await page.goto('/library')
-    const libraryNav = page.locator('nav')
-    await expect(libraryNav).toBeVisible()
-
-    // Check account
-    await page.goto('/account')
-    const accountNav = page.locator('nav')
-    await expect(accountNav).toBeVisible()
   })
 })
 

@@ -72,6 +72,8 @@ export class AuthPage {
 
   async submitSignIn(): Promise<void> {
     await this.signInButton.click()
+    // Wait for form validation to complete
+    await this.page.waitForTimeout(100)
   }
 
   async signIn(email: string, password: string): Promise<void> {
@@ -88,6 +90,8 @@ export class AuthPage {
 
   async submitSignUp(): Promise<void> {
     await this.signUpButton.click()
+    // Wait for form validation to complete
+    await this.page.waitForTimeout(100)
   }
 
   async signUp(name: string, email: string, password: string): Promise<void> {

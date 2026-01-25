@@ -109,7 +109,7 @@ export async function logout(page: Page): Promise<void> {
   // Then click sign out
   // This will depend on the actual UI implementation
   await page.evaluate(() => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('tuneslap_api_token')
   })
   await page.goto('/auth/signin')
 }
@@ -119,7 +119,7 @@ export async function logout(page: Page): Promise<void> {
  */
 export async function isAuthenticated(page: Page): Promise<boolean> {
   const token = await page.evaluate(() => {
-    return localStorage.getItem('token')
+    return localStorage.getItem('tuneslap_api_token')
   })
   return token !== null
 }
@@ -132,7 +132,7 @@ export async function setAuthToken(
   token: string = 'mock-jwt-token-for-testing'
 ): Promise<void> {
   await page.evaluate((t) => {
-    localStorage.setItem('token', t)
+    localStorage.setItem('tuneslap_api_token', t)
   }, token)
 }
 

@@ -89,7 +89,7 @@ interface MockBoard {
   description: string
   imageUrl?: string
   layout: string
-  ownerId: string
+  authorId: string
   keys: MockKey[]
   collaborators: MockCollaborator[]
   createdAt: string
@@ -118,7 +118,7 @@ export const mockBoard: MockBoard = {
   description: 'A test soundboard',
   imageUrl: 'https://example.com/images/board.png',
   layout: 'grid',
-  ownerId: 'user-1',
+  authorId: 'user-1',
   keys: mockKeys,
   collaborators: [mockCollaborator],
   createdAt: '2024-01-01T00:00:00.000Z',
@@ -133,7 +133,7 @@ export const mockBoards: MockBoard[] = [
     description: 'Another test soundboard',
     imageUrl: undefined,
     layout: 'list',
-    ownerId: 'user-1',
+    authorId: 'user-1',
     keys: [],
     collaborators: [],
     createdAt: '2024-01-02T00:00:00.000Z',
@@ -147,7 +147,7 @@ export const mockEmptyBoard: MockBoard = {
   description: 'A board with no keys',
   imageUrl: undefined,
   layout: 'grid',
-  ownerId: 'user-1',
+  authorId: 'user-1',
   keys: [],
   collaborators: [],
   createdAt: '2024-01-03T00:00:00.000Z',

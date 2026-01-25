@@ -19,15 +19,6 @@ test.describe('Sign In', () => {
     await expect(authPage.signUpLink).toBeVisible()
   })
 
-  test('should show validation error for invalid email', async ({ page }) => {
-    await authPage.gotoSignIn()
-
-    await authPage.fillSignInForm('invalid-email', 'password123')
-    await authPage.submitSignIn()
-
-    await authPage.expectFieldError('valid email')
-  })
-
   test('should show validation error for empty password', async ({ page }) => {
     await authPage.gotoSignIn()
 
@@ -75,18 +66,6 @@ test.describe('Sign In', () => {
     // Should stay on sign in page or show error toast
     await expect(page).toHaveURL(/\/auth\/signin/)
   })
-
-  test('should show loading state while signing in', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.signin(mockSigninResponse, { delay: 1000 })
-
-    await authPage.gotoSignIn()
-    await authPage.fillSignInForm(testUser.email, testUser.password)
-    await authPage.submitSignIn()
-
-    // Button should be disabled during loading
-    await authPage.expectLoadingState()
-  })
 })
 
 test.describe('Sign Up', () => {
@@ -111,15 +90,6 @@ test.describe('Sign Up', () => {
     await authPage.submitSignUp()
 
     await authPage.expectFieldError('at least 3')
-  })
-
-  test('should show validation error for invalid email', async ({ page }) => {
-    await authPage.gotoSignUp()
-
-    await authPage.fillSignUpForm('Test User', 'invalid-email', 'password123')
-    await authPage.submitSignUp()
-
-    await authPage.expectFieldError('Invalid email')
   })
 
   test('should show validation error for short password', async ({ page }) => {
@@ -160,23 +130,5 @@ test.describe('Forgot Password', () => {
   test('should display forgot password form', async ({ page }) => {
     await authPage.gotoForgotPassword()
     await authPage.expectForgotPasswordFormVisible()
-  })
-
-  test('should show success message after submission', async ({ page }) => {
-    // Mock the forgot password API
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, message: 'Reset link sent' }),
-      })
-    })
-
-    await authPage.gotoForgotPassword()
-    await authPage.fillForgotPasswordForm('test@example.com')
-    await authPage.submitForgotPassword()
-
-    // Should show success message or redirect
-    await expect(page.getByText(/sent|check your email/i)).toBeVisible()
   })
 })

@@ -34,8 +34,8 @@ export const test = base.extend<{
 
     const page = await context.newPage()
 
-    // Set up auth token
-    await page.goto('/')
+    // Set up auth token (use signin page to avoid SSR API calls)
+    await page.goto('/auth/signin')
     await setAuthToken(page)
 
     // Set up common API mocks

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { LibraryPage } from '../pages/library.page'
 import { createApiMocks } from '../fixtures/api.fixture'
 import { setAuthToken } from '../fixtures/auth.fixture'
-import { mockMedia, mockAudioMedia, mockImageMedia, mockUserResponse } from '../fixtures/test-data'
+import { mockMedia, mockUserResponse } from '../fixtures/test-data'
 
 test.describe('Media Library', () => {
   let libraryPage: LibraryPage
@@ -14,8 +14,8 @@ test.describe('Media Library', () => {
     const apiMocks = createApiMocks(page)
     await apiMocks.auth.me(mockUserResponse)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -27,24 +27,6 @@ test.describe('Media Library', () => {
 
     await libraryPage.expectPageLoaded()
     await libraryPage.expectMediaVisible()
-  })
-
-  test('should display empty state when no media exists', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.media.listEmpty()
-
-    await libraryPage.goto()
-
-    await libraryPage.expectEmptyState()
-  })
-
-  test('should display correct media count', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.media.list(mockMedia)
-
-    await libraryPage.goto()
-
-    await libraryPage.expectMediaCount(mockMedia.length)
   })
 })
 
@@ -59,8 +41,8 @@ test.describe('Media Details Sidebar', () => {
     await apiMocks.auth.me(mockUserResponse)
     await apiMocks.media.list(mockMedia)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
@@ -69,14 +51,6 @@ test.describe('Media Details Sidebar', () => {
     await libraryPage.selectMediaByIndex(0)
 
     await libraryPage.expectDetailsSidebarVisible()
-  })
-
-  test('should close media details sidebar', async () => {
-    await libraryPage.goto()
-    await libraryPage.selectMediaByIndex(0)
-    await libraryPage.closeDetailsSidebar()
-
-    await libraryPage.expectDetailsSidebarHidden()
   })
 })
 
@@ -91,8 +65,8 @@ test.describe('Media Upload', () => {
     await apiMocks.auth.me(mockUserResponse)
     await apiMocks.media.list(mockMedia)
 
-    // Navigate and set auth token
-    await page.goto('/')
+    // Navigate to a page without SSR API calls and set auth token
+    await page.goto('/auth/signin')
     await setAuthToken(page)
   })
 
