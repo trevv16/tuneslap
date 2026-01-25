@@ -9,8 +9,8 @@ jobs:
     name: Auto Approve
     runs-on: ubuntu-latest
     if: github.actor == 'trevv16' || github.actor == 'github-actions[bot]'
-    permissions:
-      pull-requests: write
     steps:
       - name: Auto approve PR
-        uses: hmarr/auto-approve-action@v4
+        uses: hmarr/auto-approve-action@44888193675f29571c9b84c5b79488c3f3eb6e5c # v4.0.1
+        with:
+          github-token: ${{ secrets.AUTO_APPROVE_PAT }}
