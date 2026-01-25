@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { AccountPage } from '../pages/account.page'
-import { createApiMocks } from '../fixtures/api.fixture'
-import { setAuthToken } from '../fixtures/auth.fixture'
-import { mockUserResponse } from '../fixtures/test-data'
+import { login } from '../fixtures/auth.fixture'
 
 test.describe('Account Settings', () => {
   let accountPage: AccountPage
@@ -10,13 +8,8 @@ test.describe('Account Settings', () => {
   test.beforeEach(async ({ page }) => {
     accountPage = new AccountPage(page)
 
-    // Set up API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should display profile section', async () => {
@@ -51,13 +44,8 @@ test.describe('Theme Toggle', () => {
   test.beforeEach(async ({ page }) => {
     accountPage = new AccountPage(page)
 
-    // Set up API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should toggle theme when clicked', async () => {
@@ -85,13 +73,8 @@ test.describe('Change Password Form', () => {
   test.beforeEach(async ({ page }) => {
     accountPage = new AccountPage(page)
 
-    // Set up API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should have password form fields', async () => {
@@ -109,13 +92,8 @@ test.describe('Delete Account', () => {
   test.beforeEach(async ({ page }) => {
     accountPage = new AccountPage(page)
 
-    // Set up API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should have delete account button', async () => {
@@ -131,13 +109,8 @@ test.describe('Sign Out', () => {
   test.beforeEach(async ({ page }) => {
     accountPage = new AccountPage(page)
 
-    // Set up API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should have sign out button visible', async () => {

@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -12,11 +14,25 @@ const (
 	DemoBoardName    = "Demo Board"
 )
 
+// E2E Test User constants - separate from demo user for test isolation
+// These credentials are used by Playwright E2E tests
+const (
+	E2ETestUserEmail    = "e2e-test@tuneslap.test"
+	E2ETestUserName     = "E2E Test User"
+	E2ETestUserPassword = "e2e-test-password-123"
+	E2ETestBoardName    = "E2E Test Board"
+)
+
 // Demo IDs - fixed ObjectIDs for predictable seeding
 var (
 	DemoUserID  = mustObjectID("000000000000000000000001")
 	DemoBoardID = mustObjectID("000000000000000000000002")
-	DemoKeyIDs  = []primitive.ObjectID{
+
+	// E2E Test IDs - fixed ObjectIDs for predictable E2E testing
+	E2ETestUserID  = mustObjectID("000000000000000000000099")
+	E2ETestBoardID = mustObjectID("000000000000000000000098")
+
+	DemoKeyIDs = []primitive.ObjectID{
 		mustObjectID("000000000000000000000101"),
 		mustObjectID("000000000000000000000102"),
 		mustObjectID("000000000000000000000103"),
@@ -178,4 +194,19 @@ func IsDemoUser(userID primitive.ObjectID) bool {
 // IsDemoBoard checks if a board ID is the demo board
 func IsDemoBoard(boardID primitive.ObjectID) bool {
 	return boardID == DemoBoardID
+}
+
+// IsE2ETestMode checks if E2E test mode is enabled via environment variable
+func IsE2ETestMode() bool {
+	return os.Getenv("E2E_TEST_MODE") == "true"
+}
+
+// IsE2ETestUser checks if a user ID is the E2E test user
+func IsE2ETestUser(userID primitive.ObjectID) bool {
+	return userID == E2ETestUserID
+}
+
+// IsE2ETestBoard checks if a board ID is the E2E test board
+func IsE2ETestBoard(boardID primitive.ObjectID) bool {
+	return boardID == E2ETestBoardID
 }

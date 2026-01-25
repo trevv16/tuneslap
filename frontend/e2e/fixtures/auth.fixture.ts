@@ -1,5 +1,12 @@
 import { test as base, expect, type Page } from '@playwright/test'
-import { testUser, mockSigninResponse, mockUserResponse } from './test-data'
+
+// E2E Test User credentials - must match server/config/demo.go
+// These are used for real authentication against the backend
+export const E2E_TEST_USER = {
+  email: 'e2e-test@tuneslap.test',
+  password: 'e2e-test-password-123',
+  name: 'E2E Test User',
+}
 
 // Storage state file path for authenticated sessions
 export const STORAGE_STATE = 'e2e/.auth/user.json'
@@ -22,54 +29,19 @@ export const test = base.extend<{
 })
 
 /**
- * Log in a user via the UI.
+ * Log in a user via the UI against the real backend.
+ * Default credentials are the E2E test user seeded by the backend.
  */
 export async function login(
   page: Page,
-  email: string = testUser.email,
-  password: string = testUser.password
+  email: string = E2E_TEST_USER.email,
+  password: string = E2E_TEST_USER.password
 ): Promise<void> {
   await page.goto('/auth/signin')
 
   // Fill in credentials
   await page.getByLabel('Email address').fill(email)
   await page.getByLabel('Password').fill(password)
-
-  // Submit form
-  await page.getByRole('button', { name: 'Sign in' }).click()
-
-  // Wait for navigation to dashboard
-  await expect(page).toHaveURL(/\/dashboard/)
-}
-
-/**
- * Log in a user with mocked API response.
- * Use this for faster tests that don't need real authentication.
- */
-export async function loginWithMock(page: Page): Promise<void> {
-  // Mock the signin API
-  await page.route('**/api/v1/auth/signin', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(mockSigninResponse),
-    })
-  })
-
-  // Mock the /me endpoint for user data
-  await page.route('**/api/v1/users/me', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(mockUserResponse),
-    })
-  })
-
-  await page.goto('/auth/signin')
-
-  // Fill in credentials
-  await page.getByLabel('Email address').fill(testUser.email)
-  await page.getByLabel('Password').fill(testUser.password)
 
   // Submit form
   await page.getByRole('button', { name: 'Sign in' }).click()

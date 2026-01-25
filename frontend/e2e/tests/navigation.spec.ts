@@ -1,19 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { createApiMocks } from '../fixtures/api.fixture'
-import { setAuthToken } from '../fixtures/auth.fixture'
-import { mockUserResponse, mockBoards } from '../fixtures/test-data'
+import { login } from '../fixtures/auth.fixture'
 
 test.describe('Authenticated Navigation', () => {
   test.beforeEach(async ({ page }) => {
-    // Set up common API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-    await apiMocks.boards.list(mockBoards)
-    await apiMocks.media.list()
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should navigate from dashboard to library', async ({ page }) => {
@@ -34,28 +25,23 @@ test.describe('Authenticated Navigation', () => {
 })
 
 test.describe('Protected Routes', () => {
+  // These tests verify the backend correctly redirects unauthenticated users
   test('should redirect to sign in when accessing dashboard without auth', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.meUnauthorized()
-
+    // Don't login - just try to access protected route directly
     await page.goto('/dashboard')
 
     await expect(page).toHaveURL(/\/auth\/signin/)
   })
 
   test('should redirect to sign in when accessing library without auth', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.meUnauthorized()
-
+    // Don't login - just try to access protected route directly
     await page.goto('/library')
 
     await expect(page).toHaveURL(/\/auth\/signin/)
   })
 
   test('should redirect to sign in when accessing account without auth', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.meUnauthorized()
-
+    // Don't login - just try to access protected route directly
     await page.goto('/account')
 
     await expect(page).toHaveURL(/\/auth\/signin/)

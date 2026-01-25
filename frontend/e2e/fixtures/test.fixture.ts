@@ -1,24 +1,15 @@
 import { test as base, expect, type Page, type BrowserContext } from '@playwright/test'
-import { createApiMocks, type ApiMocks } from './api.fixture'
-import { setAuthToken, STORAGE_STATE } from './auth.fixture'
-import { mockUserResponse } from './test-data'
+import { login, STORAGE_STATE, E2E_TEST_USER } from './auth.fixture'
 
 /**
- * Extended test fixtures combining all helpers.
+ * Extended test fixtures for true E2E testing.
+ * No API mocking - tests run against the real backend.
  */
 export const test = base.extend<{
-  // API mocking utilities
-  apiMocks: ApiMocks
-  // An authenticated page with mocked APIs
+  // An authenticated page ready for testing
   authedPage: Page
 }>({
-  // Provide API mocking utilities for the current page
-  apiMocks: async ({ page }, use) => {
-    const mocks = createApiMocks(page)
-    await use(mocks)
-  },
-
-  // Provide an authenticated page with common API mocks set up
+  // Provide an authenticated page with real backend authentication
   authedPage: async ({ browser }, use) => {
     // Create a new context with stored auth state if available
     let context: BrowserContext
@@ -34,13 +25,8 @@ export const test = base.extend<{
 
     const page = await context.newPage()
 
-    // Set up auth token (use signin page to avoid SSR API calls)
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
-
-    // Set up common API mocks
-    const mocks = createApiMocks(page)
-    await mocks.auth.me(mockUserResponse)
+    // Real login against the backend
+    await login(page)
 
     await use(page)
     await context.close()
@@ -50,11 +36,8 @@ export const test = base.extend<{
 // Re-export expect for convenience
 export { expect }
 
-// Re-export test data
+// Re-export test data (kept for assertions, not for mocking)
 export * from './test-data'
 
-// Re-export auth helpers
-export { login, loginWithMock, signup, logout, isAuthenticated, setAuthToken } from './auth.fixture'
-
-// Re-export API mock creator
-export { createApiMocks, type ApiMocks } from './api.fixture'
+// Re-export auth helpers (real authentication only)
+export { login, signup, logout, isAuthenticated, setAuthToken, E2E_TEST_USER } from './auth.fixture'

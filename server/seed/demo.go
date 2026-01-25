@@ -338,3 +338,140 @@ func seedDemoBoard(ctx context.Context) error {
 	log.Printf("[Seed] Demo board created successfully with %d keys", len(keys))
 	return nil
 }
+
+// EnsureE2EData seeds the E2E test user and board if in E2E test mode
+// This provides predictable test data for Playwright E2E tests
+func EnsureE2EData() error {
+	if !config.IsE2ETestMode() {
+		log.Println("[Seed] Not in E2E test mode, skipping E2E data seeding")
+		return nil
+	}
+
+	log.Println("[Seed] E2E test mode enabled, ensuring E2E test data exists...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Seed E2E test user
+	if err := seedE2ETestUser(ctx); err != nil {
+		return err
+	}
+
+	// Seed E2E test board
+	if err := seedE2ETestBoard(ctx); err != nil {
+		return err
+	}
+
+	log.Println("[Seed] E2E test data seeding completed successfully")
+	return nil
+}
+
+func seedE2ETestUser(ctx context.Context) error {
+	usersCollection := database.GetCollection("users")
+
+	// Check if E2E test user exists
+	var existingUser models.User
+	err := usersCollection.FindOne(ctx, bson.M{"_id": config.E2ETestUserID}).Decode(&existingUser)
+	if err == nil {
+		log.Println("[Seed] E2E test user already exists, skipping...")
+		return nil
+	}
+
+	// Hash password - E2E tests will use this to login
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(config.E2ETestUserPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// Create E2E test user
+	e2eUser := models.User{
+		ID:           config.E2ETestUserID,
+		Name:         config.E2ETestUserName,
+		Email:        config.E2ETestUserEmail,
+		PasswordHash: string(hashedPassword),
+		ImageUrl:     "",
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	opts := options.Update().SetUpsert(true)
+	_, err = usersCollection.UpdateOne(
+		ctx,
+		bson.M{"_id": config.E2ETestUserID},
+		bson.M{"$setOnInsert": e2eUser},
+		opts,
+	)
+	if err != nil {
+		log.Printf("[Seed] Error creating E2E test user: %v", err)
+		return err
+	}
+
+	log.Println("[Seed] E2E test user created successfully")
+	return nil
+}
+
+func seedE2ETestBoard(ctx context.Context) error {
+	boardsCollection := database.GetCollection("boards")
+
+	// Check if E2E test board exists
+	var existingBoard models.Board
+	err := boardsCollection.FindOne(ctx, bson.M{"_id": config.E2ETestBoardID}).Decode(&existingBoard)
+	if err == nil {
+		log.Println("[Seed] E2E test board already exists, skipping...")
+		return nil
+	}
+
+	now := time.Now()
+
+	// Create a simple E2E test board with sample keys
+	e2eBoard := models.Board{
+		ID:            config.E2ETestBoardID,
+		AuthorId:      config.E2ETestUserID,
+		Name:          config.E2ETestBoardName,
+		Description:   "Test board for E2E testing",
+		Layout:        models.GridLayout,
+		ImageUrl:      "",
+		Collaborators: []models.Collaborator{},
+		Keys: []models.Key{
+			{
+				ID:          primitive.NewObjectID(),
+				BoardId:     config.E2ETestBoardID,
+				Name:        "Test Key 1",
+				Description: "First test key",
+				HotKey:      "1",
+				AudioUrl:    "",
+				ImageUrl:    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+				CreatedAt:   now,
+				UpdatedAt:   now,
+			},
+			{
+				ID:          primitive.NewObjectID(),
+				BoardId:     config.E2ETestBoardID,
+				Name:        "Test Key 2",
+				Description: "Second test key",
+				HotKey:      "2",
+				AudioUrl:    "",
+				ImageUrl:    "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400",
+				CreatedAt:   now,
+				UpdatedAt:   now,
+			},
+		},
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+
+	opts := options.Update().SetUpsert(true)
+	_, err = boardsCollection.UpdateOne(
+		ctx,
+		bson.M{"_id": config.E2ETestBoardID},
+		bson.M{"$setOnInsert": e2eBoard},
+		opts,
+	)
+	if err != nil {
+		log.Printf("[Seed] Error creating E2E test board: %v", err)
+		return err
+	}
+
+	log.Printf("[Seed] E2E test board created successfully with %d keys", len(e2eBoard.Keys))
+	return nil
+}
