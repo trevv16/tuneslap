@@ -4,6 +4,7 @@
   "private": true,
   "description": "A self-hosted soundboard application for content creators",
   "workspaces": [
+    ".",
     "frontend"
   ],
   "scripts": {
