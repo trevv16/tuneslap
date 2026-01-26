@@ -107,5 +107,3 @@ export async function setAuthToken(
     localStorage.setItem('tuneslap_api_token', t)
   }, token)
 }
-
-export { expect }
