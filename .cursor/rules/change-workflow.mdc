@@ -247,6 +247,18 @@ When the user asks you to address PR comments or fix issues raised on a PR, foll
 - User says "address the review feedback"
 - User shares a PR link and asks you to handle comments
 
+### User Comments vs Bot Comments
+
+**By default, only address user comments.** When fetching PR comments, filter out bot comments (e.g., `coderabbitai[bot]`, `codacy-production`) unless the user explicitly asks you to look at them.
+
+**If the user specifically asks to review bot comments (e.g., "look at the CodeRabbit comments"):**
+1. Fetch and summarize the bot comments
+2. Look for the "Prompt for AI Agents" section in each comment for instructions
+3. **Do NOT auto-commit** - always check with the user first for relevance
+4. Present each suggestion and ask if the user wants it addressed
+5. If deemed unnecessary/irrelevant: reply with reasoning (e.g., "Deemed unnecessary - [reason]") and resolve
+6. If making changes: follow the normal fix/commit/reply/resolve workflow
+
 ### Step 1: Fetch PR Comments
 
 Get all comments on the PR:
@@ -255,10 +267,11 @@ Get all comments on the PR:
 gh api repos/{owner}/{repo}/pulls/{pr_number}/comments
 ```
 
-**Identify user comments to address:**
-- Filter out bot comments (e.g., `coderabbitai[bot]`, `codacy-production`)
+**Identify comments to address:**
+- By default: only user comments (filter out bots)
 - Look for comments from the repository owner or team members
 - Focus on comments that are NOT already resolved
+- If user requested bot comments: include those too, but check relevance first
 
 ### Step 2: Fix the Issue
 
