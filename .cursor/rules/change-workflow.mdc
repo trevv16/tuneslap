@@ -11,6 +11,9 @@ This rule defines how to handle requests to make code changes. It ensures change
 - [Rule Overview](#rule-overview)
 - [Workflow Steps](#workflow-steps)
 - [Pull Request Requirements](#pull-request-requirements)
+- [PR Feedback Loop](#pr-feedback-loop)
+- [Changesets](#changesets)
+- [Merging PRs](#merging-prs)
 - [Worktree Management](#worktree-management)
 - [Examples](#examples)
 
@@ -32,19 +35,24 @@ When the user asks you to make a change to the codebase, follow this workflow ex
 ## Workflow Steps
 
 ### Step 1: Prepare the Branch
+
+**Always use Cursor worktrees for changes.** This keeps your main workspace clean and allows parallel work.
+
 Before making any changes:
 
-1. **Switch to main branch**
+1. **Checkout and update main**
    ```bash
    git checkout main
-   ```
-
-2. **Pull the latest changes**
-   ```bash
    git pull origin main
    ```
+   
+   > **Note:** If `main` is already checked out in another worktree, you'll see an error like `fatal: 'main' is already used by worktree at '...'`. In this case, fetch and create your branch from `origin/main`:
+   > ```bash
+   > git fetch origin main
+   > git checkout -b feat/my-feature origin/main
+   > ```
 
-3. **Create a new branch**
+2. **Create a new branch**
    - Use a descriptive branch name
    - Follow the pattern: `type/short-description`
    - Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`
@@ -54,22 +62,13 @@ Before making any changes:
 
 ### Step 2: Make the Changes
 - Implement the requested changes
-- Do NOT stage any files
-- Do NOT commit anything
-- Do NOT push anything
+- Do NOT stage any files yet
+- Do NOT commit anything yet
+- Do NOT push anything yet
 
-### Step 3: Request Feedback
-After completing the changes:
-- Summarize what was changed
-- List all files that were modified, created, or deleted
-- Ask the user to review and confirm the changes are correct
-- Wait for explicit approval before proceeding
+### Step 3: Verify Changes
 
-**You must ask:**
-> "I've made the following changes. Please review and let me know if everything looks good, or if you'd like any adjustments."
-
-### Step 4: Verify Changes Pass All Checks
-Before staging or committing, run verification to ensure changes don't break the build:
+After completing the implementation, **always** run verification:
 
 1. **Determine which verification to run based on what files changed:**
    - Frontend changes only (`frontend/` directory): `yarn verify:frontend`
@@ -81,15 +80,34 @@ Before staging or committing, run verification to ensure changes don't break the
    - `yarn verify:server`: Runs lint, test, and build for the Go server
    - `yarn verify`: Runs both frontend and server verification
 
-3. **Fix any errors before proceeding**
-   - If verification fails, fix the issues
-   - Re-run verification until it passes
-   - Do NOT commit code that fails verification
+3. **If verification fails:** Fix the issues and re-run until it passes.
 
-**Important:** Never skip this step. Pushing code that fails CI wastes time and blocks other work.
+4. **If verification passes:** Proceed to Step 4.
 
-### Step 5: Stage and Commit (After Approval Only)
-Once the user confirms the changes are good and verification passes:
+**Important:** Never skip this step. Run `yarn verify` after every change, not just at the end.
+
+### Step 4: Request Feedback (First Pass Only)
+
+**On the first implementation of a feature or change:**
+- Summarize what was changed
+- List all files that were modified, created, or deleted
+- Ask the user to review and confirm the changes are correct
+- Wait for explicit approval before committing
+
+**You must ask:**
+> "I've made the following changes and `yarn verify` passes. Please review and let me know if everything looks good, or if you'd like any adjustments."
+
+**On subsequent changes based on user feedback:**
+- If the user gave you specific feedback like "change X and Y"
+- And you've made those changes
+- And `yarn verify` passes
+- Then proceed directly to Step 5 (commit) without asking again
+
+The user's feedback implies approval of the direction. Your job is to execute their requested changes and verify they work.
+
+### Step 5: Stage and Commit
+
+Once verification passes (and you have approval for first-pass changes):
 
 1. **Stage all changes**
    ```bash
@@ -98,8 +116,16 @@ Once the user confirms the changes are good and verification passes:
 
 2. **Commit following project conventions**
    - Follow the [Commit Conventions Rule](commit-conventions.mdc)
-   - Use the proper commit message format
-   - Use a HEREDOC for the commit message
+   - Use `--no-verify` only if the husky hook fails due to worktree path issues
+   - Use a HEREDOC for the commit message:
+   ```bash
+   git commit -m "$(cat <<'EOF'
+   feat(scope): short description
+   
+   Optional body with more details.
+   EOF
+   )"
+   ```
 
 ### Step 6: Push and Create Pull Request
 After committing:
@@ -117,7 +143,7 @@ After committing:
 ### Step 7: Cleanup After PR Merge
 After your PR is merged, clean up the worktree and branch:
 
-1. **Remove the worktree** (if working in a Cursor worktree)
+1. **Remove the worktree**
    ```bash
    git worktree list  # Find the worktree path
    git worktree remove <worktree-path>
@@ -212,10 +238,219 @@ EOF
 )"
 ```
 
+## PR Feedback Loop
+
+When the user asks you to address PR comments or fix issues raised on a PR, follow this workflow.
+
+### When to Apply
+- User says "fix the PR comment" or similar
+- User says "address the review feedback"
+- User shares a PR link and asks you to handle comments
+
+### User Comments vs Bot Comments
+
+**By default, only address user comments.** When fetching PR comments, filter out bot comments (e.g., `coderabbitai[bot]`, `codacy-production`) unless the user explicitly asks you to look at them.
+
+**If the user specifically asks to review bot comments (e.g., "look at the CodeRabbit comments"):**
+1. Fetch and summarize the bot comments
+2. Look for the "Prompt for AI Agents" section in each comment for instructions
+3. **Do NOT auto-commit** - always check with the user first for relevance
+4. Present each suggestion and ask if the user wants it addressed
+5. If deemed unnecessary/irrelevant: reply with reasoning (e.g., "Deemed unnecessary - [reason]") and resolve
+6. If making changes: follow the normal fix/commit/reply/resolve workflow
+
+### Step 1: Fetch PR Comments
+
+Get all comments on the PR:
+
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr_number}/comments
+```
+
+**Identify comments to address:**
+- By default: only user comments (filter out bots)
+- Look for comments from the repository owner or team members
+- Focus on comments that are NOT already resolved
+- If user requested bot comments: include those too, but check relevance first
+
+### Step 2: Fix the Issue
+
+1. Read and understand the comment
+2. Make the necessary code changes
+3. Run `yarn verify` to ensure the fix doesn't break anything
+
+### Step 3: Commit and Push
+
+Since this is follow-up feedback on an existing PR, auto-commit is allowed if `yarn verify` passes:
+
+```bash
+git add .
+git commit --no-verify -m "fix: address PR feedback - [brief description]"
+git push
+```
+
+Note the commit hash from the output (e.g., `28a28bb`).
+
+### Step 4: Reply to the Comment
+
+Reply to the original comment with the commit hash:
+
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr_number}/comments/{comment_id}/replies \
+  -X POST -f body="resolved here: {commit_hash}"
+```
+
+### Step 5: Resolve the Comment Thread
+
+First, get the thread ID by querying review threads:
+
+```bash
+gh api graphql -f query='
+query {
+  repository(owner: "{owner}", name: "{repo}") {
+    pullRequest(number: {pr_number}) {
+      reviewThreads(last: 20) {
+        nodes {
+          id
+          isResolved
+          comments(first: 1) {
+            nodes {
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+```
+
+Find the thread ID (starts with `PRRT_`) that matches your comment, then resolve it:
+
+```bash
+gh api graphql -f query='
+mutation {
+  resolveReviewThread(input: {threadId: "{thread_id}"}) {
+    thread {
+      isResolved
+    }
+  }
+}'
+```
+
+### Complete Example
+
+```bash
+# 1. Get PR comments
+gh api repos/trevv16/tuneslap/pulls/48/comments
+
+# 2. Fix the code issue
+# ... make changes ...
+
+# 3. Verify, commit, push
+yarn verify
+git add .
+git commit --no-verify -m "fix(e2e): remove unnecessary expect re-export"
+git push
+# Output shows: [feat/true-e2e-tests 28a28bb] fix(e2e): ...
+
+# 4. Reply to comment (comment_id from step 1)
+gh api repos/trevv16/tuneslap/pulls/48/comments/2726008855/replies \
+  -X POST -f body="resolved here: 28a28bb"
+
+# 5. Get thread ID and resolve
+gh api graphql -f query='query { repository(owner: "trevv16", name: "tuneslap") { pullRequest(number: 48) { reviewThreads(last: 10) { nodes { id isResolved comments(first: 1) { nodes { body } } } } } } }'
+
+# Find matching thread ID (PRRT_...), then:
+gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "PRRT_kwDOQ8TWQ85q9TFt"}) { thread { isResolved } } }'
+```
+
+## Changesets
+
+Before merging a PR, determine if a changeset is needed.
+
+### When to Create a Changeset
+
+Create a changeset (`yarn changeset`) when the change:
+- Adds a new feature users will notice
+- Fixes a bug that affected users
+- Changes existing behavior in a way users will experience
+- Modifies the API or public interfaces
+- Updates dependencies that affect functionality
+
+### When to Skip a Changeset
+
+Skip the changeset when the change:
+- Only affects CI/CD configuration
+- Only updates documentation
+- Is purely internal refactoring with no user-visible impact
+- Adds or updates tests without changing production code
+- Updates development tooling (linting, formatting)
+
+### Creating a Changeset
+
+```bash
+yarn changeset
+```
+
+Follow the prompts:
+1. Select the package(s) affected
+2. Choose the semver bump type (patch/minor/major)
+3. Write a summary of the change for the changelog
+
+Commit the generated changeset file with your PR.
+
+## Merging PRs
+
+When the user asks you to merge a PR or enable auto-merge:
+
+### Option 1: Enable Auto-Merge
+
+If the PR has required checks that need to pass first:
+
+```bash
+gh pr merge {pr_number} --auto --squash
+```
+
+This enables auto-merge. The PR will merge automatically once all required checks pass.
+
+### Option 2: Merge Immediately
+
+If all checks have passed and the PR is ready:
+
+```bash
+gh pr merge {pr_number} --squash
+```
+
+### Merge Method
+
+Always use `--squash` unless the user specifies otherwise. Squash merging:
+- Keeps the main branch history clean
+- Combines all PR commits into one
+- Uses the PR title as the commit message
+
+### Post-Merge Cleanup
+
+After the PR is merged, clean up the worktree and branch:
+
+```bash
+# Remove the worktree
+git worktree list  # Find the worktree path
+git worktree remove <worktree-path>
+
+# Delete the merged branch locally
+git branch -d <branch-name>
+
+# Prune stale worktree references
+git worktree prune
+```
+
+> **Important:** Always clean up after merging. Cursor creates worktrees in `~/.cursor/worktrees/` and these accumulate if not cleaned up.
+
 ## Worktree Management
 
 ### What Are Worktrees?
-Git worktrees let you have multiple working directories attached to the same repository, each with a different branch checked out. Cursor may create worktrees automatically in `~/.cursor/worktrees/` when running background agents.
+Git worktrees let you have multiple working directories attached to the same repository, each with a different branch checked out. Cursor uses worktrees in `~/.cursor/worktrees/` for background agents and parallel work.
 
 ### Why Cleanup Matters
 - A branch can only be checked out in one worktree at a time
@@ -260,37 +495,8 @@ It means the branch is checked out in another worktree. Either:
 
 ## Examples
 
-### ❌ Don't Do This
+### Correct Workflow: First-Pass Implementation
 
-**Making changes without a branch:**
-```bash
-# Wrong: Making changes directly on main
-git checkout main
-# ... make changes ...
-git add .
-git commit -m "feat: add feature"
-```
-**Why this is wrong:**
-- Changes should never be committed directly to main
-- Prevents proper code review
-- Makes it hard to roll back changes
-
-**Committing before getting feedback:**
-```bash
-# Wrong: Committing without user approval
-git checkout -b feat/new-feature
-# ... make changes ...
-git add .
-git commit -m "feat: add new feature"  # No feedback requested!
-```
-**Why this is wrong:**
-- User hasn't reviewed the changes
-- May need adjustments that would require amending or additional commits
-- Wastes time if changes aren't what the user wanted
-
-### ✅ Do This Instead
-
-**Proper workflow:**
 ```bash
 # 1. Start from latest main
 git checkout main
@@ -302,13 +508,13 @@ git checkout -b feat/add-user-settings
 # 3. Make changes (no commits yet)
 # ... implement the feature ...
 
-# 4. Ask user for feedback
-# "I've made the following changes. Please review..."
+# 4. Run verification
+yarn verify
 
-# 5. Run verification (after user approves)
-yarn verify  # or yarn verify:server, or yarn verify:frontend
+# 5. Ask user for feedback (REQUIRED on first pass)
+# "I've made the following changes and yarn verify passes. Please review..."
 
-# 6. After verification passes, commit
+# 6. After user approves, commit
 git add .
 git commit -m "$(cat <<'EOF'
 feat: add user settings page
@@ -321,12 +527,42 @@ EOF
 git push -u origin HEAD
 gh pr create --title "feat: add user settings page" --body "..."
 ```
-**Why this is better:**
-- Changes are isolated on a feature branch
-- User can review before anything is committed
-- Verification catches issues before they hit CI
-- PR follows project standards
-- Easy to track and review changes
+
+### Correct Workflow: Subsequent Feedback
+
+```bash
+# User says: "Change the button color to blue and add a loading state"
+
+# 1. Make the requested changes
+# ... edit files ...
+
+# 2. Run verification
+yarn verify
+
+# 3. If verification passes, commit and push (no approval needed)
+git add .
+git commit --no-verify -m "fix: update button color and add loading state"
+git push
+
+# 4. Let user know it's done
+# "Done. Changes pushed to the PR."
+```
+
+### Incorrect Workflow
+
+**Committing before getting feedback on first pass:**
+```bash
+# Wrong: Committing without user approval on first implementation
+git checkout -b feat/new-feature
+# ... make changes ...
+yarn verify  # passes
+git add .
+git commit -m "feat: add new feature"  # No feedback requested!
+```
+**Why this is wrong:**
+- User hasn't reviewed the implementation approach
+- May need adjustments that would require additional commits
+- Wastes time if changes aren't what the user wanted
 
 ## Related Rules
 - [Commit Conventions](commit-conventions.mdc) - Commit message format

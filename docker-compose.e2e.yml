@@ -1,0 +1,148 @@
+# E2E Test Docker Compose - Full stack for end-to-end testing
+# Based on docker-compose.dev.yml but optimized for CI/testing:
+# - No frontend service (Playwright starts Next.js)
+# - No volume mounts (faster startup, uses built binary)
+# - No openapi service (not needed for E2E)
+# - Uses isolated database (tuneslap_e2e)
+# - Adds E2E_TEST_MODE for test data seeding
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile.dev
+    ports:
+      - "8082:8082"
+    environment:
+      # Connection strings for docker services
+      - MONGODB_URI=mongodb://mongodb:27017
+      - REDIS_URL=redis:6379
+      - PORT=8082
+      # App config - use isolated E2E database
+      - DATABASE=${DATABASE:-tuneslap_e2e}
+      - JWT_SECRET=${JWT_SECRET:-e2e-test-jwt-secret}
+      - DEMO_MODE=${DEMO_MODE:-true}
+      - E2E_TEST_MODE=${E2E_TEST_MODE:-true}
+      # Storage configuration (defaults to MinIO)
+      - STORAGE_PROVIDER=${STORAGE_PROVIDER:-s3}
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT:-http://localhost:9000}
+      - S3_REGION=${S3_REGION:-us-east-1}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+      - MEDIA_BUCKET=${MEDIA_BUCKET:-tuneslap-media}
+      - USER_UPLOADS_BUCKET=${USER_UPLOADS_BUCKET:-tuneslap-uploads}
+    volumes:
+      # Mount server code for air to build
+      - ./server:/app
+      - ./server/keys:/app/keys
+      # Exclude build artifacts
+      - /app/tmp
+    command: air
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      createbuckets:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      - tuneslap-e2e-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # MongoDB - copied from dev compose
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    attach: false
+    volumes:
+      - mongodb_e2e_data:/data/db
+    restart: unless-stopped
+    networks:
+      - tuneslap-e2e-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Redis - copied from dev compose
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_e2e_data:/data
+    restart: unless-stopped
+    networks:
+      - tuneslap-e2e-network
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # MinIO - copied from dev compose
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${S3_ACCESS_KEY:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${S3_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_e2e_data:/data
+    restart: unless-stopped
+    networks:
+      - tuneslap-e2e-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Create buckets - copied from dev compose
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set myminio http://minio:9000 ${S3_ACCESS_KEY:-minioadmin} ${S3_SECRET_KEY:-minioadmin};
+      mc mb myminio/tuneslap-media --ignore-existing;
+      mc mb myminio/tuneslap-uploads --ignore-existing;
+      mc anonymous set public myminio/tuneslap-media;
+      mc anonymous set public myminio/tuneslap-uploads;
+      echo 'Buckets created successfully';
+      "
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+    networks:
+      - tuneslap-e2e-network
+    restart: no
+
+# E2E-specific volumes (isolated from dev)
+volumes:
+  mongodb_e2e_data:
+  redis_e2e_data:
+  minio_e2e_data:
+
+# E2E-specific network (isolated from dev)
+networks:
+  tuneslap-e2e-network:
+    driver: bridge

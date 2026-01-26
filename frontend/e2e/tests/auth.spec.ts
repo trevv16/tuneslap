@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { AuthPage } from '../pages/auth.page'
-import { createApiMocks } from '../fixtures/api.fixture'
-import { testUser, mockSigninResponse, mockSignupResponse } from '../fixtures/test-data'
+import { E2E_TEST_USER } from '../fixtures/auth.fixture'
 
 test.describe('Sign In', () => {
   let authPage: AuthPage
@@ -45,21 +44,15 @@ test.describe('Sign In', () => {
   })
 
   test('should sign in successfully with valid credentials', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.signin(mockSigninResponse)
-    await apiMocks.auth.me()
-    await apiMocks.boards.list()
-
+    // Use E2E test user credentials for real authentication
     await authPage.gotoSignIn()
-    await authPage.signIn(testUser.email, testUser.password)
+    await authPage.signIn(E2E_TEST_USER.email, E2E_TEST_USER.password)
 
     await authPage.expectRedirectToDashboard()
   })
 
   test('should show error for invalid credentials', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.signinError('Invalid email or password')
-
+    // Test with wrong credentials against real backend
     await authPage.gotoSignIn()
     await authPage.signIn('wrong@example.com', 'wrongpassword')
 
@@ -102,11 +95,11 @@ test.describe('Sign Up', () => {
   })
 
   test('should sign up successfully and redirect to sign in', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.signup(mockSignupResponse)
+    // Use a unique email for each test run to avoid conflicts
+    const uniqueEmail = `e2e-test-${Date.now()}@tuneslap.test`
 
     await authPage.gotoSignUp()
-    await authPage.signUp('New User', 'newuser@example.com', 'password123')
+    await authPage.signUp('E2E New User', uniqueEmail, 'password123456')
 
     await authPage.expectRedirectToSignIn()
   })

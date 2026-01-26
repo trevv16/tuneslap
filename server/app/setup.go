@@ -55,6 +55,12 @@ func SetupApp() (*fiber.App, error) {
 		return nil, fmt.Errorf("error seeding demo data: %w", err)
 	}
 
+	// seed E2E test data if in E2E test mode
+	err = seed.EnsureE2EData()
+	if err != nil {
+		return nil, fmt.Errorf("error seeding E2E test data: %w", err)
+	}
+
 	// create app
 	app := fiber.New()
 
@@ -121,7 +127,7 @@ func attachMiddleware(app *fiber.App) {
 
 	// cors middleware
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3001, http://localhost:8081, https://tuneslap.com, https://*.tuneslap.com",
+		AllowOrigins:     "http://localhost:3000, http://localhost:3001, http://localhost:8081, https://tuneslap.com, https://*.tuneslap.com",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
 	}))

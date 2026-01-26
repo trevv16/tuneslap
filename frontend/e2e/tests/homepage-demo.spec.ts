@@ -12,7 +12,9 @@ const DEMO_KEYS = [
   { name: 'Ta-Da', hotKey: '8', imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400' },
 ]
 
-const STORAGE_URL_BASE = 'https://media.tuneslap.com/tuneslap-media'
+// Storage URL can be either production or localhost MinIO in E2E/CI environments
+const PRODUCTION_STORAGE_URL = 'https://media.tuneslap.com/tuneslap-media'
+const LOCALHOST_STORAGE_URL = 'http://localhost:9000/tuneslap-media'
 const DEMO_USER_ID = '000000000000000000000001'
 
 test.describe('Homepage Demo Section', () => {
@@ -274,8 +276,11 @@ test.describe('Homepage Demo Section', () => {
 
     // Verify the URL pattern for each fetched audio
     for (const url of fetchedAudioUrls) {
-      // Should contain the storage URL pattern
-      expect(url).toContain(`${STORAGE_URL_BASE}/${DEMO_USER_ID}/audio/`)
+      // Should contain either production or localhost storage URL pattern
+      const hasValidStorageUrl = 
+        url.includes(`${PRODUCTION_STORAGE_URL}/${DEMO_USER_ID}/audio/`) ||
+        url.includes(`${LOCALHOST_STORAGE_URL}/${DEMO_USER_ID}/audio/`)
+      expect(hasValidStorageUrl).toBe(true)
 
       // Should be one of our expected files
       const matchesExpectedFile = expectedAudioFiles.some(file => url.includes(file))

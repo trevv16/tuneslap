@@ -119,6 +119,9 @@ export class BoardPage {
   // Assertions
   async expectPageLoaded(boardName?: string): Promise<void> {
     await expect(this.page).toHaveURL(/\/boards\/[a-z0-9]+/)
+    // Check for board-specific elements
+    await expect(this.pageTitle).toBeVisible()
+    await expect(this.keysGrid).toBeVisible()
     if (boardName) {
       await expect(this.pageTitle).toContainText(boardName)
     }
@@ -157,5 +160,14 @@ export class BoardPage {
 
   async expectNavigatedToEdit(): Promise<void> {
     await expect(this.page).toHaveURL(/\/boards\/[a-z0-9]+\/edit/)
+  }
+
+  async expectEditPageLoaded(): Promise<void> {
+    // Check URL
+    await expect(this.page).toHaveURL(/\/boards\/[a-z0-9]+\/edit/)
+    // Check for edit-specific elements (form inputs, save button, etc.)
+    await expect(this.page.getByRole('heading', { level: 1 })).toBeVisible()
+    // Check for board name input field (common on edit pages)
+    await expect(this.page.getByLabel(/name/i)).toBeVisible()
   }
 }

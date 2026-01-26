@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test'
 import { BoardPage } from '../pages/board.page'
-import { createApiMocks } from '../fixtures/api.fixture'
-import { setAuthToken } from '../fixtures/auth.fixture'
-import { mockBoard, mockKeys, mockUserResponse } from '../fixtures/test-data'
+import { login } from '../fixtures/auth.fixture'
+
+// E2E Test Board ID - must match server/config/demo.go E2ETestBoardID
+const E2E_TEST_BOARD_ID = '000000000000000000000098'
 
 test.describe('Board Detail', () => {
   let boardPage: BoardPage
@@ -10,31 +11,19 @@ test.describe('Board Detail', () => {
   test.beforeEach(async ({ page }) => {
     boardPage = new BoardPage(page)
 
-    // Set up common API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should open add key sheet', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.boards.get(mockBoard.id, mockBoard)
-    await apiMocks.media.list()
-
-    await boardPage.goto(mockBoard.id)
+    await boardPage.goto(E2E_TEST_BOARD_ID)
     await boardPage.openAddKeySheet()
 
     await boardPage.expectAddKeySheetVisible()
   })
 
   test('should have edit and add key buttons visible', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.boards.get(mockBoard.id, mockBoard)
-
-    await boardPage.goto(mockBoard.id)
+    await boardPage.goto(E2E_TEST_BOARD_ID)
 
     await expect(boardPage.editButton).toBeVisible()
     await expect(boardPage.addKeyButton).toBeVisible()
@@ -47,24 +36,15 @@ test.describe('Board Key Interaction', () => {
   test.beforeEach(async ({ page }) => {
     boardPage = new BoardPage(page)
 
-    // Set up common API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
   test('should respond to keyboard hotkey press', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.boards.get(mockBoard.id, mockBoard)
+    await boardPage.goto(E2E_TEST_BOARD_ID)
 
-    await boardPage.goto(mockBoard.id)
-
-    // Press the hotkey for the first key
-    const firstKey = mockKeys[0]
-    await boardPage.pressHotkey(firstKey.hotKey)
+    // Press the hotkey for the first key (seeded test data has hotkey "1")
+    await boardPage.pressHotkey('1')
   })
 })
 
@@ -74,21 +54,13 @@ test.describe('Board Edit Page', () => {
   test.beforeEach(async ({ page }) => {
     boardPage = new BoardPage(page)
 
-    // Set up common API mocks BEFORE any navigation
-    const apiMocks = createApiMocks(page)
-    await apiMocks.auth.me(mockUserResponse)
-
-    // Navigate to a page without SSR API calls and set auth token
-    await page.goto('/auth/signin')
-    await setAuthToken(page)
+    // Real authentication against the backend
+    await login(page)
   })
 
-  test('should load edit page', async ({ page }) => {
-    const apiMocks = createApiMocks(page)
-    await apiMocks.boards.get(mockBoard.id, mockBoard)
+  test('should load edit page', async () => {
+    await boardPage.gotoEdit(E2E_TEST_BOARD_ID)
 
-    await boardPage.gotoEdit(mockBoard.id)
-
-    await expect(page).toHaveURL(/\/boards\/[a-z0-9-]+\/edit/)
+    await boardPage.expectEditPageLoaded()
   })
 })
