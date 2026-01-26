@@ -58,9 +58,9 @@ test.describe('Board Edit Page', () => {
     await login(page)
   })
 
-  test('should load edit page', async ({ page }) => {
+  test('should load edit page', async () => {
     await boardPage.gotoEdit(E2E_TEST_BOARD_ID)
 
-    await expect(page).toHaveURL(/\/boards\/[a-z0-9-]+\/edit/)
+    await boardPage.expectEditPageLoaded()
   })
 })

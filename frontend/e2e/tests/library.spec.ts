@@ -12,12 +12,12 @@ test.describe('Media Library', () => {
     await login(page)
   })
 
-  test('should display media gallery', async ({ page }) => {
+  test('should display media gallery', async () => {
     await libraryPage.goto()
 
     await libraryPage.expectPageLoaded()
-    // Note: E2E test user may not have media initially
-    // This tests that the library page loads correctly
+    // E2E test user has seeded media - if none exists, something is wrong
+    await libraryPage.expectMediaVisible()
   })
 })
 
@@ -31,18 +31,12 @@ test.describe('Media Details Sidebar', () => {
     await login(page)
   })
 
-  test('should open media details sidebar on item click', async ({ page }) => {
+  test('should open media details sidebar on item click', async () => {
     await libraryPage.goto()
 
-    // Check if there's media to click on
-    const hasMedia = await page.locator('[data-testid="media-item"]').count()
-    if (hasMedia > 0) {
-      await libraryPage.selectMediaByIndex(0)
-      await libraryPage.expectDetailsSidebarVisible()
-    } else {
-      // No media available - test passes as library is functional
-      await libraryPage.expectPageLoaded()
-    }
+    // E2E test user has seeded media - select first item
+    await libraryPage.selectMediaByIndex(0)
+    await libraryPage.expectDetailsSidebarVisible()
   })
 })
 

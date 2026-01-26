@@ -99,6 +99,8 @@ export class AccountPage {
   // Assertions
   async expectPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/\/account/)
+    // Check for account-specific elements
+    await expect(this.profileSection).toBeVisible()
   }
 
   async expectProfileSectionVisible(): Promise<void> {

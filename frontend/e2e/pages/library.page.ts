@@ -175,6 +175,9 @@ export class LibraryPage {
   // Assertions
   async expectPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/\/library/)
+    // Check for library-specific elements
+    await expect(this.pageTitle).toBeVisible()
+    await expect(this.mediaGallery).toBeVisible()
   }
 
   async expectEmptyState(): Promise<void> {

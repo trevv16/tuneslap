@@ -105,6 +105,10 @@ export class DashboardPage {
   // Assertions
   async expectPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/\/dashboard/)
+    // Check for dashboard-specific elements
+    await expect(this.pageTitle).toBeVisible()
+    // Either boards list or empty state should be visible
+    await expect(this.boardsList.or(this.emptyState)).toBeVisible()
   }
 
   async expectEmptyState(): Promise<void> {
