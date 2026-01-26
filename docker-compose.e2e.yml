@@ -60,7 +60,7 @@ services:
 
   # MongoDB - copied from dev compose
   mongodb:
-    image: mongo:6
+    image: mongo:8
     ports:
       - "27017:27017"
     attach: false
