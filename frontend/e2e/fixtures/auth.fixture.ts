@@ -39,6 +39,9 @@ export async function login(
 ): Promise<void> {
   await page.goto('/auth/signin')
 
+  // Wait for sign in form to be ready
+  await page.waitForLoadState('networkidle')
+
   // Fill in credentials
   await page.getByLabel('Email address').fill(email)
   await page.getByLabel('Password').fill(password)
@@ -46,8 +49,11 @@ export async function login(
   // Submit form
   await page.getByRole('button', { name: 'Sign in' }).click()
 
-  // Wait for navigation to dashboard
-  await expect(page).toHaveURL(/\/dashboard/)
+  // Wait for navigation to dashboard with longer timeout for CI
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 })
+
+  // Wait for dashboard to finish loading
+  await page.waitForLoadState('networkidle')
 }
 
 /**
