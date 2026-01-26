@@ -51,13 +51,9 @@ jobs:
           - image: server
             context: .
             file: ./server/Dockerfile
-            build-args: ""
           - image: frontend
             context: ./frontend
             file: ./frontend/Dockerfile
-            build-args: |
-              NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:8082' }}
-              NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -78,13 +74,22 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Set build args for frontend
+        id: build-args
+        if: matrix.image == 'frontend'
+        run: |
+          echo "args<<EOF" >> $GITHUB_OUTPUT
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:8082' }}" >> $GITHUB_OUTPUT
+          echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001' }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Build and push ${{ matrix.image }} image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
           push: true
-          build-args: ${{ matrix.build-args }}
+          build-args: ${{ steps.build-args.outputs.args }}
           tags: |
             tuneslap/${{ matrix.image }}:latest
             tuneslap/${{ matrix.image }}:${{ env.VERSION }}
