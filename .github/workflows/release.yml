@@ -52,7 +52,7 @@ jobs:
             context: .
             file: ./server/Dockerfile
           - image: frontend
-            context: ./frontend
+            context: .
             file: ./frontend/Dockerfile
     steps:
       - name: Checkout code
