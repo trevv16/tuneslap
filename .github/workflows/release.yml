@@ -91,8 +91,8 @@ jobs:
           push: true
           build-args: ${{ steps.build-args.outputs.args }}
           tags: |
-            tuneslap/${{ matrix.image }}:latest
-            tuneslap/${{ matrix.image }}:${{ env.VERSION }}
+            trevva/tuneslap-${{ matrix.image }}:latest
+            trevva/tuneslap-${{ matrix.image }}:${{ env.VERSION }}
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
@@ -127,8 +127,8 @@ jobs:
 
             ## Docker Images
 
-            - `tuneslap/server:${{ env.VERSION }}`
-            - `tuneslap/frontend:${{ env.VERSION }}`
+            - `trevva/tuneslap-server:${{ env.VERSION }}`
+            - `trevva/tuneslap-frontend:${{ env.VERSION }}`
 
             Or use `latest` tags for the most recent release.
           draft: false
