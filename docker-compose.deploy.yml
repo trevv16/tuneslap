@@ -4,7 +4,7 @@
 
 services:
   server:
-    image: tuneslap/server:latest
+    image: trevva/tuneslap-server:latest
     ports:
       - "8082:8082"
     environment:
@@ -39,7 +39,7 @@ services:
       - tuneslap-network
 
   frontend:
-    image: tuneslap/frontend:latest
+    image: trevva/tuneslap-frontend:latest
     ports:
       - "3001:3001"
     environment:
