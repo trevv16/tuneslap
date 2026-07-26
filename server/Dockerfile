@@ -58,6 +58,11 @@ WORKDIR /app
 # Copy the binary from the builder stage
 COPY --from=builder /workspace/server/main .
 
+# Copy runtime assets (demo audio seeded into MinIO on startup in demo mode).
+# Without these, findDemoAudioFile cannot resolve /app/assets/demo/*.mp3 and
+# demo seeding silently skips every upload.
+COPY --from=builder /workspace/server/assets ./assets
+
 # Set environment variables
 # We do NOT set GO_ENV=production here because the application logic 
 # only loads .env if GO_ENV is empty or "local".
