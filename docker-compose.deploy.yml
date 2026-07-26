@@ -34,7 +34,9 @@ services:
         condition: service_started
       createbuckets:
         condition: service_completed_successfully
-    restart: on-failure
+    # unless-stopped, not on-failure: this container exits 0 on shutdown, and a
+    # clean exit is not a failure, so Docker will not restart it after a reboot.
+    restart: unless-stopped
     networks:
       - tuneslap-network
 
@@ -47,7 +49,9 @@ services:
       - INTERNAL_API_URL=${INTERNAL_API_URL:-http://server:8082/api/v1}
     depends_on:
       - server
-    restart: on-failure
+    # unless-stopped, not on-failure: this container exits 0 on shutdown, and a
+    # clean exit is not a failure, so Docker will not restart it after a reboot.
+    restart: unless-stopped
     networks:
       - tuneslap-network
 
