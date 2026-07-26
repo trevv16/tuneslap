@@ -195,7 +195,9 @@ jobs:
 
       - name: Create MinIO buckets
         run: |
-          curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
+          # -fL is required: dl.min.io now 302-redirects to GitHub release assets.
+          # Without -L curl saves the 141-byte redirect body and ./mc fails to exec.
+          curl -fLO https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           ./mc alias set myminio http://localhost:9000 minioadmin minioadmin
           ./mc mb myminio/tuneslap-media --ignore-existing
