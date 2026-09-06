@@ -208,7 +208,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25.6'
+          go-version: '1.25.14'
           cache: true
           cache-dependency-path: './server/go.sum'
 
@@ -324,7 +324,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25.6'
+          go-version: '1.25.14'
           cache: true
           cache-dependency-path: './server/go.sum'
       
@@ -350,7 +350,7 @@ jobs:
       # https://github.com/h2non/bimg?tab=readme-ov-file#installation
       # https://github.com/libvips/libvips/wiki/Build-for-Ubuntu
       - name: Install bimg dependencies
-        uses: awalsh128/cache-apt-pkgs-action@acb598e5ddbc6f68a970c5da0688d2f3a9f04d05 # v1.6.0
+        uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # v1.6.3
         with:
           packages: libvips-dev libhdf5-dev
           version: 2.0
